@@ -1,0 +1,110 @@
+name: N0TE mechanical closeout
+
+on:
+  workflow_run:
+    workflows: ["N0TE governance and regression"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  closeout:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - run: python -m pip install -r requirements.txt && python -m pip install pytest
+
+      - name: Locate merged PR closeout request
+        id: request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MAIN_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/commits/${MAIN_SHA}/pulls" \
+            --jq '[.[] | select(.merged_at != null)][0].body // ""' \
+            > /tmp/pr-body.txt
+          if ! grep -q "N0TE_CLOSEOUT" /tmp/pr-body.txt; then
+            echo "requested=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          PYTHONPATH=. python governance/closeout.py extract \
+            --pr-body-file /tmp/pr-body.txt \
+            --output /tmp/closeout-request.json
+          echo "requested=true" >> "$GITHUB_OUTPUT"
+
+      - name: Apply bounded mechanical closeout
+        if: steps.request.outputs.requested == 'true'
+        env:
+          MAIN_SHA: ${{ github.event.workflow_run.head_sha }}
+          CI_RUN: ${{ github.event.workflow_run.id }}
+          OBSERVED_AT: ${{ github.event.workflow_run.updated_at }}
+        run: |
+          set -euo pipefail
+          PYTHONPATH=. python governance/closeout.py apply \
+            --root . \
+            --request /tmp/closeout-request.json \
+            --main-sha "$MAIN_SHA" \
+            --ci-run "$CI_RUN" \
+            --observed-at "$OBSERVED_AT"
+
+      - name: Validate exact generated closeout tree
+        if: steps.request.outputs.requested == 'true'
+        run: |
+          set -euo pipefail
+          unexpected="$(
+            git diff --name-only |
+            grep -Ev '^(governance/current_state\.json|governance/programs/[^/]+\.json|governance/evidence/[^/]+\.json)$' || true
+          )"
+          if [ -n "$unexpected" ]; then
+            echo "Mechanical closeout attempted unexpected paths:" >&2
+            echo "$unexpected" >&2
+            exit 1
+          fi
+          python -m compileall -q governance
+          PYTHONPATH=. python governance/check_governance.py --offline
+          python -m pytest -q tests/governance
+          if grep -RIn --exclude-dir="__pycache__" --exclude-dir="migration" --exclude="*.yml" --exclude="*.yaml" -E "N0TE2|n0te2" governance tests/governance; then
+            echo "Legacy repository identity found in closeout surfaces" >&2
+            exit 1
+          fi
+
+      - name: Fast-forward validated closeout state
+        if: steps.request.outputs.requested == 'true'
+        env:
+          MAIN_SHA: ${{ github.event.workflow_run.head_sha }}
+          CI_RUN: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- governance/current_state.json governance/programs governance/evidence; then
+            echo "No closeout state change was produced."
+            exit 0
+          fi
+
+          remote_main="$(git ls-remote origin refs/heads/main | cut -f1)"
+          if [ "$remote_main" != "$MAIN_SHA" ]; then
+            echo "Main moved after product verification; refusing automatic closeout." >&2
+            exit 1
+          fi
+
+          git config user.name "N0TE Governance Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add governance/current_state.json governance/programs governance/evidence
+          git commit -m "Mechanically close verified construction work from ${MAIN_SHA:0:12}"
+          git push origin HEAD:main
