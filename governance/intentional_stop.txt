@@ -1,1 +1,0 @@
-No additional scaffold module should be created after this marker unless CI or execution-path integration exposes a concrete missing mechanism. Finish by wiring existing additions into coordinator/gate and removing temporary branch artifacts.
