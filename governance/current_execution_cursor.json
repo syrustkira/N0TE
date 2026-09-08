@@ -1,0 +1,9 @@
+{
+  "job_id": "SERVICE-ACQUISITION-001",
+  "outcome": "Obtain the first valid external demand evidence for professional music services without flattening the wider artist-business system.",
+  "active_object": "service_acquisition",
+  "current_step": "Select one concrete buyer problem and one acquisition channel, then prepare a bounded reversible acquisition increment.",
+  "acceptance": "Externally observed acquisition evidence is recorded through the funnel without treating traffic, publication, or an untested offer as payment or demand failure.",
+  "state": "READY",
+  "blockers": []
+}
