@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "retained_scope_refs": [
+    "artist",
+    "producer",
+    "songwriter",
+    "engineer",
+    "catalog",
+    "services",
+    "licensing",
+    "audience",
+    "relationships",
+    "business",
+    "n0te",
+    "finance"
+  ],
+  "truth_owners": {
+    "WHY": "TELLMEN0TE MASTER CONTEXT",
+    "WHAT": "N0TE - CURRENT PRODUCT VISION + PUBLIC_SCOPE_CANON",
+    "HOW": "N0TE_PRODUCT_DB + executable governance",
+    "NOW": "TELLMEN0TE_OS",
+    "PROOF": "live repository/provider/runtime evidence"
+  },
+  "dependency_graph": {
+    "services": ["service_acquisition"],
+    "service_acquisition": ["qualified_inquiry"],
+    "qualified_inquiry": ["brief"],
+    "brief": ["quote"],
+    "quote": ["paid_start"],
+    "paid_start": [],
+    "artist": ["audience", "catalog"],
+    "catalog": ["licensing"],
+    "n0te": []
+  },
+  "lens_dispatch": {
+    "services": ["epistemology", "anti_flattening", "positioning", "offer", "proof", "customer_experience", "finance", "agency_velocity"],
+    "service_acquisition": ["epistemology", "anti_flattening", "positioning", "offer", "discovery", "distribution", "sales", "experiments", "finance", "friction_memory", "success_memory", "agency_velocity"],
+    "qualified_inquiry": ["epistemology", "customer_experience", "sales", "offer", "pricing", "authority"],
+    "brief": ["epistemology", "customer_experience", "scope", "authority"],
+    "quote": ["epistemology", "pricing", "negotiation", "finance", "authority"],
+    "paid_start": ["epistemology", "finance", "customer_experience", "verification", "reconciliation"],
+    "artist": ["epistemology", "anti_flattening", "taste", "positioning", "story", "audience_development"],
+    "producer": ["epistemology", "production", "arrangement", "finishing", "feedback_literacy"],
+    "songwriter": ["epistemology", "songwriting", "composition", "arrangement", "feedback_literacy"],
+    "engineer": ["epistemology", "recording", "editing", "mixing", "mastering", "quality_control", "finishing"],
+    "catalog": ["epistemology", "rights", "release", "licensing", "distribution", "finance"],
+    "licensing": ["epistemology", "rights", "offer", "sales", "finance", "authority"],
+    "audience": ["epistemology", "content", "distribution", "discovery", "audience_development", "experiments"],
+    "relationships": ["epistemology", "relationship_management", "authority", "friction_memory"],
+    "business": ["epistemology", "finance", "revenue_portfolio", "sales", "leverage", "agency_velocity"],
+    "n0te": ["epistemology", "anti_flattening", "scope", "capability_evidence", "finishing", "failure_recovery"],
+    "finance": ["epistemology", "finance", "agency_velocity", "opportunity_cost", "risk"]
+  },
+  "standing_authority": {
+    "auto": [
+      "READ_ONLY",
+      "REVERSIBLE"
+    ],
+    "human_required_when": [
+      "spend_money",
+      "enter_contract",
+      "transfer_rights",
+      "irreversible_publication",
+      "destructive_delete",
+      "financial_transaction",
+      "person_directed_outreach_when_not_preapproved"
+    ]
+  }
+}
