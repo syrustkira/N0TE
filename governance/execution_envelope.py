@@ -39,7 +39,11 @@ class ExecutionGateResult:
 
 
 def _text(value, field):
-    text = str(value).strip()
+    if value is None:
+        raise ExecutionEnvelopeError(f"{field} must not be empty")
+    if not isinstance(value, str):
+        raise ExecutionEnvelopeError(f"{field} must be text")
+    text = value.strip()
     if not text:
         raise ExecutionEnvelopeError(f"{field} must not be empty")
     return text
@@ -131,8 +135,9 @@ def validate_execution_envelope(envelope):
     claims = envelope["claims"]
     if not isinstance(claims, list) or not claims:
         raise ExecutionEnvelopeError("claims must be a non-empty list")
+    claim_types = []
     for index, claim in enumerate(claims):
-        _validate_claim(claim, index)
+        claim_types.append(_validate_claim(claim, index))
 
     required_functions = set(
         _string_list(envelope["required_functions"], "required_functions")
@@ -209,9 +214,17 @@ def evaluate_execution_envelope(envelope):
 
     blockers = []
     for index, claim in enumerate(envelope["claims"]):
+        truth_type = str(claim["truth_type"]).strip().upper()
         posture = str(claim["evidence_posture"]).strip().upper()
         if claim["blocking"] and posture in BLOCKING_POSTURES:
             blockers.append(f"blocking epistemic claim claims[{index}]={posture}")
+        # A CURRENT_FACT admitted into the action envelope is material current-state
+        # input. It cannot be stale/assumed/unknown for stateful execution merely
+        # because the caller forgot to label it blocking.
+        if truth_type == "CURRENT_FACT" and posture in {"STALE", "ASSUMED", "UNKNOWN"}:
+            blockers.append(
+                f"material current fact claims[{index}] cannot execute with posture={posture}"
+            )
 
     authority = envelope["authority"]
     action_class = str(authority["action_class"]).strip().upper()
@@ -221,7 +234,7 @@ def evaluate_execution_envelope(envelope):
         blockers.append("irreversible action must require human authority")
 
     fingerprint = envelope_fingerprint(envelope)
-    return ExecutionGateResult(True, not blockers, fingerprint, tuple(blockers))
+    return ExecutionGateResult(True, not blockers, fingerprint, tuple(dict.fromkeys(blockers)))
 
 
 def require_execution_permit(envelope):
