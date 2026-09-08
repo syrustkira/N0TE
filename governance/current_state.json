@@ -16,7 +16,18 @@
     "personal_production_acceptance": "DERIVED_SEPARATELY_FROM_REQUIRED_DAW_OS_AND_RELIABILITY_OBLIGATIONS",
     "activation_receipt": "migration/receipts/constitutional-req-scope-172-2026-09-08.json"
   },
-  "active_construction_program": "governance/programs/PROGRAM-PERSONAL-PRODUCTION-001.json",
+  "last_completed_construction_program": {
+    "program_id": "PROGRAM-PERSONAL-PRODUCTION-001",
+    "program_path": "governance/programs/PROGRAM-PERSONAL-PRODUCTION-001.json",
+    "completion_receipt": "governance/evidence/PROGRAM-PERSONAL-PRODUCTION-001-completion-2026-09-08.json",
+    "resulting_main_execution_commit": "c0cb39fe47779f7a36f6bec877c4861ab73776cf",
+    "resulting_main_execution_ci_run": 34261064328
+  },
+  "current_requirement_evidence": {
+    "REQ-SCOPE-003": "governance/evidence/REQ-SCOPE-003-headquarters-reachability-2026-09-08.json",
+    "REQ-SCOPE-010": "governance/evidence/REQ-SCOPE-010-compare-decide-reachability-2026-09-08.json",
+    "REQ-SCOPE-172": "governance/evidence/REQ-SCOPE-172-first-program-reachability-2026-09-08.json"
+  },
   "work_selection_rule": "Resume durable unfinished construction programs or work packages first. For an active construction program, validate the parent and expose every dependency-valid, authority-bounded, path-disjoint sibling package not blocked by evidenced blast radius. Otherwise select from current canonical scope and current evidence only.",
   "normal_reconstruction": "Begin from the clean N0TE START HERE, current semantic owners, current repository state, and requirement-level evidence."
 }

@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "kind": "REQUIREMENT_EVIDENCE_RECEIPT",
+  "requirement_id": "REQ-SCOPE-010",
+  "semantic_owner": "N0TE_PRODUCT_DB/SCOPE_LEDGER",
+  "observed_at": "2026-09-08T18:08:00Z",
+  "claims": {
+    "MAPPED": {
+      "state": "PROVEN",
+      "evidence_refs": ["N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-010"]
+    },
+    "IMPLEMENTED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/version_compare_shell.py",
+        "n0te/audition.py",
+        "tests/acceptance/test_req_scope_010_compare_decide_reachability.py"
+      ]
+    },
+    "INTEGRATED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "pull-request:4",
+        "main:c0cb39fe47779f7a36f6bec877c4861ab73776cf"
+      ]
+    },
+    "REACHABLE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "tests/acceptance/test_req_scope_010_compare_decide_reachability.py",
+        "ci-run:34261064328"
+      ],
+      "observed_result": "The normal Compare surface exposed two exact locally auditionable WAV Versions, offered KEEP/REVERT/REVISE/INCONCLUSIVE, recorded an explicit REVISE judgment with rationale, and preserved the exact pair-bound decision."
+    },
+    "VERIFIED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "ci-run:34260800977",
+        "ci-run:34261064328"
+      ]
+    },
+    "RECOVERABLE": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "No dedicated rollback or recovery exercise for Compare decision storage was observed."
+    },
+    "AUTHORITY_SAFE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "tests/acceptance/test_req_scope_010_compare_decide_reachability.py"
+      ],
+      "observed_result": "Recording REVISE did not change Current, Approved, audio assets, Learning, a provider, or a DAW."
+    },
+    "CONSUMER_ACCEPTED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "Automated consumer-path reachability is not artist acceptance."
+    },
+    "VALUE_EVIDENCED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "No real-session usefulness or decision-quality outcome was observed."
+    }
+  },
+  "anti_collapse_rule": "This receipt proves the exercised Hear/Compare/Decide path and its bounded decision write. It does not prove the full real-DAW closed loop, recovery, artist acceptance, or value."
+}

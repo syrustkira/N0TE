@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "kind": "REQUIREMENT_EVIDENCE_RECEIPT",
+  "requirement_id": "REQ-SCOPE-172",
+  "semantic_owner": "N0TE_PRODUCT_DB/SCOPE_LEDGER",
+  "observed_at": "2026-09-08T18:08:00Z",
+  "claims": {
+    "MAPPED": {
+      "state": "PROVEN",
+      "evidence_refs": ["N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-172"]
+    },
+    "IMPLEMENTED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "governance/evidence/REQ-SCOPE-172-constitutional-activation-2026-09-08.json",
+        "governance/programs/PROGRAM-PERSONAL-PRODUCTION-001.json"
+      ]
+    },
+    "INTEGRATED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "main:556712cc52d349957adbe912b0b9f92cfbb7b75d",
+        "main:c0cb39fe47779f7a36f6bec877c4861ab73776cf"
+      ]
+    },
+    "REACHABLE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "governance/evidence/PROGRAM-PERSONAL-PRODUCTION-001-completion-2026-09-08.json",
+        "ci-run:34260216592",
+        "ci-run:34261064328"
+      ],
+      "observed_result": "A current parent construction program was present on main before child execution; ordinary governance exposed two dependency-valid, authority-bounded, path-disjoint sibling packages together; both executed; a fresh contradiction reopened only the affected sibling; bounded repair restored the program to green."
+    },
+    "VERIFIED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "ci-run:34260035445",
+        "ci-run:34260216592",
+        "ci-run:34260800977",
+        "ci-run:34261064328"
+      ]
+    },
+    "RECOVERABLE": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "The run demonstrated bounded repair after a child contradiction, but did not exercise rollback/recovery of the construction-program state itself."
+    },
+    "AUTHORITY_SAFE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "governance/evidence/REQ-SCOPE-172-constitutional-activation-2026-09-08.json",
+        "governance/evidence/PROGRAM-PERSONAL-PRODUCTION-001-completion-2026-09-08.json"
+      ]
+    },
+    "CONSUMER_ACCEPTED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "Construction governance reachability is not Personal Production or consumer acceptance."
+    },
+    "VALUE_EVIDENCED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "No measured real-work throughput, quality, or user-value consequence has yet been recorded."
+    }
+  },
+  "anti_collapse_rule": "This first real program proves governance reachability. It does not prove recoverability, Personal Production acceptance, consumer acceptance, or value."
+}

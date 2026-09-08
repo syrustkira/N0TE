@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "kind": "CONSTRUCTION_PROGRAM_COMPLETION_RECEIPT",
+  "program_id": "PROGRAM-PERSONAL-PRODUCTION-001",
+  "status": "COMPLETE_WHEN_CLOSEOUT_IS_ON_MAIN_AND_RESULTING_MAIN_CI_PASSES",
+  "authority_source": "User selected CONTINUE option 1 on 2026-09-08.",
+  "semantic_requirements": [
+    "REQ-SCOPE-003",
+    "REQ-SCOPE-010",
+    "REQ-SCOPE-172"
+  ],
+  "lifecycle": {
+    "active_state": {
+      "pull_request": 3,
+      "exact_head": "e7d86342b22674c75df6729b9abb68a0acd44769",
+      "branch_ci_run": 34260035445,
+      "main_commit": "556712cc52d349957adbe912b0b9f92cfbb7b75d",
+      "resulting_main_ci_run": 34260216592,
+      "observed_eligible_siblings": [
+        "WP-003-HQ-REACHABILITY",
+        "WP-010-COMPARE-DECIDE-REACHABILITY"
+      ]
+    },
+    "sibling_execution": {
+      "pull_request": 4,
+      "first_ci_run": 34260512908,
+      "first_ci_result": "FAIL",
+      "contradiction": {
+        "affected_work_package": "WP-003-HQ-REACHABILITY",
+        "failure": "The acceptance observer accessed a ConsumerShell-owned SQLite connection from the test thread.",
+        "classification": "BOUNDED_TEST_OBSERVER_DEFECT",
+        "governance_failure": false,
+        "other_sibling_failure": false,
+        "repair_scope": "tests/acceptance/test_req_scope_003_headquarters_reachability.py only"
+      },
+      "repaired_exact_head": "3adfb9f71c58d0f65399efef890f721a65afbafb",
+      "repaired_ci_run": 34260800977,
+      "repaired_ci_result": "PASS",
+      "main_commit": "c0cb39fe47779f7a36f6bec877c4861ab73776cf",
+      "resulting_main_ci_run": 34261064328,
+      "resulting_main_ci_result": "PASS",
+      "resulting_main_pytest": "1343 passed, 227 subtests passed"
+    }
+  },
+  "observed_program_result": {
+    "parent_was_current_on_main_before_child_execution": true,
+    "multiple_siblings_were_eligible_together": true,
+    "sibling_paths_were_disjoint": true,
+    "dependency_blockers": [],
+    "authority_leak_observed": false,
+    "unrelated_sibling_frozen_by_bounded_failure": false,
+    "fresh_contradiction_reopened_only_affected_child": true,
+    "bounded_repair_returned_program_to_green": true
+  },
+  "requirement_consequences": {
+    "REQ-SCOPE-003": "Normal consumer Headquarters -> Song -> safe quit -> reopen -> same Artist/Song truth is automated and reachable.",
+    "REQ-SCOPE-010": "Normal Compare surface can audition two exact local WAV Versions and record a bounded artist REVISE judgment without silently mutating Current, Approved, audio, Learning, provider, or DAW state.",
+    "REQ-SCOPE-172": "A real current parent program with two eligible sibling work packages was exercised through normal governance, including a bounded child contradiction and scoped repair."
+  },
+  "evidence_boundary": {
+    "consumer_acceptance": "UNPROVEN",
+    "value_evidence": "UNPROVEN",
+    "personal_production_acceptance": "UNPROVEN",
+    "real_daw_closed_loop": "UNPROVEN"
+  },
+  "closeout_condition": {
+    "branch": "program/personal-production-001-closeout",
+    "required": [
+      "exact closeout branch CI success",
+      "exact closeout diff review",
+      "merge to main",
+      "resulting main-head CI success"
+    ]
+  }
+}
