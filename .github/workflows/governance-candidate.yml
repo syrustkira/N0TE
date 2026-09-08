@@ -24,6 +24,17 @@ jobs:
         run: |
           python .github/scripts/build_governance.py
           sed -i 's#python governance/check_governance.py --offline#PYTHONPATH=. python governance/check_governance.py --offline#g' .github/workflows/governance.yml
+          sed -i 's/N0TE2/N0TE/g; s/n0te2/n0te/g' n0te/lineage.py n0te/graph.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('governance/canonical_scope_manifest.json')
+          data = json.loads(p.read_text())
+          data['semantic_owner_drive_id'] = '1pStCPe7FpAMr2t_Hm2uS-38Y8Eg50j8hMLwscQ5diN4'
+          data['source_class'] = 'clean_n0te_drive_scope_projection'
+          data['freshness_rule'] = 'Before normal work selection, compare this exact requirement-ID projection to a freshly retrieved N0TE_PRODUCT_DB/SCOPE_LEDGER manifest; any set difference fails visibly.'
+          p.write_text(json.dumps(data, indent=2) + '\n')
+          PY
       - name: Install dependencies
         run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt && python -m pip install pytest
       - name: Compile
@@ -44,6 +55,6 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add governance tests/governance .github/workflows/governance.yml
+          git add governance tests/governance .github/workflows/governance.yml n0te/lineage.py n0te/graph.py
           git commit -m 'Install clean executable governance candidate'
           git push
