@@ -1,0 +1,117 @@
+name: Clean-room bootstrap migration
+
+on:
+  push:
+    paths:
+      - ".github/workflows/bootstrap-migration.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out clean target
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch exact migration source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet https://github.com/syrustkira/N0TE2.git _source
+          git -C _source checkout --quiet --detach 35fa98d3a3e9c22a2c2aaf843bab09776abebaa1
+          test "$(git -C _source rev-parse HEAD)" = "35fa98d3a3e9c22a2c2aaf843bab09776abebaa1"
+          test "$(git -C _source rev-parse HEAD^{tree})" = "4be592ceaed468e70bc256005ad5e656c1cf1191"
+
+      - name: Classify and migrate valid implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf n0te tests migration/regression-input migration/provenance/source-state
+          mkdir -p n0te tests migration/regression-input/legacy-governance-tests migration/provenance/source-state
+          cp -R _source/n0te2/. n0te/
+          rsync -a --exclude='governance/' _source/tests/ tests/
+          cp -R _source/tests/governance/. migration/regression-input/legacy-governance-tests/
+          cp _source/requirements.txt requirements.txt
+          cp _source/.gitignore .gitignore
+          for f in acceptance_evidence_spine.json completion_graph.json current_state.json discovery_closure.json work_continuity.json requirements.json; do
+            cp "_source/governance/$f" "migration/provenance/source-state/$f"
+          done
+
+      - name: Remove operational package-name dependency on legacy repository identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          for root in (Path('n0te'), Path('tests')):
+              for p in root.rglob('*.py'):
+                  text = p.read_text(encoding='utf-8')
+                  text = text.replace('n0te2', 'n0te')
+                  p.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Record bounded migration provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > migration/provenance/source.json <<'JSON'
+          {
+            "record_type": "non_commanding_migration_provenance",
+            "source_repository": "syrustkira/N0TE2",
+            "source_commit": "35fa98d3a3e9c22a2c2aaf843bab09776abebaa1",
+            "source_tree": "4be592ceaed468e70bc256005ad5e656c1cf1191",
+            "classification": {
+              "implementation": "migrated from n0te2/ to n0te/ with package-identity rewrite only",
+              "product_behavior_tests": "migrated to tests/",
+              "legacy_governance_tests": "retained only under migration/regression-input/legacy-governance-tests/",
+              "legacy_state": "selected evidence/state inputs retained only under migration/provenance/source-state/"
+            },
+            "authority": "none",
+            "bootstrap_authority": "active_until_verified_cutover"
+          }
+          JSON
+
+      - name: Install runtime and test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pytest
+
+      - name: Compile migrated implementation
+        shell: bash
+        run: python -m compileall -q n0te
+
+      - name: Run migrated product behavior regression
+        shell: bash
+        run: python -m pytest -q tests
+
+      - name: Scan active implementation for legacy package identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RIn --exclude-dir='__pycache__' -E '(^|[^A-Za-z0-9_])n0te2([^A-Za-z0-9_]|$)' n0te tests; then
+            echo 'Active implementation or product tests still contain legacy package identity.' >&2
+            exit 1
+          fi
+
+      - name: Commit verified implementation migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf _source
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add n0te tests requirements.txt .gitignore migration
+          if git diff --cached --quiet; then
+            echo 'No migration changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Migrate valid implementation and product behavior tests'
+          git push
