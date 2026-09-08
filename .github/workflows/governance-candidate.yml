@@ -1,5 +1,5 @@
 name: Build clean governance candidate
-# rerun after executable governance package fix
+# invoke executable governance from repository root
 
 on:
   push:
@@ -21,13 +21,15 @@ jobs:
         with:
           python-version: "3.12"
       - name: Generate candidate
-        run: python .github/scripts/build_governance.py
+        run: |
+          python .github/scripts/build_governance.py
+          sed -i 's#python governance/check_governance.py --offline#PYTHONPATH=. python governance/check_governance.py --offline#g' .github/workflows/governance.yml
       - name: Install dependencies
         run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt && python -m pip install pytest
       - name: Compile
         run: python -m compileall -q n0te governance
       - name: Validate clean governance structure
-        run: python governance/check_governance.py --offline
+        run: PYTHONPATH=. python governance/check_governance.py --offline
       - name: Run product and governance regression
         run: python -m pytest -q tests
       - name: Active contamination scan
