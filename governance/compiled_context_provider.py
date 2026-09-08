@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 from .compiled_execution_state import CompiledExecutionState, compile_execution_state
@@ -17,6 +19,10 @@ class CanonicalCompiledContextProvider:
     manifest, resumable cursor, current facts and incident list, then compiles those
     inputs into a disposable state and the TrustedContextSnapshot used by the
     existing execution permit gate.
+
+    The provider caches one compiled state while its source content is unchanged.
+    That makes a snapshot stable long enough for a one-time permit to be issued and
+    consumed. Any canonical source change invalidates the snapshot immediately.
     """
 
     def __init__(
@@ -33,6 +39,9 @@ class CanonicalCompiledContextProvider:
         self.facts_path = Path(facts_path)
         self.incidents_path = Path(incidents_path) if incidents_path else None
         self.ttl_seconds = ttl_seconds
+        self._cached_source_digest: str | None = None
+        self._cached_state: CompiledExecutionState | None = None
+        self._cached_snapshot: TrustedContextSnapshot | None = None
 
     @staticmethod
     def _read_object(path: Path, label: str) -> dict:
@@ -44,13 +53,14 @@ class CanonicalCompiledContextProvider:
             raise TrustedContextError(f"{label} must be an object: {path}")
         return value
 
-    def current_state(self) -> CompiledExecutionState:
+    def _sources(self) -> tuple[dict, dict, list[dict], list[str], str]:
         manifest = self._read_object(self.manifest_path, "execution manifest")
         cursor = self._read_object(self.cursor_path, "execution cursor")
         facts_obj = self._read_object(self.facts_path, "execution facts")
         facts = facts_obj.get("facts")
         if not isinstance(facts, list):
             raise TrustedContextError("execution facts must contain a facts list")
+
         incidents: list[str] = []
         if self.incidents_path:
             incidents_obj = self._read_object(self.incidents_path, "execution incidents")
@@ -59,19 +69,52 @@ class CanonicalCompiledContextProvider:
                 raise TrustedContextError("execution incidents must contain an incidents list")
             incidents = value
 
+        source_material = {
+            "manifest": manifest,
+            "cursor": cursor,
+            "facts": facts,
+            "incidents": incidents,
+        }
+        digest = hashlib.sha256(
+            json.dumps(
+                source_material,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+            ).encode("utf-8")
+        ).hexdigest()
+        return manifest, cursor, facts, incidents, digest
+
+    def current_manifest(self) -> dict:
+        manifest, _, _, _, _ = self._sources()
+        return manifest
+
+    def current_state(self) -> CompiledExecutionState:
+        manifest, cursor, facts, incidents, digest = self._sources()
+        if self._cached_source_digest == digest and self._cached_state is not None:
+            return self._cached_state
+
         raw = compile_from_manifest(
             manifest=manifest,
             cursor=cursor,
             facts=facts,
             incidents=incidents,
+            compiled_at=datetime.now(timezone.utc),
         )
-        return compile_execution_state(raw)
-
-    def current_snapshot(self) -> TrustedContextSnapshot:
-        return compiled_state_to_trusted_snapshot(
-            self.current_state(),
+        state = compile_execution_state(raw)
+        self._cached_source_digest = digest
+        self._cached_state = state
+        self._cached_snapshot = compiled_state_to_trusted_snapshot(
+            state,
             ttl_seconds=self.ttl_seconds,
         )
+        return state
+
+    def current_snapshot(self) -> TrustedContextSnapshot:
+        self.current_state()
+        if self._cached_snapshot is None:
+            raise TrustedContextError("compiled context snapshot was not produced")
+        return self._cached_snapshot
 
     def current_projection(self) -> dict:
         return build_execution_projection(self.current_state())
