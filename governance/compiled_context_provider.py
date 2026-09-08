@@ -117,7 +117,18 @@ class CanonicalCompiledContextProvider:
         return self._cached_snapshot
 
     def current_projection(self) -> dict:
-        return build_execution_projection(self.current_state())
+        projection = build_execution_projection(self.current_state())
+        manifest = self.current_manifest()
+        constraints = manifest.get("decision_constraints", {})
+        standing = manifest.get("standing_authority", {})
+        if not isinstance(constraints, dict):
+            raise TrustedContextError("execution manifest decision_constraints must be an object")
+        if not isinstance(standing, dict):
+            raise TrustedContextError("execution manifest standing_authority must be an object")
+        projection["decision_constraints"] = constraints
+        projection["standing_authority"] = standing
+        projection["manifest_version"] = manifest.get("version")
+        return projection
 
     def get(self, snapshot_id: str) -> TrustedContextSnapshot:
         current = self.current_snapshot()
