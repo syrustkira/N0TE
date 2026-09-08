@@ -14,7 +14,7 @@ _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 
 
 class LineageError(RuntimeError):
-    """Base error for the N0TE2 canonical Song lineage store."""
+    """Base error for the N0TE canonical Song lineage store."""
 
 
 class LineageCorruptionError(LineageError):

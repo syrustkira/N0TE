@@ -1,0 +1,25 @@
+name: N0TE governance and regression
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt && python -m pip install pytest
+      - run: python -m compileall -q n0te governance
+      - run: PYTHONPATH=. python governance/check_governance.py --offline
+      - run: python -m pytest -q tests
+      - name: Active contamination scan
+        run: |
+          set -euo pipefail
+          if grep -RIn --exclude-dir="__pycache__" --exclude-dir="migration" --exclude="*.yml" --exclude="*.yaml" -E "N0TE2|n0te2" n0te governance tests README.md; then
+            echo "Legacy repository identity found in active surfaces" >&2
+            exit 1
+          fi

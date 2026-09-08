@@ -69,7 +69,7 @@ class SongKnowledgeMap:
 
 
 class SongKnowledgeMapService:
-    """Pure-read typed projection over canonical N0TE2 Song memory.
+    """Pure-read typed projection over canonical N0TE Song memory.
 
     This service owns no tables and performs no writes. It derives one bounded
     Song map from existing canonical relational owners.

@@ -1,0 +1,6857 @@
+{
+  "schema_version": 1,
+  "dimensions": [
+    "MAPPED",
+    "IMPLEMENTED",
+    "INTEGRATED",
+    "REACHABLE",
+    "VERIFIED",
+    "RECOVERABLE",
+    "AUTHORITY_SAFE",
+    "CONSUMER_ACCEPTED",
+    "VALUE_EVIDENCED"
+  ],
+  "requirements": {
+    "REQ-SCOPE-002": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-003": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-004": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-005": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-006": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-007": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-008": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-009": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-010": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-011": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-012": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-013": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-014": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-015": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-016": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-017": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-018": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-019": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-020": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-021": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-022": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-023": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-024": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-025": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-026": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-027": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-028": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-029": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-030": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-031": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-032": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-033": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-034": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-035": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-036": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-037": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-038": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-039": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-040": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-041": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-042": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-043": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-044": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-045": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-046": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-047": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-048": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-049": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-050": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-051": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-052": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-053": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-054": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-055": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-056": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-057": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-058": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-059": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-060": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-061": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-062": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-063": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-064": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-065": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-066": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-067": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-068": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-069": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-070": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-071": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-072": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-073": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-074": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-075": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-076": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-077": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-078": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-079": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-080": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-081": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-082": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-083": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-084": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-085": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-086": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-087": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-088": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-089": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-090": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-091": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-092": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-093": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-094": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-095": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-096": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-097": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-098": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-099": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-100": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-101": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-102": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-103": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-104": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-105": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-106": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-107": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-108": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-109": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-110": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-111": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-112": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-113": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-114": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-115": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-116": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-117": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-118": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-119": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-120": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-121": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-122": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-123": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-124": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-125": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-126": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-127": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-128": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-129": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-130": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-131": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-132": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-133": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-134": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-135": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-136": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-137": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-138": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-139": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-140": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-141": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-142": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-143": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-144": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-145": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-146": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-147": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-148": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-149": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-150": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-151": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-152": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-153": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-154": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-155": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-156": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-157": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-158": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-159": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-160": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-161": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-162": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-163": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-164": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-165": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-166": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-167": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-168": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-169": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-170": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-171": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    },
+    "REQ-SCOPE-172": {
+      "MAPPED": {
+        "state": "PROVEN",
+        "evidence_refs": [
+          "N0TE_PRODUCT_DB/SCOPE_LEDGER"
+        ]
+      },
+      "IMPLEMENTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "INTEGRATED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "REACHABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VERIFIED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "RECOVERABLE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "AUTHORITY_SAFE": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "CONSUMER_ACCEPTED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      },
+      "VALUE_EVIDENCED": {
+        "state": "UNPROVEN",
+        "evidence_refs": []
+      }
+    }
+  },
+  "migration_rule": "Historical construction closure is not acceptance. Missing evidence remains UNPROVEN."
+}

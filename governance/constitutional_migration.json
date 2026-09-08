@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "ordinary_product_path_may_invoke": false,
+  "required_sequence": [
+    "EXPLICIT_AUTHORIZED_MIGRATION",
+    "NAMED_MIGRATION_SCOPE",
+    "CURRENT_SEMANTIC_OWNER_RECONCILIATION",
+    "LEGACY_GOVERNANCE_AS_INPUT_ONLY",
+    "EXTERNAL_MIGRATION_INVARIANTS",
+    "CANDIDATE",
+    "INDEPENDENT_REGRESSION_MIGRATION_PROOF",
+    "STATE_MIGRATION",
+    "EXACT_HEAD_REVIEW",
+    "ACTIVATION",
+    "MIGRATION_AUTHORITY_EXPIRATION",
+    "DURABLE_MIGRATION_RECEIPT"
+  ],
+  "candidate_may_certify_itself": false,
+  "permanent_bypass": false
+}

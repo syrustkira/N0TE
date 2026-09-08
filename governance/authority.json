@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "truth_classes": {
+    "PRODUCT_SEMANTICS": "current canonical semantic owners in clean N0TE Drive environment",
+    "IMPLEMENTATION": "syrustkira/N0TE current source",
+    "CURRENT_EXECUTABLE_STATE": "governance/current_state.json and executable validators",
+    "EVIDENCE_ACCEPTANCE": "governance/evidence_state.json plus referenced observed evidence",
+    "HISTORY_MIGRATION": "migration/ only, explicitly non-commanding"
+  },
+  "legacy_governance_authority": "NONE",
+  "bootstrap_migration_authority": {
+    "state": "ACTIVE_UNTIL_VERIFIED_CUTOVER",
+    "source": "explicit_user_authorized_clean_room_migration_2026_09_08",
+    "may_be_vetoed_by_legacy_lifecycle": false,
+    "ordinary_product_construction_may_use": false
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "allowed_dispositions": [
+    "EXECUTED",
+    "DURABLY_CAPTURED",
+    "DUPLICATE",
+    "BLOCKED",
+    "REJECTED",
+    "NON_ACTIONABLE"
+  ],
+  "orphan_discovery_is_defect": true,
+  "started_unfinished_work_requires_checkpoint": true
+}
