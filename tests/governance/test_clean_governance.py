@@ -94,13 +94,31 @@ def test_discovery_closure_has_only_explicit_dispositions():
 
 
 def test_unfinished_work_resumes_before_adjacency():
-    state = data("current_state.json")
-    selected = select_next_work(state["unfinished_work"], adjacent={"canonical_work_id": "ADJACENT"})
-    assert selected["canonical_work_id"] == "MIGRATION-CLEANROOM-2026-09-08"
+    item = {
+        "canonical_work_id": "CURRENT-WORK",
+        "outcome": "resume me",
+        "owner": "current governance",
+        "state": "ACTIVE",
+        "progress_checkpoint": "durable checkpoint",
+        "state_basis_or_evidence": ["receipt"],
+        "remaining_work": ["finish"],
+        "blocker_or_waiting_condition": None,
+        "next_admissible_action": "finish",
+        "wake_condition": "next invocation",
+        "completion_condition": "verified finish",
+    }
+    selected = select_next_work([item], adjacent={"canonical_work_id": "ADJACENT"})
+    assert selected["canonical_work_id"] == "CURRENT-WORK"
 
 
 def test_old_governance_cannot_veto_explicit_authorized_migration():
-    assert legacy_veto_blocks_authorized_migration(data("authority.json"), {"blocks": True}) is False
+    a = copy.deepcopy(data("authority.json"))
+    a["bootstrap_migration_authority"] = {
+        "state": "ACTIVE_UNTIL_VERIFIED_CUTOVER",
+        "may_be_vetoed_by_legacy_lifecycle": False,
+        "ordinary_product_construction_may_use": False,
+    }
+    assert legacy_veto_blocks_authorized_migration(a, {"blocks": True}) is False
 
 
 def test_candidate_governance_cannot_certify_itself():
@@ -111,6 +129,11 @@ def test_candidate_governance_cannot_certify_itself():
 
 def test_bootstrap_authority_expires_only_after_proven_cutover():
     a = copy.deepcopy(data("authority.json"))
+    a["bootstrap_migration_authority"] = {
+        "state": "ACTIVE_UNTIL_VERIFIED_CUTOVER",
+        "may_be_vetoed_by_legacy_lifecycle": False,
+        "ordinary_product_construction_may_use": False,
+    }
     with pytest.raises(ValueError):
         expire_bootstrap_authority(a, False)
     assert expire_bootstrap_authority(a, True)["bootstrap_migration_authority"]["state"] == "EXPIRED"

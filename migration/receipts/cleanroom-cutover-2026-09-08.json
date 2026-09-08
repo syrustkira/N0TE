@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "kind": "CLEANROOM_CUTOVER_RECEIPT",
+  "cutover_date": "2026-09-08",
+  "status": "COMPLETE_WITH_PHYSICAL_LEGACY_REPOSITORY_DELETE_UNAVAILABLE",
+  "new_drive": {
+    "root_id": "1Yno8o4bGLcXufD_gsBVmCbGKRzNqbh0j",
+    "start_here_id": "1xhfcR2MzDnD7bVwEmDflDm4ILaOO5PowKKnSKin2bqY",
+    "product_vision_id": "1H8G5cWi0EH5R4SLiHh2fk64Wr7FcwweM5gLq1HEAFdk",
+    "product_db_id": "1pStCPe7FpAMr2t_Hm2uS-38Y8Eg50j8hMLwscQ5diN4",
+    "personal_production_spec_id": "1v-hk5wef0Y3OwKLwmVSkhEOGAPFpVcrVYfEf4eRF1po",
+    "semantic_parity": "PASS",
+    "canonical_requirement_range": "REQ-SCOPE-002..REQ-SCOPE-172"
+  },
+  "repository": {
+    "current": "syrustkira/N0TE",
+    "verified_candidate_revision": "be4b1f229a951edbe253af9ccb653b7db8951c03",
+    "steady_state_ci_run": 34253169654,
+    "steady_state_ci": "PASS",
+    "product_and_governance_regression": "1324 passed, 227 subtests passed",
+    "active_contamination_scan": "PASS"
+  },
+  "old_drive": {
+    "root_id": "17K-Svd8VTISEh4GqGkhBznWpXC-uWdM3",
+    "deletion": "PERMANENTLY_DELETED",
+    "readback": "NO_CONTENTS"
+  },
+  "legacy_repository": {
+    "name": "syrustkira/N0TE2",
+    "physical_deletion": "UNAVAILABLE_IN_CONNECTED_GITHUB_TOOLING",
+    "archive_metadata_mutation": "UNAVAILABLE_IN_CONNECTED_GITHUB_TOOLING",
+    "default_branch_decommission_commit": "b53ae1ebd254064fd356c91e110f83090fc0cd40",
+    "default_branch_state": "ONE_FILE_NON_COMMANDING_TOMBSTONE",
+    "historical_non_default_branches": "RETAINED_AS_HISTORY_ONLY_AND_EXCLUDED_FROM_ROUTING"
+  },
+  "authority": {
+    "bootstrap_migration_authority": "EXPIRED",
+    "ordinary_product_construction_bypass": false,
+    "constitutional_future_governance_migration": "governance/constitutional_migration.json"
+  },
+  "cutover_gates": {
+    "NEW_DRIVE": "PASS",
+    "NEW_N0TE_REPOSITORY": "PASS",
+    "SEMANTIC_PARITY": "PASS",
+    "STATE_EVIDENCE_MIGRATION": "PASS",
+    "GOVERNANCE_MIGRATION": "PASS",
+    "REQUIRED_TESTS": "PASS",
+    "CLEAN_RECONSTRUCTION": "PASS",
+    "NORMAL_USER_JOURNEY": "PASS",
+    "NO_REQUIRED_CURRENT_TRUTH_DEPENDS_ON_OLD_SOURCES": "PASS"
+  },
+  "history_policy": "This receipt and migration/ are non-commanding provenance. Normal operation starts from the clean Drive START HERE and current N0TE repository state/evidence."
+}

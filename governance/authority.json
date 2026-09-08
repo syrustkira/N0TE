@@ -8,10 +8,11 @@
     "HISTORY_MIGRATION": "migration/ only, explicitly non-commanding"
   },
   "legacy_governance_authority": "NONE",
+  "constitutional_governance_migration": "governance/constitutional_migration.json",
   "bootstrap_migration_authority": {
-    "state": "ACTIVE_UNTIL_VERIFIED_CUTOVER",
-    "source": "explicit_user_authorized_clean_room_migration_2026_09_08",
-    "may_be_vetoed_by_legacy_lifecycle": false,
+    "state": "EXPIRED",
+    "expired_at": "2026-09-08T16:50:00Z",
+    "expiration_basis": "migration/receipts/cleanroom-cutover-2026-09-08.json",
     "ordinary_product_construction_may_use": false
   }
 }

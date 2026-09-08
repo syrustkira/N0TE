@@ -1,27 +1,9 @@
 {
   "schema_version": 1,
   "repository": "syrustkira/N0TE",
-  "migration_state": "CANDIDATE_NOT_CUT_OVER",
-  "unfinished_work": [
-    {
-      "canonical_work_id": "MIGRATION-CLEANROOM-2026-09-08",
-      "outcome": "Verified clean N0TE cutover without stale command authority",
-      "owner": "authorized clean-room migration",
-      "state": "ACTIVE",
-      "progress_checkpoint": "Implementation and product behavior tests migrated; clean governance candidate under verification",
-      "state_basis_or_evidence": [
-        "migration/provenance/source.json"
-      ],
-      "remaining_work": [
-        "verify clean governance",
-        "construct and verify clean Drive authority environment",
-        "prove reconstruction and normal user journey",
-        "cut over only if all gates pass"
-      ],
-      "blocker_or_waiting_condition": null,
-      "next_admissible_action": "verify clean governance candidate and clean Drive semantic parity",
-      "wake_condition": "current invocation or next eligible clean invocation",
-      "completion_condition": "all migration cutover gates independently pass and bootstrap authority expires"
-    }
-  ]
+  "migration_state": "CUTOVER_COMPLETE",
+  "cutover_receipt": "migration/receipts/cleanroom-cutover-2026-09-08.json",
+  "unfinished_work": [],
+  "work_selection_rule": "Resume any durable unfinished current work before selecting unrelated adjacency; otherwise select from current canonical scope and current evidence only.",
+  "normal_reconstruction": "Begin from the clean N0TE START HERE, current semantic owners, current repository state, and requirement-level evidence."
 }
