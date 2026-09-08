@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "retained_scope_refs": [
     "artist",
     "producer",
@@ -7,6 +7,11 @@
     "engineer",
     "catalog",
     "services",
+    "service_acquisition",
+    "qualified_inquiry",
+    "brief",
+    "quote",
+    "paid_start",
     "licensing",
     "audience",
     "relationships",
@@ -29,8 +34,16 @@
     "quote": ["paid_start"],
     "paid_start": [],
     "artist": ["audience", "catalog"],
+    "producer": [],
+    "songwriter": [],
+    "engineer": [],
     "catalog": ["licensing"],
-    "n0te": []
+    "licensing": [],
+    "audience": [],
+    "relationships": [],
+    "business": [],
+    "n0te": [],
+    "finance": []
   },
   "lens_dispatch": {
     "services": ["epistemology", "anti_flattening", "positioning", "offer", "proof", "customer_experience", "finance", "agency_velocity"],
@@ -51,11 +64,36 @@
     "n0te": ["epistemology", "anti_flattening", "scope", "capability_evidence", "finishing", "failure_recovery"],
     "finance": ["epistemology", "finance", "agency_velocity", "opportunity_cost", "risk"]
   },
+  "decision_constraints": {
+    "focus_does_not_delete_scope": {
+      "rule": "Activating one room never retires accepted retained scope.",
+      "failure_class": "ACTIVE_SUBSYSTEM_ERASED_RETAINED_SCOPE"
+    },
+    "production_entry": {
+      "requires_rough_demo": false,
+      "valid_starting_material": ["idea", "reference", "story", "mood", "lyrics", "melody", "voice_note", "instrumental_need", "unfinished_session", "rough_demo", "approved_mix"],
+      "rule": "Creating the first workable demo can itself be the production job."
+    },
+    "service_demand": {
+      "meaningful_exposure_required_before_failure_conclusion": true,
+      "rule": "No meaningful acquisition exposure means demand remains UNTESTED, not FAILED_TEST."
+    },
+    "economic_selection": {
+      "forbidden_shortcut": "LOW_CASH=>LOWEST_VALUE_JOB",
+      "rule": "Compare time-to-cash, probability, user hours, opportunity cost, sustainability, downside and impact on higher-leverage work."
+    },
+    "completion": {
+      "rule": "A file, page, PR, merge, prepared artifact, submission or local PASS is not an external or human outcome unless it is the acceptance object and fresh evidence verifies it."
+    },
+    "anti_loop": {
+      "rule": "A repeated already-owned correction is a retrieval, propagation, function-invocation or completion incident before it is a reason to add doctrine."
+    },
+    "runtime_precedence": {
+      "rule": "Fresh observed provider/runtime evidence outranks stale projected current state."
+    }
+  },
   "standing_authority": {
-    "auto": [
-      "READ_ONLY",
-      "REVERSIBLE"
-    ],
+    "auto": ["READ_ONLY", "REVERSIBLE"],
     "human_required_when": [
       "spend_money",
       "enter_contract",
