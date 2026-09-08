@@ -72,7 +72,7 @@
     {
       "work_id": "WP-090-MUSICAL-TRANSACTION-BRIDGE",
       "parent_program_id": "PROGRAM-PERSONAL-PRODUCTION-002",
-      "state": "ACTIVE",
+      "state": "COMPLETE",
       "paths": [
         "n0te/musical_transactions.py",
         "tests/ops/test_musical_transactions.py"
@@ -91,12 +91,37 @@
             "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-090"
           ]
         },
-        "IMPLEMENTED": {"state": "UNPROVEN", "evidence_refs": []},
-        "INTEGRATED": {"state": "UNPROVEN", "evidence_refs": []},
+        "IMPLEMENTED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-090-musical-transaction-bridge-2026-09-08.json"
+          ]
+        },
+        "INTEGRATED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-090-musical-transaction-bridge-2026-09-08.json"
+          ]
+        },
         "REACHABLE": {"state": "UNPROVEN", "evidence_refs": []},
-        "VERIFIED": {"state": "UNPROVEN", "evidence_refs": []},
-        "RECOVERABLE": {"state": "UNPROVEN", "evidence_refs": []},
-        "AUTHORITY_SAFE": {"state": "UNPROVEN", "evidence_refs": []},
+        "VERIFIED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-090-musical-transaction-bridge-2026-09-08.json"
+          ]
+        },
+        "RECOVERABLE": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-090-musical-transaction-bridge-2026-09-08.json"
+          ]
+        },
+        "AUTHORITY_SAFE": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-090-musical-transaction-bridge-2026-09-08.json"
+          ]
+        },
         "CONSUMER_ACCEPTED": {"state": "UNPROVEN", "evidence_refs": []},
         "VALUE_EVIDENCED": {"state": "UNPROVEN", "evidence_refs": []}
       }

@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "kind": "REQUIREMENT_EVIDENCE_RECEIPT",
+  "requirement_id": "REQ-SCOPE-090",
+  "semantic_owner": "N0TE_PRODUCT_DB/SCOPE_LEDGER",
+  "observed_at": "2026-09-08T19:36:00Z",
+  "claims": {
+    "MAPPED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-090"
+      ]
+    },
+    "IMPLEMENTED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/musical_transactions.py",
+        "tests/ops/test_musical_transactions.py",
+        "pull-request:10"
+      ]
+    },
+    "INTEGRATED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/musical_plan.py",
+        "n0te/authority.py",
+        "n0te/operations.py",
+        "n0te/song_transactions.py",
+        "n0te/transactions.py",
+        "main:83f95d1dc6abf30cf7ffb7e538a5bc38c44002a5"
+      ],
+      "observed_result": "The Musical Plan transaction bridge binds the exact MusicalPlan and HostCompilation material fingerprints to one REVERSIBLE ActionIntent and explicit ApprovalBinding, claims one Song/current-Version-bound execute-once operation, translates compiled actions into the canonical TransactionPlan, and delegates mutation and durable transaction evidence to the existing SongTransactionService and TransactionCoordinator owners."
+    },
+    "REACHABLE": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "WP-090 proves the bridge below the consumer surface. A normal Produce path through consumer_shell.py is intentionally deferred to WP-079-090-PRODUCE-REACHABILITY."
+    },
+    "VERIFIED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "ci-run:34269522207",
+        "ci-run:34269544978",
+        "ci-run:34269805074"
+      ],
+      "observed_result": "Exact-head push and PR verification plus resulting-main governance, full regression, and contamination scanning passed for the two-file WP-090 implementation."
+    },
+    "RECOVERABLE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "tests/ops/test_musical_transactions.py",
+        "n0te/song_transactions.py",
+        "n0te/transactions.py",
+        "n0te/operations.py",
+        "ci-run:34269805074"
+      ],
+      "observed_result": "The exercised bridge compensates prior applied actions after a known downstream failure, persists UNKNOWN execution as RECOVERY_REQUIRED, exposes durable recovery review through the existing transaction history, and clears that review only after canonical OperationJournal reconciliation evidence."
+    },
+    "AUTHORITY_SAFE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/musical_transactions.py",
+        "tests/ops/test_musical_transactions.py",
+        "n0te/authority.py",
+        "n0te/operations.py",
+        "ci-run:34269805074"
+      ],
+      "observed_result": "Preview is write-free; approval is bound to the exact Musical Plan revision and material HostCompilation fingerprint; stale approval, stale focus, changed current Version, active-Song mismatch, and compilation substitution fail closed before host driver execution; and noncompensatable compiled actions are refused under the program's REVERSIBLE_WRITE authority. The bridge exposes no independent approval, authority-grant, reconciliation, rollback, receipt-journal, or recovery-owner surface."
+    },
+    "CONSUMER_ACCEPTED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "Automated bridge execution and recovery verification is not artist acceptance."
+    },
+    "VALUE_EVIDENCED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "No real production-session value observation was recorded in WP-090."
+    }
+  },
+  "anti_collapse_rule": "This receipt proves mapping, implementation, integration, verification, recovery behavior, and authority containment for the Musical Plan to canonical Song transaction bridge only. It does not prove normal consumer Produce reachability, artist acceptance, or real-work value."
+}
