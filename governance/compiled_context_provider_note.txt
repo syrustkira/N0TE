@@ -1,0 +1,1 @@
+Compiled context snapshots must remain stable while their source files are unchanged. Provider compilation time is derived from source file modification time, not wall-clock request time, so one-time permits remain consumable until the canonical source changes or the snapshot TTL expires.
