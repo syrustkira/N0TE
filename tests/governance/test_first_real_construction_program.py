@@ -15,7 +15,10 @@ def load(path: str):
 
 
 def test_first_real_program_is_durably_complete_and_no_longer_current():
-    assert evaluate_current_construction_program() is None
+    current = evaluate_current_construction_program()
+    if current is not None:
+        current_program, _ = current
+        assert current_program["program_id"] != "PROGRAM-PERSONAL-PRODUCTION-001"
 
     state = load("governance/current_state.json")
     completed = state["last_completed_construction_program"]
