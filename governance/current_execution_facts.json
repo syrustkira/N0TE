@@ -1,0 +1,44 @@
+{
+  "facts": [
+    {
+      "fact_id": "services_funnel",
+      "value": "Full-entry services and contact path materially repaired and live; zero-to-song/pre-demo entry represented; typed inquiry routing represented.",
+      "state": "VERIFIED",
+      "source_ref": "TELLMEN0TE_OS + live services/contact verification",
+      "observed_at": "2026-09-08T22:00:00-05:00",
+      "source_revision": "services-pr41-live"
+    },
+    {
+      "fact_id": "service_acquisition",
+      "value": "Professional-services acquisition has not been meaningfully run; no valid demand-failure conclusion exists.",
+      "state": "UNTESTED",
+      "source_ref": "TELLMEN0TE_OS REVENUE_PIPELINE",
+      "observed_at": "2026-09-08T22:00:00-05:00",
+      "source_revision": "revenue-pipeline-acquisition-next"
+    },
+    {
+      "fact_id": "beat_shop",
+      "value": "Custom instrumental inquiry exists; self-serve beat shop is not live.",
+      "state": "BLOCKED",
+      "source_ref": "TELLMEN0TE_OS REVENUE_PIPELINE",
+      "observed_at": "2026-09-08T22:00:00-05:00",
+      "source_revision": "beat-shop-not-self-serve"
+    },
+    {
+      "fact_id": "artist_signing",
+      "value": "Artist development/collaboration retained; public open-signing terms remain unresolved and are not an active signing offer.",
+      "state": "UNKNOWN",
+      "source_ref": "TELLMEN0TE_OS + Business & Label Desk",
+      "observed_at": "2026-09-08T22:00:00-05:00",
+      "source_revision": "signing-terms-unresolved"
+    },
+    {
+      "fact_id": "control_plane_execution_gate",
+      "value": "Fail-closed execution envelope, one-time permit, mutation verification/reconciliation gateway, and MCP gate are merged and regression-verified in N0TE main.",
+      "state": "VERIFIED",
+      "source_ref": "syrustkira/N0TE main",
+      "observed_at": "2026-09-08T22:14:08-05:00",
+      "source_revision": "cecb362d57b6e8f19fb9c76e576207dfeee3a47d"
+    }
+  ]
+}
