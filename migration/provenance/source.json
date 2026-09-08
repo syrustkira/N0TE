@@ -1,0 +1,14 @@
+{
+  "record_type": "non_commanding_migration_provenance",
+  "source_repository": "syrustkira/N0TE2",
+  "source_commit": "35fa98d3a3e9c22a2c2aaf843bab09776abebaa1",
+  "source_tree": "4be592ceaed468e70bc256005ad5e656c1cf1191",
+  "classification": {
+    "implementation": "migrated from n0te2/ to n0te/ with package-identity rewrite only",
+    "product_behavior_tests": "migrated to tests/",
+    "legacy_governance_tests": "retained only under migration/regression-input/legacy-governance-tests/",
+    "legacy_state": "selected evidence/state inputs retained only under migration/provenance/source-state/"
+  },
+  "authority": "none",
+  "bootstrap_authority": "active_until_verified_cutover"
+}

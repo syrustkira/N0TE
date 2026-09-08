@@ -1,0 +1,43 @@
+{
+  "schema_version": 2,
+  "policy_id": "DISCOVERY-CLOSURE-001",
+  "purpose": "Prevent useful analysis, suggestions, reviews and newly discovered requirements from disappearing between conversation and durable execution state.",
+  "applies_to": [
+    "CONTROL_PLANE_MODE",
+    "SUBSTANTIAL_REVIEW",
+    "UNKNOWN_UNKNOWN_SCAN",
+    "REPEATED_FRICTION_ANALYSIS",
+    "IMPLEMENTATION_REVIEW",
+    "CONTINUATION_OR_NEXT_ACTION_SELECTION"
+  ],
+  "core_rule": "Before ending a control-plane cycle, every material actionable discovery introduced or surfaced in that cycle must be reconciled against canonical state and receive an explicit disposition. Conversational mention is not completion and is not durable capture.",
+  "allowed_dispositions": {
+    "EXECUTED": "Safe, authorized, reversible work was performed and verified in the current cycle.",
+    "DURABLY_CAPTURED": "The item is a real accepted/candidate obligation but is not currently selected; it was recorded in the appropriate canonical scope, acceptance, decision, incident, held-scope or execution-state surface with provenance.",
+    "DUPLICATE": "Equivalent canonical work already exists; advance or reference that object rather than creating another.",
+    "BLOCKED": "The item is actionable but cannot proceed because of a concrete authority, dependency, evidence, capability or external blocker; preserve the blocker and wake condition.",
+    "REJECTED": "Current authority or evidence explicitly rejects the item; retain enough provenance to prevent silent resurrection.",
+    "NON_ACTIONABLE": "The item was explanatory, speculative or advisory only and does not create a product/task obligation."
+  },
+  "execution_bias": {
+    "rule": "If a discovered next action is safe, authorized, reversible and supported by an available tool, execute it rather than stopping at recommendation.",
+    "do_not_auto_promote": true,
+    "do_not_expand_scope_without_authority": true,
+    "do_not_create_duplicate_work": true
+  },
+  "cycle_gate": [
+    "Collect material new suggestions/discoveries produced this cycle.",
+    "Normalize each to the outcome it is trying to produce.",
+    "Search current canonical state for equivalent work.",
+    "Execute safe authorized work immediately when justified.",
+    "Otherwise assign one allowed disposition and persist it when durability is required.",
+    "Do not leave an actionable item only in prose, a chat answer, a temporary summary or model memory.",
+    "For any item whose execution started but did not finish, apply WORK-CONTINUITY-001 before ending the cycle.",
+    "Distinguish work actually performed from work merely proposed or partially performed in the user-facing status.",
+    "If the cycle must stop, preserve exact progress, remaining work, blocker/waiting state, state basis, next admissible action and a legitimate wake condition before returning control."
+  ],
+  "unfinished_work_policy": "governance/work_continuity.json",
+  "failure_definition": "A material actionable suggestion that leaves the cycle without execution, canonical capture, deduplication, rejection, blocker state or explicit non-actionable classification is an ORPHAN_DISCOVERY controller defect. Started work that leaves the cycle without a WORK-CONTINUITY-001 checkpoint is a WORK_LOSS controller defect.",
+  "relationship_to_scope": "This policy closes the analysis-to-state gap. It does not make every model suggestion accepted product scope and does not allow the controller to expand its own authority.",
+  "user_intent_basis": "Explicit user corrections on 2026-09-02: the controller must not stop updating work after making useful suggestions, and unfinished processes must be continued or checkpointed rather than forgotten at turn boundaries."
+}

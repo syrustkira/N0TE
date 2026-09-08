@@ -1,0 +1,40 @@
+{
+  "schema_version": 7,
+  "repository": "syrustkira/N0TE2",
+  "construction_phase": "INCIDENT REPAIR / PERSONAL PRODUCTION PROGRAM GOVERNANCE",
+  "lifecycle_state": "ACTIVE",
+  "active_node": "INCIDENT-REPAIR",
+  "active_increment": "INCIDENT-REPAIR-206-PROGRAM-GOVERNANCE-01",
+  "terminal_reason": null,
+  "wake_condition": null,
+  "next_admissible_action": "Repair the #206 construction controller so one artist-authorized parent program may carry multiple independently bounded child work packages while preserving receipt, path, dependency, blast-radius and acceptance authority. This increment is governance-only and authorizes no product code.",
+  "product_code_authorized": false,
+  "legacy_admission_authorized": false,
+  "direct_legacy_source_copy_authorized": false,
+  "direct_legacy_test_text_copy_authorized": false,
+  "completed_nodes": [
+    "BOOT-00","BOOT-01","BOOT-02","AUDIT-01","AUDIT-HISTORY","AUDIT-DESIGN","AUDIT-GRAPH","LEGACY-01","CORE-01","CORE-02","CORE-03","CORE-04","PLATFORM-00","APP-01"
+  ],
+  "supervision": {
+    "root": "N0TE-SUPERVISOR",
+    "handoff": "governance/handoff.json",
+    "context_policy": "governance/context_lifecycle.json",
+    "construction_must_terminate_when_unjustified": true,
+    "reactivation_must_be_observable": true,
+    "historical_archaeology_is_fallback_only": true,
+    "no_unjustified_persistent_loop": true,
+    "all_automation_reports_into_supervision_graph": true,
+    "construction_must_terminate_at_stability": true
+  },
+  "truth": [
+    "This file is the sole committed owner of N0TE2 construction lifecycle and next admissible action. It is not a product constitution.",
+    "This increment is an explicit bounded child repair of parent incident #206 and does not close that parent incident.",
+    "The artist explicitly authorized repair of the construction governance before additional N0TE product construction.",
+    "The repair may introduce a parent-program work-package mode, but may not activate that future product program in this governance-only increment.",
+    "Product work remains forbidden until this repair is integrated, exact-head verified and terminalized through a fresh closure transition.",
+    "Current Product Vision and N0TE_PRODUCT_DB/SCOPE_LEDGER own durable product meaning and requirement scope. GitHub/provider evidence owns current implementation, delivery, CI and runtime proof.",
+    "The repository's trusted retained-scope snapshot retains 169 requirements, REQ-SCOPE-002 through REQ-SCOPE-170; newer Product DB requirements remain external canonical evidence until a reviewed trusted-manifest migration.",
+    "Historical branches, old PRs, archived receipts and prior controller prose are targeted evidence only and cannot select work.",
+    "Exact current head/PR/CI/review truth must be refreshed from live repository/provider evidence rather than embedded here as self-current truth."
+  ]
+}

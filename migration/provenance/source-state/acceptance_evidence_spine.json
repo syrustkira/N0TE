@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "spine_id": "ACCEPTANCE-EVIDENCE-001",
+  "purpose": "Trace accepted N0TE scope from requirement through implementation, reachability, execution evidence and real artist value without collapsing those states into one another.",
+  "states": ["MAPPED", "IMPLEMENTED", "INTEGRATED", "REACHABLE", "VERIFIED", "RECOVERABLE", "AUTHORITY_SAFE", "CONSUMER_ACCEPTED", "VALUE_EVIDENCED"],
+  "required_links": [
+    "requirement_id",
+    "canonical_scope_ref",
+    "implementation_refs",
+    "integration_refs",
+    "user_reachability_refs",
+    "verification_refs",
+    "failure_recovery_refs",
+    "authority_security_refs",
+    "consumer_acceptance_refs",
+    "value_evidence_refs"
+  ],
+  "rules": [
+    "Missing evidence keeps that state unproven rather than inferred from adjacent evidence.",
+    "Unit tests may prove implementation behavior but do not automatically prove user reachability or artist value.",
+    "Documentation may reference evidence but is not itself sufficient proof of product completion.",
+    "Foreground selection never removes retained requirements from the spine.",
+    "Semantic deduplication may merge duplicate evidence or duplicate work expressions, not distinct accepted requirements.",
+    "Acceptance can be revoked when fresh contradictory evidence appears, while historical evidence remains retained."
+  ],
+  "golden_journey_evidence": {
+    "purpose": "Use a compact set of real TellMeN0TE journeys to prove Consumer Health and Value Health.",
+    "candidate_journeys": [
+      "resume a real Song with correct Artist/Song context and prior decisions",
+      "cloud-to-local handoff with one trace and no duplicate mutation",
+      "preserve and recover project/version lineage after an edit",
+      "prepare a release package from current Song state with rights and metadata checks",
+      "reconcile provider/public artist state without stale-memory overwrite",
+      "recover cleanly from a partial executor or provider failure"
+    ],
+    "capture_rule": "Prefer evidence captured during legitimate real work over synthetic manual QA when safety and privacy permit."
+  },
+  "health_mapping": {
+    "BUILD_SYSTEM_HEALTH": ["implementation_refs", "verification_refs"],
+    "PRODUCT_HEALTH": ["implementation_refs", "integration_refs", "failure_recovery_refs", "authority_security_refs"],
+    "CONSUMER_HEALTH": ["user_reachability_refs", "consumer_acceptance_refs"],
+    "VALUE_HEALTH": ["value_evidence_refs"]
+  },
+  "memory_retention": {
+    "accepted_artist_decisions_and_corrections_must_remain_retrievable": true,
+    "evidence_must_reference_relevant_context_when_context_changed_the_result": true,
+    "historical_evidence_is_retained_after_supersession": true
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "policy_id": "WORK-CONTINUITY-001",
+  "authority": "USER_ROOT",
+  "change_class": "CONSTITUTIONAL",
+  "purpose": "Ensure that unfinished work survives conversation, agent, process and controller-run boundaries and resumes from durable state rather than being forgotten, rediscovered or silently replaced by adjacent work.",
+  "hard_rules": [
+    "A turn boundary, response boundary, context-window boundary, agent replacement, process restart or controller-run boundary is never by itself a task completion boundary.",
+    "No ACTIVE, WAITING or BLOCKED work may exist only in conversational prose, temporary model memory or an ephemeral process object.",
+    "Before a control-plane cycle ends with unfinished work, the controller must durably checkpoint the canonical work identity, outcome, owner, state, exact progress, evidence/state basis, remaining steps, blocker or waiting condition when any, next admissible action, wake condition and completion condition.",
+    "The next eligible controller invocation must reconstruct and reconcile unfinished canonical work before selecting unrelated adjacent work. It resumes the same work when still justified and actionable, consumes new evidence when WAITING, or preserves/exposes the blocker when BLOCKED.",
+    "A newly discovered suggestion does not displace already selected unfinished work unless current authority explicitly reprioritizes, supersedes or invalidates that work.",
+    "Partial execution must be represented as partial execution. Work may not be reported DONE merely because the current turn, tool call, worker lease or CI observation ended.",
+    "If a safe authorized operation can continue in the current execution context, continue it rather than stopping merely because a conversational answer could be produced.",
+    "If actual execution cannot continue because the execution context is ending or a future event is required, persist the checkpoint before returning control and attach a real wake path when one is available and authorized.",
+    "Failure, timeout, cancellation, interruption and tool unavailability are states to handle and resume or block explicitly, not reasons to forget the underlying outcome.",
+    "No work should need the user to restate recoverable context solely because a turn ended."
+  ],
+  "runtime_boundary": {
+    "hard_state_continuity": true,
+    "pretend_background_execution": false,
+    "rule": "The controller must not claim execution continues after its execution environment stops. Continuity is provided by durable checkpointing plus a legitimate next invocation, event, scheduler or registered automation/worker.",
+    "when_background_capability_exists": "Use the existing registered owner when recurring or future-event continuation is justified; do not create duplicate watchers or workers.",
+    "when_background_capability_does_not_exist": "Persist WAITING or BLOCKED state with the smallest real wake condition and resume automatically on the next eligible invocation."
+  },
+  "required_checkpoint_fields": [
+    "canonical_work_id",
+    "outcome",
+    "owner",
+    "state",
+    "progress_checkpoint",
+    "state_basis_or_evidence",
+    "remaining_work",
+    "blocker_or_waiting_condition",
+    "next_admissible_action",
+    "wake_condition",
+    "completion_condition"
+  ],
+  "legal_unfinished_states": ["ACTIVE", "WAITING", "BLOCKED"],
+  "resume_order": [
+    "RECONSTRUCT_UNFINISHED_WORK",
+    "REFRESH_LIVE_EVIDENCE",
+    "RECONCILE_STATE",
+    "RESUME_IF_ACTIONABLE",
+    "PRESERVE_WAIT_OR_BLOCK_IF_NOT",
+    "ONLY_THEN_RESELECT"
+  ],
+  "anti_loop": {
+    "unchanged_waiting_state_must_not_busy_retry": true,
+    "unchanged_blocker_must_not_busy_retry": true,
+    "new_turn_alone_is_not_new_evidence": true,
+    "resume_does_not_mean_restart_from_zero": true
+  },
+  "failure_definition": "WORK_LOSS defect: any unfinished material work becomes unrecoverable, requires avoidable user restatement, is silently dropped, is restarted from zero without reason, or is displaced solely because an interaction/run boundary occurred.",
+  "relationship_to_discovery_closure": "DISCOVERY-CLOSURE-001 governs disposition of newly surfaced actionable discoveries. WORK-CONTINUITY-001 governs preservation and resumption of work after execution has begun or remains unfinished. Both apply before ending a control-plane cycle.",
+  "user_intent_basis": "Explicit user correction on 2026-09-02: if a process does not finish it must be handled and continued, not forgotten at the end of a turn; work must not be lost or left unfinished merely because turns change."
+}

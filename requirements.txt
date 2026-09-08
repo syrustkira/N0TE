@@ -1,0 +1,5 @@
+# Runtime dependencies for N0TE2.
+# Keep platform-specific dependencies guarded so peer platforms remain independently installable.
+# pyloudnorm 0.2.0 is MIT-licensed and implements ITU-R BS.1770-4 integrated loudness.
+pyloudnorm==0.2.0
+pywin32>=312; sys_platform == "win32"
