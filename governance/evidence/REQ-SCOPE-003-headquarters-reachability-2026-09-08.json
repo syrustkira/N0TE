@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "kind": "REQUIREMENT_EVIDENCE_RECEIPT",
+  "requirement_id": "REQ-SCOPE-003",
+  "semantic_owner": "N0TE_PRODUCT_DB/SCOPE_LEDGER",
+  "observed_at": "2026-09-08T18:08:00Z",
+  "claims": {
+    "MAPPED": {
+      "state": "PROVEN",
+      "evidence_refs": ["N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-003"]
+    },
+    "IMPLEMENTED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/consumer_shell.py",
+        "n0te/memory.py",
+        "n0te/resume.py",
+        "tests/acceptance/test_req_scope_003_headquarters_reachability.py"
+      ]
+    },
+    "INTEGRATED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "pull-request:4",
+        "main:c0cb39fe47779f7a36f6bec877c4861ab73776cf"
+      ]
+    },
+    "REACHABLE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "tests/acceptance/test_req_scope_003_headquarters_reachability.py",
+        "ci-run:34261064328"
+      ],
+      "observed_result": "A normal local consumer path created a Headquarters, started a Song, quit normally, cleared its lease, reopened N0TE, and resumed the same Artist/Song identity and active Song truth."
+    },
+    "VERIFIED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "ci-run:34260800977",
+        "ci-run:34261064328"
+      ]
+    },
+    "RECOVERABLE": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "Normal quit/relaunch continuity was observed, but a dedicated crash, corruption, rollback, or recovery exercise for this requirement was not."
+    },
+    "AUTHORITY_SAFE": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "This run did not independently exercise the full authority boundary of Headquarters operations."
+    },
+    "CONSUMER_ACCEPTED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "Automated normal-path reachability is not artist acceptance."
+    },
+    "VALUE_EVIDENCED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "No real-work value observation was recorded."
+    }
+  },
+  "contradiction_trace": {
+    "first_ci_run": 34260512908,
+    "affected_dimension": "VERIFIED",
+    "observation": "The first test observer crossed the ConsumerShell SQLite thread boundary.",
+    "disposition": "BOUNDED_REPAIR",
+    "repair": "Observe persisted Headquarters state only after normal shell shutdown via a fresh HeadquartersMemory connection.",
+    "repaired_ci_run": 34260800977
+  },
+  "anti_collapse_rule": "This receipt proves implementation, integration, automated reachability and verification for the exercised Headquarters/Song-resume path only. It does not prove recovery, full authority safety, artist acceptance, or value."
+}
