@@ -305,6 +305,14 @@ class MusicalPlanService:
         targets = tuple(MusicalTarget(item.dimension, item.refs) for item in exact)
         section = next((target for target in targets if target.dimension == "SONG_SECTION"), None)
         section_ref = None if section is None else section.refs[0]
+        normalized_constraints = _text_tuple(constraints, "constraints")
+        normalized_locked = _text_tuple(locked_element_refs, "locked_element_refs")
+        normalized_editable = _text_tuple(editable_element_refs, "editable_element_refs")
+        normalized_verification = _text_tuple(
+            verification_refs,
+            "verification_refs",
+            allow_empty=False,
+        )
         automatic_provenance = [context.observation_evidence_ref]
         automatic_provenance.extend(item.evidence_ref for item in exact)
         supplied_provenance = _text_tuple(provenance_refs, "provenance_refs")
@@ -318,11 +326,11 @@ class MusicalPlanService:
             artist_intent=artist_intent,
             targets=targets,
             section_ref=section_ref,
-            constraints=tuple(constraints),
-            locked_element_refs=tuple(locked_element_refs),
-            editable_element_refs=tuple(editable_element_refs),
+            constraints=normalized_constraints,
+            locked_element_refs=normalized_locked,
+            editable_element_refs=normalized_editable,
             desired_change=desired_change,
-            verification_refs=tuple(verification_refs),
+            verification_refs=normalized_verification,
             provenance_refs=combined_provenance,
         )
 
