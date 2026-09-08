@@ -22,7 +22,7 @@
     {
       "work_id": "WP-079-MUSICAL-PLAN-IR",
       "parent_program_id": "PROGRAM-PERSONAL-PRODUCTION-002",
-      "state": "ACTIVE",
+      "state": "COMPLETE",
       "paths": [
         "n0te/musical_plan.py",
         "tests/daw/test_musical_plan.py"
@@ -39,12 +39,32 @@
             "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-079"
           ]
         },
-        "IMPLEMENTED": {"state": "UNPROVEN", "evidence_refs": []},
-        "INTEGRATED": {"state": "UNPROVEN", "evidence_refs": []},
+        "IMPLEMENTED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-079-musical-plan-ir-2026-09-08.json"
+          ]
+        },
+        "INTEGRATED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-079-musical-plan-ir-2026-09-08.json"
+          ]
+        },
         "REACHABLE": {"state": "UNPROVEN", "evidence_refs": []},
-        "VERIFIED": {"state": "UNPROVEN", "evidence_refs": []},
+        "VERIFIED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-079-musical-plan-ir-2026-09-08.json"
+          ]
+        },
         "RECOVERABLE": {"state": "UNPROVEN", "evidence_refs": []},
-        "AUTHORITY_SAFE": {"state": "UNPROVEN", "evidence_refs": []},
+        "AUTHORITY_SAFE": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-079-musical-plan-ir-2026-09-08.json"
+          ]
+        },
         "CONSUMER_ACCEPTED": {"state": "UNPROVEN", "evidence_refs": []},
         "VALUE_EVIDENCED": {"state": "UNPROVEN", "evidence_refs": []}
       }

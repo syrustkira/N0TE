@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "kind": "REQUIREMENT_EVIDENCE_RECEIPT",
+  "requirement_id": "REQ-SCOPE-079",
+  "semantic_owner": "N0TE_PRODUCT_DB/SCOPE_LEDGER",
+  "observed_at": "2026-09-08T19:20:00Z",
+  "claims": {
+    "MAPPED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-079"
+      ]
+    },
+    "IMPLEMENTED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/musical_plan.py",
+        "tests/daw/test_musical_plan.py",
+        "pull-request:7",
+        "pull-request:8"
+      ]
+    },
+    "INTEGRATED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/focus.py",
+        "n0te/hosts.py",
+        "main:1ab4a1707330ca485badbe5855115bd2e3223697"
+      ],
+      "observed_result": "MusicalPlan preparation consumes exact FocusContext truth, binds Song/workspace observation/runtime identity, and host compilation validates the active HostRuntimeIdentity before producing a HostCompilation envelope."
+    },
+    "REACHABLE": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "WP-079 proves the semantic owner and compiler boundary in isolation. Consumer Produce reachability is intentionally deferred to WP-079-090-PRODUCE-REACHABILITY after the transaction bridge exists."
+    },
+    "VERIFIED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "ci-run:34264191306",
+        "ci-run:34264416954",
+        "ci-run:34264818670",
+        "ci-run:34264839360",
+        "ci-run:34265048243"
+      ],
+      "observed_result": "Exact-head PR/push verification and resulting-main governance, full regression, and contamination scans all passed, including the post-merge scalar-sequence hardening."
+    },
+    "RECOVERABLE": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "WP-079 does not execute mutations or own recovery. Transaction rollback and recovery semantics belong to REQ-SCOPE-090."
+    },
+    "AUTHORITY_SAFE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/musical_plan.py",
+        "tests/daw/test_musical_plan.py",
+        "ci-run:34265048243"
+      ],
+      "observed_result": "MusicalPlanService exposes only prepare, validate_current, and compile; it performs no host execution, transaction write, apply, commit, send, or provider mutation. Compilation is write-free against the canonical store and fails closed on stale focus/runtime or mismatched compiler identity."
+    },
+    "CONSUMER_ACCEPTED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "Automated semantic/compiler verification is not artist acceptance."
+    },
+    "VALUE_EVIDENCED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "No real production session or consumer value observation was recorded in WP-079."
+    }
+  },
+  "contradiction_trace": {
+    "affected_dimension": "IMPLEMENTED",
+    "observation": "Post-merge review found that scalar text passed to sequence-valued prepare inputs could be converted character-by-character before durable schema validation.",
+    "disposition": "BOUNDED_REPAIR",
+    "repair": "Validate and normalize constraints, locked/editable refs, verification refs, and provenance as text sequences before MusicalPlan construction.",
+    "repair_pull_request": 8,
+    "repaired_main_commit": "1ab4a1707330ca485badbe5855115bd2e3223697",
+    "repaired_main_ci_run": 34265048243
+  },
+  "anti_collapse_rule": "This receipt proves mapping, implementation, semantic integration, verification, and authority containment for the host-neutral Musical Plan/compiler boundary only. It does not prove consumer Produce reachability, transaction recovery, artist acceptance, or real-work value."
+}
