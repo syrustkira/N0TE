@@ -168,6 +168,32 @@ class MusicalPlanTests(unittest.TestCase):
         changed = replace(plan, desired_change="Lower the bass instead.")
         self.assertNotEqual(changed.fingerprint, plan.fingerprint)
 
+    def test_scalar_text_is_rejected_for_every_sequence_input(self):
+        context = self.exact_context()
+        baseline = {
+            "plan_id": "plan:shape-check",
+            "artist_intent": "Make one exact bounded change.",
+            "required_dimensions": ("TRACK", "SONG_SECTION"),
+            "desired_change": "Change the exact target.",
+            "constraints": (),
+            "locked_element_refs": (),
+            "editable_element_refs": (),
+            "verification_refs": ("verify:shape",),
+            "provenance_refs": (),
+        }
+        for field in (
+            "constraints",
+            "locked_element_refs",
+            "editable_element_refs",
+            "verification_refs",
+            "provenance_refs",
+        ):
+            with self.subTest(field=field):
+                kwargs = dict(baseline)
+                kwargs[field] = "not-a-sequence"
+                with self.assertRaises(MusicalPlanError):
+                    self.service.prepare(context, **kwargs)
+
     def test_missing_ambiguous_inferred_or_unknown_target_refuses_plan_creation(self):
         cases = (
             (),
