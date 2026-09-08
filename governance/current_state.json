@@ -16,6 +16,39 @@
     "personal_production_acceptance": "DERIVED_SEPARATELY_FROM_REQUIRED_DAW_OS_AND_RELIABILITY_OBLIGATIONS",
     "activation_receipt": "migration/receipts/constitutional-req-scope-172-2026-09-08.json"
   },
+  "construction_pipeline": {
+    "state": "ACTIVATION_CANDIDATE",
+    "migration_id": "CONST-FAST-CONSTRUCTION-PIPELINE-2026-09-08",
+    "candidate_main_commit": "5c7b025684a00aad551db0a32484a82632abd0d1",
+    "independent_pre_migration_proof": {
+      "candidate_pull_request": 12,
+      "candidate_exact_head": "bc06d8ef4ee7b69fb82a222effae81519c2dcf69",
+      "candidate_pr_ci_run": 34271460031,
+      "candidate_main_commit": "5c7b025684a00aad551db0a32484a82632abd0d1",
+      "candidate_main_ci_run": 34271647509
+    },
+    "pull_request_verification": "EXACT_HEAD",
+    "branch_push_duplication": "DISABLED_EXCEPT_MAIN",
+    "risk_tiers": [
+      "FULL",
+      "TARGETED",
+      "GOVERNANCE"
+    ],
+    "stale_pr_runs": "CANCELLED",
+    "dependency_cache": "PIP_BY_REQUIREMENTS",
+    "mechanical_closeout": {
+      "trigger": "SUCCESSFUL_RESULTING_MAIN_RUN_WITH_EXPLICIT_N0TE_CLOSEOUT_MARKER",
+      "scope": "CURRENT_ACTIVE_WORK_PACKAGE_ONLY",
+      "dimension_authority": "PREDECLARED_MECHANICAL_CLOSEOUT_ALLOWLIST_ONLY",
+      "never_automatic": [
+        "CONSUMER_ACCEPTED",
+        "VALUE_EVIDENCED"
+      ],
+      "write_mode": "VALIDATE_EXACT_GENERATED_TREE_THEN_FAST_FORWARD_FROM_GREEN_MAIN",
+      "race_behavior": "FAIL_IF_MAIN_MOVED"
+    },
+    "activation_condition": "Activation remains conditional until the workflow/state migration exact head and resulting-main verification pass."
+  },
   "last_completed_construction_program": {
     "program_id": "PROGRAM-PERSONAL-PRODUCTION-001",
     "program_path": "governance/programs/PROGRAM-PERSONAL-PRODUCTION-001.json",

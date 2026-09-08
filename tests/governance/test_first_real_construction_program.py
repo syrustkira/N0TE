@@ -20,17 +20,18 @@ def test_first_real_program_is_durably_complete_and_no_longer_current():
         current_program, _ = current
         assert current_program["program_id"] != "PROGRAM-PERSONAL-PRODUCTION-001"
 
-    state = load("governance/current_state.json")
-    completed = state["last_completed_construction_program"]
-    assert completed["program_id"] == "PROGRAM-PERSONAL-PRODUCTION-001"
-    assert completed["resulting_main_execution_commit"] == (
-        "c0cb39fe47779f7a36f6bec877c4861ab73776cf"
-    )
-    assert completed["resulting_main_execution_ci_run"] == 34261064328
-
-    program = load(completed["program_path"])
+    program = load("governance/programs/PROGRAM-PERSONAL-PRODUCTION-001.json")
     assert validate_construction_program(program)
     assert program["state"] == "COMPLETE"
+    assert program["completion_receipt"] == (
+        "governance/evidence/PROGRAM-PERSONAL-PRODUCTION-001-completion-2026-09-08.json"
+    )
+    receipt = load(program["completion_receipt"])
+    execution = receipt["lifecycle"]["sibling_execution"]
+    assert execution["main_commit"] == "c0cb39fe47779f7a36f6bec877c4861ab73776cf"
+    assert execution["resulting_main_ci_run"] == 34261064328
+    assert execution["resulting_main_ci_result"] == "PASS"
+
     assert [package["state"] for package in program["work_packages"]] == [
         "COMPLETE",
         "COMPLETE",

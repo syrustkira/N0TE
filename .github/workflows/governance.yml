@@ -1,21 +1,29 @@
 name: N0TE governance and regression
 on:
-  push:
   pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
 permissions:
   contents: read
+
+concurrency:
+  group: n0te-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  verify:
+  structural:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt && python -m pip install pytest
       - run: python -m compileall -q n0te governance
       - run: PYTHONPATH=. python governance/check_governance.py --offline
-      - run: python -m pytest -q tests
       - name: Active contamination scan
         run: |
           set -euo pipefail
@@ -23,3 +31,38 @@ jobs:
             echo "Legacy repository identity found in active surfaces" >&2
             exit 1
           fi
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - run: python -m pip install -r requirements.txt && python -m pip install pytest
+      - name: Risk-tier regression
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            BASE_SHA="$PR_BASE_SHA"
+            HEAD_SHA="$PR_HEAD_SHA"
+          else
+            BASE_SHA="$PUSH_BEFORE_SHA"
+            HEAD_SHA="$CURRENT_SHA"
+          fi
+          python governance/ci_plan.py \
+            --event "$EVENT_NAME" \
+            --base-sha "$BASE_SHA" \
+            --head-sha "$HEAD_SHA" \
+            --execute-tests
