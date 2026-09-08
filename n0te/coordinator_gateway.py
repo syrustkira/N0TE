@@ -1,14 +1,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Generic, TypeVar
+from typing import Callable, Generic, Protocol, TypeVar
 
 from governance.execution_permit import ExecutionPermitAuthority
-from governance.trusted_context import FileTrustedContextProvider
+from governance.trusted_context import TrustedContextSnapshot
 
 from .authority import ActionIntent
 
 T = TypeVar("T")
+
+
+class ContextProvider(Protocol):
+    def get(self, snapshot_id: str) -> TrustedContextSnapshot: ...
 
 
 class CoordinatorGatewayError(RuntimeError):
@@ -75,12 +79,12 @@ class CoordinatorMutationGateway:
         self,
         *,
         permits: ExecutionPermitAuthority,
-        contexts: FileTrustedContextProvider,
+        contexts: ContextProvider,
     ):
         if not isinstance(permits, ExecutionPermitAuthority):
             raise TypeError("permits must be ExecutionPermitAuthority")
-        if not isinstance(contexts, FileTrustedContextProvider):
-            raise TypeError("contexts must be FileTrustedContextProvider")
+        if not callable(getattr(contexts, "get", None)):
+            raise TypeError("contexts must provide get(snapshot_id)")
         self._permits = permits
         self._contexts = contexts
         self._mutations: dict[str, _MutationRegistration] = {}
