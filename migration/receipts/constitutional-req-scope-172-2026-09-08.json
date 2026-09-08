@@ -5,7 +5,7 @@
   "named_scope": [
     "REQ-SCOPE-172"
   ],
-  "status": "ACTIVATION_STATE_CANDIDATE",
+  "status": "ACTIVATED_WHEN_PRESENT_ON_MAIN_AND_RESULTING_MAIN_HEAD_CI_PASSES",
   "semantic_owner": {
     "name": "N0TE_PRODUCT_DB/SCOPE_LEDGER",
     "drive_id": "1pStCPe7FpAMr2t_Hm2uS-38Y8Eg50j8hMLwscQ5diN4",
@@ -20,9 +20,9 @@
     "candidate": "PASS",
     "independent_regression_migration_proof": "PASS",
     "state_migration": "PASS",
-    "exact_head_review": "PASS",
-    "activation": "PENDING_ACTIVATION_STATE_MERGE",
-    "migration_authority_expiration": "PENDING_ACTIVATION_STATE_MERGE",
+    "exact_head_review": "REQUIRED_FOR_THIS_ACTIVATION_STATE_CHANGE",
+    "activation": "CONDITIONAL_ON_MERGE_TO_MAIN_AND_RESULTING_MAIN_HEAD_CI_PASS",
+    "migration_authority_expiration": "SAME_CONDITION_AS_ACTIVATION",
     "durable_migration_receipt": "THIS_FILE"
   },
   "candidate": {
@@ -38,6 +38,15 @@
     "main_commit": "b718f3e8d62fd99b621f17ea3b2c894208204564",
     "post_merge_ci_run": 34258356442,
     "post_merge_ci_result": "PASS"
+  },
+  "activation_state_proof": {
+    "branch": "constitutional/req-scope-172-activation-state",
+    "required_before_activation": [
+      "exact activation-state branch CI pass",
+      "exact activation-state diff review",
+      "merge to main",
+      "resulting main-head CI pass"
+    ]
   },
   "activated_capabilities": [
     "one bounded artist-authorized parent construction program may expose multiple eligible sibling work packages",
@@ -67,7 +76,7 @@
   },
   "acceptance_boundary": "This constitutional activation does not establish a real DAW closed loop, Personal Production acceptance, stranger-consumer acceptance, release acceptance or value evidence.",
   "temporary_migration_authority": {
-    "current_candidate_state": "EXPIRES_ONLY_IF_THIS_ACTIVATION_STATE_IS_MERGED_AND_EXACT_HEAD_CI_PASSES",
+    "state_after_activation_condition_is_satisfied": "EXPIRED",
     "ordinary_product_path_bypass": false,
     "permanent_bypass": false
   }
