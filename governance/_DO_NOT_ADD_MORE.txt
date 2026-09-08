@@ -1,0 +1,1 @@
+Integration phase. Do not add more standalone governance modules. Modify existing coordinator/gate paths, run CI, fix only concrete failures, remove temporary artifacts, merge verified head.
