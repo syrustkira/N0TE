@@ -8,6 +8,14 @@ from .execution_envelope import OUTCOME_CLASSES
 from .trusted_context import TrustedContextSnapshot, validate_trusted_context_snapshot
 
 
+def _upstream_dependencies(state: CompiledExecutionState, active_object: str) -> list[str]:
+    return sorted(
+        node
+        for node, successors in state.dependency_graph.items()
+        if active_object in successors
+    )
+
+
 def compiled_state_to_trusted_snapshot(
     state: CompiledExecutionState,
     *,
@@ -22,7 +30,7 @@ def compiled_state_to_trusted_snapshot(
     for active_object in state.retained_scope_refs:
         functions = list(state.lens_dispatch.get(active_object, ()))
         dependencies = {
-            "upstream": [],
+            "upstream": _upstream_dependencies(state, active_object),
             "downstream": list(state.dependency_graph.get(active_object, ())),
         }
         policies[active_object] = {
