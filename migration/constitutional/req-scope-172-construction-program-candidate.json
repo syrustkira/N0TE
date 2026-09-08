@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "CONSTITUTIONAL_GOVERNANCE_MIGRATION_CANDIDATE",
+  "migration_id": "CONST-REQ-SCOPE-172-2026-09-08",
+  "status": "CANDIDATE",
+  "explicit_authorization": "User instruction on 2026-09-08: invoke constitutional governance migration when evidence shows governance itself is defective.",
+  "named_scope": [
+    "REQ-SCOPE-172"
+  ],
+  "semantic_owner": {
+    "name": "N0TE_PRODUCT_DB/SCOPE_LEDGER",
+    "drive_id": "1pStCPe7FpAMr2t_Hm2uS-38Y8Eg50j8hMLwscQ5diN4",
+    "reconciled_requirement": "REQ-SCOPE-172"
+  },
+  "defect_evidence": [
+    "governance/model.py select_next_work exposes single-item selection while REQ-SCOPE-172 requires multiple bounded sibling work packages",
+    "REQ-SCOPE-172 requires blast-radius-scoped blocking and independent implementation/acceptance state",
+    "REQ-SCOPE-172 requires progressive dogfood on a proven tuple without global host/OS completion"
+  ],
+  "legacy_governance_role": "INPUT_ONLY",
+  "external_invariants": [
+    "artist remains final consequential authority",
+    "child work paths, requirement IDs and authority classes remain bounded by the parent program",
+    "real dependency and path conflicts block affected work",
+    "unrelated incidents do not freeze disjoint work without blast-radius evidence",
+    "implementation and acceptance remain distinct",
+    "dogfood eligibility never implies Personal Production acceptance",
+    "Personal Production acceptance retains seven declared DAW paths, three OS families and reliability obligations",
+    "missing evidence remains UNPROVEN"
+  ],
+  "candidate_owner": "constitutional/req-scope-172-construction-program",
+  "candidate_certifier": "GitHub Actions N0TE governance and regression workflow",
+  "ordinary_product_path": false,
+  "temporary_migration_authority": {
+    "state": "ACTIVE_FOR_NAMED_MIGRATION_ONLY",
+    "permanent_bypass": false,
+    "expires_on_activation_or_rejection": true
+  },
+  "activation_requires": [
+    "candidate branch exact-head CI success",
+    "pull request exact diff review",
+    "merge to main",
+    "post-merge exact-head CI success",
+    "durable activation receipt",
+    "temporary migration authority expiration"
+  ]
+}
