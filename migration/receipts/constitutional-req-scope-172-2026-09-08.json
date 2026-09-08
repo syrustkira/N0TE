@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "kind": "CONSTITUTIONAL_GOVERNANCE_ACTIVATION_RECEIPT",
+  "migration_id": "CONST-REQ-SCOPE-172-2026-09-08",
+  "named_scope": [
+    "REQ-SCOPE-172"
+  ],
+  "status": "ACTIVATED_WHEN_PRESENT_ON_MAIN_AND_RESULTING_MAIN_HEAD_CI_PASSES",
+  "semantic_owner": {
+    "name": "N0TE_PRODUCT_DB/SCOPE_LEDGER",
+    "drive_id": "1pStCPe7FpAMr2t_Hm2uS-38Y8Eg50j8hMLwscQ5diN4",
+    "requirement_id": "REQ-SCOPE-172"
+  },
+  "constitutional_sequence": {
+    "explicit_authorized_migration": "PASS",
+    "named_migration_scope": "PASS",
+    "current_semantic_owner_reconciliation": "PASS",
+    "legacy_governance_as_input_only": "PASS",
+    "external_migration_invariants": "PASS",
+    "candidate": "PASS",
+    "independent_regression_migration_proof": "PASS",
+    "state_migration": "PASS",
+    "exact_head_review": "REQUIRED_FOR_THIS_ACTIVATION_STATE_CHANGE",
+    "activation": "CONDITIONAL_ON_MERGE_TO_MAIN_AND_RESULTING_MAIN_HEAD_CI_PASS",
+    "migration_authority_expiration": "SAME_CONDITION_AS_ACTIVATION",
+    "durable_migration_receipt": "THIS_FILE"
+  },
+  "candidate": {
+    "branch": "constitutional/req-scope-172-construction-program",
+    "exact_head": "834b13bf75299e2bae0d34c788bb6d8dc66858f6",
+    "independent_ci_run": 34258135484,
+    "ci_result": "PASS",
+    "exact_diff_review": "PASS",
+    "review_comment_id": 5589317933,
+    "pull_request": 1
+  },
+  "implementation_merge": {
+    "main_commit": "b718f3e8d62fd99b621f17ea3b2c894208204564",
+    "post_merge_ci_run": 34258356442,
+    "post_merge_ci_result": "PASS"
+  },
+  "activation_state_proof": {
+    "branch": "constitutional/req-scope-172-activation-state",
+    "required_before_activation": [
+      "exact activation-state branch CI pass",
+      "exact activation-state diff review",
+      "merge to main",
+      "resulting main-head CI pass"
+    ]
+  },
+  "activated_capabilities": [
+    "one bounded artist-authorized parent construction program may expose multiple eligible sibling work packages",
+    "child path, requirement-ID and authority-class bounds are validated",
+    "dependency cycles and unresolved dependencies block affected work",
+    "active path conflicts block affected work",
+    "incident blocking is scoped to evidenced blast radius and global blocking requires explicit evidence references",
+    "implementation and consumer acceptance remain independent states",
+    "a proven DAW/OS/capability tuple may be eligible for dogfood before global Personal Production acceptance",
+    "Personal Production acceptance remains derived from its required DAW, OS and reliability obligations"
+  ],
+  "state_migration": {
+    "current_state": "governance/current_state.json:construction_program_governance",
+    "authority": "governance/authority.json:last_constitutional_migration",
+    "requirement_evidence": "governance/evidence/REQ-SCOPE-172-constitutional-activation-2026-09-08.json"
+  },
+  "evidence_boundary": {
+    "MAPPED": "PROVEN",
+    "IMPLEMENTED": "PROVEN",
+    "INTEGRATED": "PROVEN",
+    "REACHABLE": "UNPROVEN",
+    "VERIFIED": "PROVEN",
+    "RECOVERABLE": "UNPROVEN",
+    "AUTHORITY_SAFE": "PROVEN",
+    "CONSUMER_ACCEPTED": "UNPROVEN",
+    "VALUE_EVIDENCED": "UNPROVEN"
+  },
+  "acceptance_boundary": "This constitutional activation does not establish a real DAW closed loop, Personal Production acceptance, stranger-consumer acceptance, release acceptance or value evidence.",
+  "temporary_migration_authority": {
+    "state_after_activation_condition_is_satisfied": "EXPIRED",
+    "ordinary_product_path_bypass": false,
+    "permanent_bypass": false
+  }
+}
