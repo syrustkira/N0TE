@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "kind": "CONSTITUTIONAL_MIGRATION_RECEIPT",
+  "migration_id": "CONST-FAST-CONSTRUCTION-PIPELINE-2026-09-08",
+  "status": "ACTIVATED",
+  "authorized_by": "User explicitly selected IMPLEMENT FAST PIPELINE on 2026-09-08.",
+  "named_scope": [
+    "CI_ORCHESTRATION",
+    "RISK_TIER_VERIFICATION",
+    "MECHANICAL_EVIDENCE_CLOSEOUT"
+  ],
+  "semantic_owner_reconciliation": {
+    "product_semantics_changed": false,
+    "evidence_meanings_changed": false,
+    "authority_classes_changed": false,
+    "active_product_scope_changed": false
+  },
+  "candidate_proof": {
+    "pull_request": 12,
+    "exact_head": "bc06d8ef4ee7b69fb82a222effae81519c2dcf69",
+    "pr_ci_run": 34271460031,
+    "candidate_main_commit": "5c7b025684a00aad551db0a32484a82632abd0d1",
+    "candidate_main_ci_run": 34271647509,
+    "certifier": "PRE_MIGRATION_FULL_WORKFLOW",
+    "candidate_self_certification": false
+  },
+  "activation_proof": {
+    "pull_request": 13,
+    "exact_head": "a693739a66f2d0a530a7e116ddef6bc8e909412d",
+    "pr_ci_run": 34272334510,
+    "pr_ci_result": "PASS",
+    "pr_regression": "1380 passed, 236 subtests passed",
+    "resulting_main_commit": "384718557c25db493987f9b60bd72a4375608b82",
+    "resulting_main_ci_run": 34272519900,
+    "resulting_main_ci_result": "PASS",
+    "resulting_main_regression": "1380 passed, 236 subtests passed"
+  },
+  "activated_behavior": {
+    "pull_request_verification": "EXACT_PROPOSED_HEAD",
+    "branch_push_full_ci": "REMOVED_FOR_NON_MAIN_BRANCHES",
+    "resulting_main_verification": "RETAINED",
+    "stale_pr_runs": "CANCELLED",
+    "structural_and_regression_jobs": "PARALLEL",
+    "dependency_cache": "PIP_CACHE_KEYED_BY_REQUIREMENTS",
+    "risk_tiers": {
+      "FULL": "implementation, workflow, governance core, dependencies, unknown or mixed changes",
+      "TARGETED": "bounded test-only changes plus governance tests",
+      "GOVERNANCE": "mechanical evidence/program/current-state closeouts"
+    },
+    "mechanical_closeout": "AFTER_SUCCESSFUL_RESULTING_MAIN_WITH_EXPLICIT_MARKER"
+  },
+  "mechanical_closeout_invariants": {
+    "current_active_work_package_only": true,
+    "predeclared_dimension_allowlist_only": true,
+    "consumer_accepted_never_automatic": true,
+    "value_evidenced_never_automatic": true,
+    "generated_tree_validated_before_write": true,
+    "remote_main_must_equal_verified_source_sha": true,
+    "force_push": false,
+    "contradictions_are_not_normalized": true
+  },
+  "authority": {
+    "ordinary_product_path_bypass": false,
+    "permanent_bypass": false,
+    "temporary_migration_authority": "EXPIRED_AFTER_VERIFIED_ACTIVATION"
+  },
+  "product_acceptance_effect": "NONE",
+  "note": "This receipt changes governance execution speed only. It does not promote any product requirement evidence or Personal Production acceptance."
+}

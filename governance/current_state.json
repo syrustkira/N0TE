@@ -17,8 +17,9 @@
     "activation_receipt": "migration/receipts/constitutional-req-scope-172-2026-09-08.json"
   },
   "construction_pipeline": {
-    "state": "ACTIVATION_CANDIDATE",
+    "state": "ACTIVE",
     "migration_id": "CONST-FAST-CONSTRUCTION-PIPELINE-2026-09-08",
+    "activation_receipt": "migration/receipts/constitutional-fast-construction-pipeline-2026-09-08.json",
     "candidate_main_commit": "5c7b025684a00aad551db0a32484a82632abd0d1",
     "independent_pre_migration_proof": {
       "candidate_pull_request": 12,
@@ -26,6 +27,13 @@
       "candidate_pr_ci_run": 34271460031,
       "candidate_main_commit": "5c7b025684a00aad551db0a32484a82632abd0d1",
       "candidate_main_ci_run": 34271647509
+    },
+    "activation_proof": {
+      "pull_request": 13,
+      "exact_head": "a693739a66f2d0a530a7e116ddef6bc8e909412d",
+      "pr_ci_run": 34272334510,
+      "resulting_main_commit": "384718557c25db493987f9b60bd72a4375608b82",
+      "resulting_main_ci_run": 34272519900
     },
     "pull_request_verification": "EXACT_HEAD",
     "branch_push_duplication": "DISABLED_EXCEPT_MAIN",
@@ -46,8 +54,7 @@
       ],
       "write_mode": "VALIDATE_EXACT_GENERATED_TREE_THEN_FAST_FORWARD_FROM_GREEN_MAIN",
       "race_behavior": "FAIL_IF_MAIN_MOVED"
-    },
-    "activation_condition": "Activation remains conditional until the workflow/state migration exact head and resulting-main verification pass."
+    }
   },
   "last_completed_construction_program": {
     "program_id": "PROGRAM-PERSONAL-PRODUCTION-001",

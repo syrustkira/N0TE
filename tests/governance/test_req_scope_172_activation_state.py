@@ -21,14 +21,23 @@ def test_activation_state_routes_current_work_through_bounded_construction_progr
     assert "every dependency-valid" in state["work_selection_rule"]
 
 
-def test_named_temporary_constitutional_authority_expires_without_permanent_bypass():
+def test_req_scope_172_temporary_authority_remains_expired_after_later_constitutional_migrations():
+    state = load("governance/current_state.json")
+    assert state["construction_program_governance"]["activation_receipt"] == (
+        "migration/receipts/constitutional-req-scope-172-2026-09-08.json"
+    )
+
+    receipt = load(
+        "migration/receipts/constitutional-req-scope-172-2026-09-08.json"
+    )
+    temporary = receipt["temporary_migration_authority"]
+    assert temporary["state_after_activation_condition_is_satisfied"] == "EXPIRED"
+    assert temporary["permanent_bypass"] is False
+
     authority = load("governance/authority.json")
-    migration = authority["last_constitutional_migration"]
-    assert migration["migration_id"] == "CONST-REQ-SCOPE-172-2026-09-08"
-    assert migration["state"] == "ACTIVATED"
-    assert migration["temporary_migration_authority"] == "EXPIRED"
-    assert migration["ordinary_product_path_bypass"] is False
-    assert migration["permanent_bypass"] is False
+    pending = authority.get("pending_constitutional_migration")
+    if pending is not None:
+        assert pending.get("migration_id") != "CONST-REQ-SCOPE-172-2026-09-08"
 
 
 def test_activation_receipt_is_conditioned_on_verified_main_state():
