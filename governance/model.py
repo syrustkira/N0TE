@@ -175,6 +175,7 @@ def validate_construction_program(program):
         if work_id in seen:
             raise ValueError(f"duplicate work package id: {work_id}")
         seen.add(work_id)
+    by_id = {package["work_id"]: package for package in packages}
     for package in packages:
         unknown_dependencies = _as_set(package.get("dependencies", []), "dependencies") - seen
         if unknown_dependencies:
@@ -183,6 +184,23 @@ def validate_construction_program(program):
             )
         if package["work_id"] in _as_set(package.get("dependencies", []), "dependencies"):
             raise ValueError(f"work package cannot depend on itself: {package['work_id']}")
+
+    visiting = set()
+    visited = set()
+
+    def visit(work_id):
+        if work_id in visited:
+            return
+        if work_id in visiting:
+            raise ValueError(f"work package dependency cycle: {work_id}")
+        visiting.add(work_id)
+        for dependency in by_id[work_id].get("dependencies", []):
+            visit(dependency)
+        visiting.remove(work_id)
+        visited.add(work_id)
+
+    for work_id in by_id:
+        visit(work_id)
     return True
 
 
@@ -232,6 +250,11 @@ def _incident_hits_package(incident, package):
     if str(incident.get("state", "OPEN")).upper() not in {"OPEN","ACTIVE","BLOCKING"}:
         return False
     if incident.get("global") is True:
+        global_refs = _as_set(
+            incident.get("global_evidence_refs", []), "incident global_evidence_refs"
+        )
+        if not global_refs:
+            raise ValueError("global incident requires blast-radius evidence")
         return True
     blast = incident.get("blast_radius", {}) or {}
     if not isinstance(blast, dict):
