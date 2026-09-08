@@ -9,6 +9,7 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from n0te.consumer_shell import ConsumerShell
 from n0te.instance import InstanceLeaseManager, ProcessIdentity
+from n0te.memory import HeadquartersMemory
 from n0te.platforms import PlatformEnvironment
 from n0te.resume import SongResumeService
 
@@ -106,6 +107,14 @@ def quit_normally(shell: ConsumerShell) -> None:
     assert shell.wait_stopped(timeout=2.0)
 
 
+def persisted_brief(data_root: Path, profile_id: str):
+    headquarters = HeadquartersMemory.open(data_root, profile_id)
+    try:
+        return SongResumeService(headquarters).brief()
+    finally:
+        headquarters.close()
+
+
 def test_normal_customer_can_create_headquarters_start_song_quit_and_resume_same_truth(
     tmp_path: Path,
 ) -> None:
@@ -152,15 +161,16 @@ def test_normal_customer_can_create_headquarters_start_song_quit_and_resume_same
 
     profile_id = first.runtime.profile_id
     assert profile_id is not None
-    brief_before = SongResumeService(first.runtime.headquarters).brief()
-    song_id = brief_before.song_id
-    assert brief_before.artist_name == "Reachability Artist"
-    assert brief_before.song_title == "Reachability Song"
-    assert brief_before.is_active_song is True
     assert InstanceLeaseManager(state_root).inspect(profile_id) is not None
 
     quit_normally(first)
     assert InstanceLeaseManager(state_root).inspect(profile_id) is None
+
+    brief_before = persisted_brief(data_root, profile_id)
+    song_id = brief_before.song_id
+    assert brief_before.artist_name == "Reachability Artist"
+    assert brief_before.song_title == "Reachability Song"
+    assert brief_before.is_active_song is True
 
     reopened = ConsumerShell(
         data_root=data_root,
@@ -175,10 +185,11 @@ def test_normal_customer_can_create_headquarters_start_song_quit_and_resume_same
     assert "Reachability Song" in resumed.text
     assert "Pick up where you left off" in resumed.text
 
-    brief_after = SongResumeService(reopened.runtime.headquarters).brief()
+    quit_normally(reopened)
+    assert InstanceLeaseManager(state_root).inspect(profile_id) is None
+
+    brief_after = persisted_brief(data_root, profile_id)
     assert brief_after.song_id == song_id
     assert brief_after.artist_name == brief_before.artist_name
     assert brief_after.song_title == brief_before.song_title
     assert brief_after.is_active_song is True
-
-    quit_normally(reopened)
