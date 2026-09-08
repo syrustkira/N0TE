@@ -1,5 +1,7 @@
-# Runtime dependencies for N0TE2.
+# Runtime dependencies for N0TE.
 # Keep platform-specific dependencies guarded so peer platforms remain independently installable.
+# MCP v2 is the current stable SDK line and supplies the coordinator gate transport.
+mcp>=2,<3
 # pyloudnorm 0.2.0 is MIT-licensed and implements ITU-R BS.1770-4 integrated loudness.
 pyloudnorm==0.2.0
 pywin32>=312; sys_platform == "win32"
