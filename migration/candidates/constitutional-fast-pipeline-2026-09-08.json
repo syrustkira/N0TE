@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "migration_id": "CONST-FAST-CONSTRUCTION-PIPELINE-2026-09-08",
+  "state": "CANDIDATE",
+  "named_scope": [
+    "CI_ORCHESTRATION",
+    "RISK_TIER_VERIFICATION",
+    "MECHANICAL_EVIDENCE_CLOSEOUT"
+  ],
+  "authorization": "User explicitly selected IMPLEMENT FAST PIPELINE on 2026-09-08.",
+  "semantic_owner_reconciliation": {
+    "product_semantics_changed": false,
+    "evidence_meanings_changed": false,
+    "authority_classes_changed": false,
+    "active_product_scope_changed": false,
+    "note": "This migration changes only executable CI orchestration and mechanically bounded evidence/state closeout."
+  },
+  "legacy_governance_role": "INPUT_ONLY",
+  "external_invariants": [
+    "Pull requests must verify the exact proposed head before merge.",
+    "Merged implementation changes must receive a resulting-main verification.",
+    "Implementation-adjacent and governance-core changes fail conservative to the full test suite.",
+    "Mechanical closeout may update only the current active construction program, its requirement evidence receipts, and current_state routing.",
+    "Mechanical closeout may prove only dimensions predeclared on the work package.",
+    "CONSUMER_ACCEPTED and VALUE_EVIDENCED can never be mechanically promoted.",
+    "Contradictions still fail CI and reopen work rather than being normalized away.",
+    "Routine branch push duplication may be removed only after the pre-migration full regression independently proves the candidate."
+  ],
+  "candidate_owner": "FAST_PIPELINE_IMPLEMENTATION",
+  "candidate_certifier": "PRE_MIGRATION_FULL_REGRESSION",
+  "ordinary_product_path": false,
+  "permanent_bypass": false
+}
