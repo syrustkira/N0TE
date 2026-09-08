@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "PROGRAM-PERSONAL-PRODUCTION-001",
-  "state": "ACTIVE",
+  "state": "COMPLETE",
   "authority_source": "User selected CONTINUE option 1 on 2026-09-08 under active REQ-SCOPE-172 construction-program governance.",
   "allowed_paths": [
     "tests/acceptance/test_req_scope_003_headquarters_reachability.py",
@@ -14,11 +14,12 @@
   "allowed_authority_classes": [
     "READ"
   ],
+  "completion_receipt": "governance/evidence/PROGRAM-PERSONAL-PRODUCTION-001-completion-2026-09-08.json",
   "work_packages": [
     {
       "work_id": "WP-003-HQ-REACHABILITY",
       "parent_program_id": "PROGRAM-PERSONAL-PRODUCTION-001",
-      "state": "ACTIVE",
+      "state": "COMPLETE",
       "paths": [
         "tests/acceptance/test_req_scope_003_headquarters_reachability.py"
       ],
@@ -34,10 +35,30 @@
             "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-003"
           ]
         },
-        "IMPLEMENTED": {"state": "UNPROVEN", "evidence_refs": []},
-        "INTEGRATED": {"state": "UNPROVEN", "evidence_refs": []},
-        "REACHABLE": {"state": "UNPROVEN", "evidence_refs": []},
-        "VERIFIED": {"state": "UNPROVEN", "evidence_refs": []},
+        "IMPLEMENTED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-003-headquarters-reachability-2026-09-08.json"
+          ]
+        },
+        "INTEGRATED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-003-headquarters-reachability-2026-09-08.json"
+          ]
+        },
+        "REACHABLE": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-003-headquarters-reachability-2026-09-08.json"
+          ]
+        },
+        "VERIFIED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-003-headquarters-reachability-2026-09-08.json"
+          ]
+        },
         "RECOVERABLE": {"state": "UNPROVEN", "evidence_refs": []},
         "AUTHORITY_SAFE": {"state": "UNPROVEN", "evidence_refs": []},
         "CONSUMER_ACCEPTED": {"state": "UNPROVEN", "evidence_refs": []},
@@ -47,7 +68,7 @@
     {
       "work_id": "WP-010-COMPARE-DECIDE-REACHABILITY",
       "parent_program_id": "PROGRAM-PERSONAL-PRODUCTION-001",
-      "state": "ACTIVE",
+      "state": "COMPLETE",
       "paths": [
         "tests/acceptance/test_req_scope_010_compare_decide_reachability.py"
       ],
@@ -63,12 +84,37 @@
             "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-010"
           ]
         },
-        "IMPLEMENTED": {"state": "UNPROVEN", "evidence_refs": []},
-        "INTEGRATED": {"state": "UNPROVEN", "evidence_refs": []},
-        "REACHABLE": {"state": "UNPROVEN", "evidence_refs": []},
-        "VERIFIED": {"state": "UNPROVEN", "evidence_refs": []},
+        "IMPLEMENTED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-010-compare-decide-reachability-2026-09-08.json"
+          ]
+        },
+        "INTEGRATED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-010-compare-decide-reachability-2026-09-08.json"
+          ]
+        },
+        "REACHABLE": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-010-compare-decide-reachability-2026-09-08.json"
+          ]
+        },
+        "VERIFIED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-010-compare-decide-reachability-2026-09-08.json"
+          ]
+        },
         "RECOVERABLE": {"state": "UNPROVEN", "evidence_refs": []},
-        "AUTHORITY_SAFE": {"state": "UNPROVEN", "evidence_refs": []},
+        "AUTHORITY_SAFE": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-010-compare-decide-reachability-2026-09-08.json"
+          ]
+        },
         "CONSUMER_ACCEPTED": {"state": "UNPROVEN", "evidence_refs": []},
         "VALUE_EVIDENCED": {"state": "UNPROVEN", "evidence_refs": []}
       }
