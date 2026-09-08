@@ -15,33 +15,28 @@
     "expiration_basis": "migration/receipts/cleanroom-cutover-2026-09-08.json",
     "ordinary_product_construction_may_use": false
   },
-  "pending_constitutional_migration": {
+  "last_constitutional_migration": {
     "migration_id": "CONST-FAST-CONSTRUCTION-PIPELINE-2026-09-08",
     "named_scope": [
       "CI_ORCHESTRATION",
       "RISK_TIER_VERIFICATION",
       "MECHANICAL_EVIDENCE_CLOSEOUT"
     ],
-    "state": "ACTIVE_UNTIL_VERIFIED_ACTIVATION",
-    "authorization": "User explicitly selected IMPLEMENT FAST PIPELINE on 2026-09-08.",
-    "candidate_main_commit": "5c7b025684a00aad551db0a32484a82632abd0d1",
-    "independent_certifier": {
+    "state": "ACTIVATED",
+    "temporary_migration_authority": "EXPIRED",
+    "expiration_basis": "migration/receipts/constitutional-fast-construction-pipeline-2026-09-08.json",
+    "independent_candidate_proof": {
       "candidate_pr_ci_run": 34271460031,
       "candidate_main_ci_run": 34271647509,
       "governance_regime": "PRE_MIGRATION_FULL_WORKFLOW"
     },
-    "ordinary_product_path_bypass": false,
-    "permanent_bypass": false,
-    "expiration_condition": "Expire only after activation exact-head and resulting-main verification plus a durable migration receipt."
-  },
-  "last_constitutional_migration": {
-    "migration_id": "CONST-REQ-SCOPE-172-2026-09-08",
-    "named_scope": [
-      "REQ-SCOPE-172"
-    ],
-    "state": "ACTIVATED",
-    "temporary_migration_authority": "EXPIRED",
-    "expiration_basis": "migration/receipts/constitutional-req-scope-172-2026-09-08.json",
+    "activation_proof": {
+      "pull_request": 13,
+      "exact_head": "a693739a66f2d0a530a7e116ddef6bc8e909412d",
+      "pr_ci_run": 34272334510,
+      "resulting_main_commit": "384718557c25db493987f9b60bd72a4375608b82",
+      "resulting_main_ci_run": 34272519900
+    },
     "ordinary_product_path_bypass": false,
     "permanent_bypass": false
   }

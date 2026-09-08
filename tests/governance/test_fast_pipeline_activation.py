@@ -8,25 +8,46 @@ def load_json(path: str):
     return json.loads((ROOT / path).read_text())
 
 
-def test_fast_pipeline_activation_is_bounded_and_conditioned_on_resulting_main():
+def test_fast_pipeline_is_durably_active_after_independent_and_activation_proof():
     state = load_json("governance/current_state.json")
     pipeline = state["construction_pipeline"]
-    assert pipeline["state"] == "ACTIVATION_CANDIDATE"
+    assert pipeline["state"] == "ACTIVE"
+    assert pipeline["activation_receipt"] == (
+        "migration/receipts/constitutional-fast-construction-pipeline-2026-09-08.json"
+    )
     assert pipeline["pull_request_verification"] == "EXACT_HEAD"
     assert pipeline["branch_push_duplication"] == "DISABLED_EXCEPT_MAIN"
     assert pipeline["independent_pre_migration_proof"]["candidate_pr_ci_run"] == 34271460031
     assert pipeline["independent_pre_migration_proof"]["candidate_main_ci_run"] == 34271647509
+    assert pipeline["activation_proof"]["pull_request"] == 13
+    assert pipeline["activation_proof"]["exact_head"] == (
+        "a693739a66f2d0a530a7e116ddef6bc8e909412d"
+    )
+    assert pipeline["activation_proof"]["pr_ci_run"] == 34272334510
+    assert pipeline["activation_proof"]["resulting_main_commit"] == (
+        "384718557c25db493987f9b60bd72a4375608b82"
+    )
+    assert pipeline["activation_proof"]["resulting_main_ci_run"] == 34272519900
     assert set(pipeline["mechanical_closeout"]["never_automatic"]) == {
         "CONSUMER_ACCEPTED",
         "VALUE_EVIDENCED",
     }
 
     authority = load_json("governance/authority.json")
-    pending = authority["pending_constitutional_migration"]
-    assert pending["migration_id"] == "CONST-FAST-CONSTRUCTION-PIPELINE-2026-09-08"
-    assert pending["state"] == "ACTIVE_UNTIL_VERIFIED_ACTIVATION"
-    assert pending["ordinary_product_path_bypass"] is False
-    assert pending["permanent_bypass"] is False
+    assert "pending_constitutional_migration" not in authority
+    last = authority["last_constitutional_migration"]
+    assert last["migration_id"] == "CONST-FAST-CONSTRUCTION-PIPELINE-2026-09-08"
+    assert last["state"] == "ACTIVATED"
+    assert last["temporary_migration_authority"] == "EXPIRED"
+    assert last["ordinary_product_path_bypass"] is False
+    assert last["permanent_bypass"] is False
+
+    receipt = load_json(last["expiration_basis"])
+    assert receipt["status"] == "ACTIVATED"
+    assert receipt["candidate_proof"]["candidate_self_certification"] is False
+    assert receipt["activation_proof"]["pr_ci_result"] == "PASS"
+    assert receipt["activation_proof"]["resulting_main_ci_result"] == "PASS"
+    assert receipt["product_acceptance_effect"] == "NONE"
 
 
 def test_active_produce_package_predeclares_only_safe_mechanical_closeout_dimensions():
