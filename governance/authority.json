@@ -14,5 +14,16 @@
     "expired_at": "2026-09-08T16:50:00Z",
     "expiration_basis": "migration/receipts/cleanroom-cutover-2026-09-08.json",
     "ordinary_product_construction_may_use": false
+  },
+  "last_constitutional_migration": {
+    "migration_id": "CONST-REQ-SCOPE-172-2026-09-08",
+    "named_scope": [
+      "REQ-SCOPE-172"
+    ],
+    "state": "ACTIVATED",
+    "temporary_migration_authority": "EXPIRED",
+    "expiration_basis": "migration/receipts/constitutional-req-scope-172-2026-09-08.json",
+    "ordinary_product_path_bypass": false,
+    "permanent_bypass": false
   }
 }
