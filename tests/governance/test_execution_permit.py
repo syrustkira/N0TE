@@ -18,7 +18,11 @@ from governance.trusted_context import (
     validate_trusted_context_snapshot,
 )
 from n0te.authority import ActionIntent, AuthorityService
-from n0te.coordinator_gateway import CoordinatorMutationGateway
+from n0te.coordinator_gateway import (
+    CoordinatorMutationGateway,
+    MutationVerification,
+    MutationVerificationError,
+)
 from n0te.coordinator_mcp import mcp
 
 
@@ -190,12 +194,7 @@ def test_permit_rejects_action_changed_after_issuance(tmp_path):
     snap = validate_trusted_context_snapshot(snapshot_raw())
     act = action()
     issued = permits.issue(envelope=env, action=act, snapshot=snap)
-    changed = ActionIntent(
-        **{
-            **act.material_fields(),
-            "payload_fingerprint": "sha256:creative-v2",
-        }
-    )
+    changed = ActionIntent(**{**act.material_fields(), "payload_fingerprint": "sha256:creative-v2"})
     with pytest.raises(ExecutionPermitError, match="action_intent_fingerprint"):
         permits.consume(token=issued.token, envelope=env, action=changed, snapshot=snap)
 
@@ -230,12 +229,7 @@ def test_human_required_action_needs_exact_action_approval(tmp_path):
         requires_human=True,
         source_ref="artist:explicit-approval-required",
     )
-    act = ActionIntent(
-        **{
-            **action().material_fields(),
-            "action_class": "IRREVERSIBLE",
-        }
-    )
+    act = ActionIntent(**{**action().material_fields(), "action_class": "IRREVERSIBLE"})
     permits = authority(tmp_path)
     snap = validate_trusted_context_snapshot(snapshot_raw())
     with pytest.raises(ExecutionPermitError, match="lacks exact approval"):
@@ -245,17 +239,28 @@ def test_human_required_action_needs_exact_action_approval(tmp_path):
     assert issued.action_intent_fingerprint == act.intent_fingerprint
 
 
-def test_mutation_gateway_never_calls_executor_without_valid_permit(tmp_path):
-    path = context_file(tmp_path)
-    contexts = FileTrustedContextProvider(path)
+def _gateway(tmp_path, *, verified=True):
+    contexts = FileTrustedContextProvider(context_file(tmp_path))
     permits = authority(tmp_path)
     calls = []
+    reconciled = []
     gateway = CoordinatorMutationGateway(permits=permits, contexts=contexts)
     gateway.register(
         "publish-acquisition-test",
         action_class="REVERSIBLE",
         executor=lambda act: calls.append(act.action_id) or "published",
+        verifier=lambda act, result: MutationVerification(
+            verified=verified,
+            evidence_refs=("provider:receipt", "fresh:readback") if verified else ("fresh:readback",),
+            observation="fresh readback confirmed publication" if verified else "fresh readback could not confirm publication",
+        ),
+        reconciler=lambda act, result, verification: reconciled.append(act.action_id) or "TELLMEN0TE_OS:receipt:001",
     )
+    return gateway, permits, contexts, calls, reconciled
+
+
+def test_mutation_gateway_never_calls_executor_without_valid_permit(tmp_path):
+    gateway, permits, contexts, calls, reconciled = _gateway(tmp_path)
     with pytest.raises(ExecutionPermitError):
         gateway.execute(
             "publish-acquisition-test",
@@ -265,6 +270,7 @@ def test_mutation_gateway_never_calls_executor_without_valid_permit(tmp_path):
             action=action(),
         )
     assert calls == []
+    assert reconciled == []
 
     snap = contexts.get("ctx-001")
     issued = permits.issue(envelope=envelope(), action=action(), snapshot=snap)
@@ -276,7 +282,33 @@ def test_mutation_gateway_never_calls_executor_without_valid_permit(tmp_path):
         action=action(),
     )
     assert result.result == "published"
+    assert result.verification.verified is True
+    assert result.reconciliation_ref == "TELLMEN0TE_OS:receipt:001"
     assert calls == ["publish:acq-test-001"]
+    assert reconciled == ["publish:acq-test-001"]
+
+
+def test_unverified_mutation_is_not_reconciled_or_reported_complete(tmp_path):
+    gateway, permits, contexts, calls, reconciled = _gateway(tmp_path, verified=False)
+    issued = permits.issue(envelope=envelope(), action=action(), snapshot=contexts.get("ctx-001"))
+    with pytest.raises(MutationVerificationError, match="unverified"):
+        gateway.execute(
+            "publish-acquisition-test",
+            permit_token=issued.token,
+            context_snapshot_id="ctx-001",
+            envelope=envelope(),
+            action=action(),
+        )
+    assert calls == ["publish:acq-test-001"]
+    assert reconciled == []
+    with pytest.raises(ExecutionPermitError, match="already been consumed"):
+        gateway.execute(
+            "publish-acquisition-test",
+            permit_token=issued.token,
+            context_snapshot_id="ctx-001",
+            envelope=envelope(),
+            action=action(),
+        )
 
 
 def test_mcp_surface_exposes_gate_but_no_mutation_bypass():
