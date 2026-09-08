@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "requirement_id": "REQ-SCOPE-172",
+  "kind": "REQUIREMENT_EVIDENCE_RECEIPT",
+  "observed_at": "2026-09-08T17:41:00Z",
+  "semantic_owner": "N0TE_PRODUCT_DB/SCOPE_LEDGER",
+  "claims": {
+    "MAPPED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-172"
+      ]
+    },
+    "IMPLEMENTED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "commit:b718f3e8d62fd99b621f17ea3b2c894208204564",
+        "governance/model.py:validate_construction_program",
+        "governance/model.py:evaluate_construction_program"
+      ]
+    },
+    "INTEGRATED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "pull-request:1",
+        "main:b718f3e8d62fd99b621f17ea3b2c894208204564",
+        "governance/current_state.json:construction_program_governance"
+      ]
+    },
+    "REACHABLE": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "Executable governance is activated, but a real current construction program with artist work packages has not yet been exercised through normal operation."
+    },
+    "VERIFIED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "ci-run:34258135484",
+        "ci-run:34258356442",
+        "pr-review-comment:5589317933"
+      ]
+    },
+    "RECOVERABLE": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "No dedicated rollback/recovery exercise for the activated construction-program governance has yet been observed."
+    },
+    "AUTHORITY_SAFE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "tests/governance/test_req_scope_172_construction_program.py",
+        "tests/governance/test_req_scope_172_constitutional_safety.py",
+        "migration/constitutional/req-scope-172-construction-program-candidate.json"
+      ]
+    },
+    "CONSUMER_ACCEPTED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "Automated governance proof is not Personal Production or artist acceptance."
+    },
+    "VALUE_EVIDENCED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "No real-work value observation has yet been recorded for the activated construction program."
+    }
+  },
+  "anti_collapse_rule": "Passing construction and CI may prove implementation, integration, verification and authority safety only where evidence supports them. It does not imply reachability, recoverability, consumer acceptance or value evidence."
+}
