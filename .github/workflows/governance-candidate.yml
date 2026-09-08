@@ -23,7 +23,6 @@ jobs:
       - name: Generate candidate
         run: |
           python .github/scripts/build_governance.py
-          sed -i 's#python governance/check_governance.py --offline#PYTHONPATH=. python governance/check_governance.py --offline#g' .github/workflows/governance.yml
           sed -i 's/N0TE2/N0TE/g; s/n0te2/n0te/g' n0te/lineage.py n0te/graph.py
           python - <<'PY'
           import json
@@ -55,6 +54,6 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add governance tests/governance .github/workflows/governance.yml n0te/lineage.py n0te/graph.py
+          git add governance tests/governance n0te/lineage.py n0te/graph.py
           git commit -m 'Install clean executable governance candidate'
           git push
