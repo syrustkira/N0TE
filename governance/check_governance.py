@@ -2,6 +2,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from governance.execution_envelope import require_execution_permit
 from governance.model import (
     evaluate_construction_program,
     validate_requirement_evidence,
@@ -58,10 +59,20 @@ def load_current_requirement_evidence(canonical_ids):
     return current
 
 
+def validate_execution_envelope_file(path_value):
+    path = Path(path_value).resolve()
+    envelope = json.loads(path.read_text())
+    return require_execution_permit(envelope)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--offline", action="store_true")
     ap.add_argument("--canonical-manifest")
+    ap.add_argument(
+        "--execution-envelope",
+        help="Validate one concrete execution envelope and fail closed unless it receives a permit.",
+    )
     args = ap.parse_args()
     repo_manifest = json.loads((ROOT / "governance/canonical_scope_manifest.json").read_text())
     evidence = json.loads((ROOT / "governance/evidence_state.json").read_text())
@@ -83,6 +94,9 @@ def main():
         program, result = current_program
         eligible = ",".join(result["eligible_work_package_ids"]) or "NONE"
         print(f"current construction program {program['program_id']} eligible={eligible}")
+    if args.execution_envelope:
+        permit = validate_execution_envelope_file(args.execution_envelope)
+        print(f"execution envelope permitted fingerprint={permit.envelope_fingerprint}")
     print("offline structural governance validation passed" if args.offline else "fresh canonical governance validation passed")
 
 
