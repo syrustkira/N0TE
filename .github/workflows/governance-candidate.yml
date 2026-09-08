@@ -1,4 +1,5 @@
 name: Build clean governance candidate
+# rerun after executable governance package fix
 
 on:
   push:
