@@ -16,6 +16,7 @@
     "personal_production_acceptance": "DERIVED_SEPARATELY_FROM_REQUIRED_DAW_OS_AND_RELIABILITY_OBLIGATIONS",
     "activation_receipt": "migration/receipts/constitutional-req-scope-172-2026-09-08.json"
   },
+  "active_construction_program": "governance/programs/PROGRAM-PERSONAL-PRODUCTION-001.json",
   "work_selection_rule": "Resume durable unfinished construction programs or work packages first. For an active construction program, validate the parent and expose every dependency-valid, authority-bounded, path-disjoint sibling package not blocked by evidenced blast radius. Otherwise select from current canonical scope and current evidence only.",
   "normal_reconstruction": "Begin from the clean N0TE START HERE, current semantic owners, current repository state, and requirement-level evidence."
 }
