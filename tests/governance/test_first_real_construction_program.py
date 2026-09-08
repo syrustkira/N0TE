@@ -79,6 +79,7 @@ def test_current_requirement_receipts_are_executable_and_keep_parent_acceptance_
         "REQ-SCOPE-003",
         "REQ-SCOPE-010",
         "REQ-SCOPE-079",
+        "REQ-SCOPE-090",
         "REQ-SCOPE-172",
     }
 
@@ -88,6 +89,10 @@ def test_current_requirement_receipts_are_executable_and_keep_parent_acceptance_
     assert current["REQ-SCOPE-079"]["claims"]["VERIFIED"]["state"] == "PROVEN"
     assert current["REQ-SCOPE-079"]["claims"]["AUTHORITY_SAFE"]["state"] == "PROVEN"
     assert current["REQ-SCOPE-079"]["claims"]["REACHABLE"]["state"] == "UNPROVEN"
+    assert current["REQ-SCOPE-090"]["claims"]["VERIFIED"]["state"] == "PROVEN"
+    assert current["REQ-SCOPE-090"]["claims"]["RECOVERABLE"]["state"] == "PROVEN"
+    assert current["REQ-SCOPE-090"]["claims"]["AUTHORITY_SAFE"]["state"] == "PROVEN"
+    assert current["REQ-SCOPE-090"]["claims"]["REACHABLE"]["state"] == "UNPROVEN"
     assert current["REQ-SCOPE-172"]["claims"]["REACHABLE"]["state"] == "PROVEN"
 
     for receipt in current.values():
