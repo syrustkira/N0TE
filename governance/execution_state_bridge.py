@@ -4,6 +4,7 @@ from datetime import timedelta
 from typing import Mapping
 
 from .compiled_execution_state import CompiledExecutionState
+from .execution_envelope import OUTCOME_CLASSES
 from .trusted_context import TrustedContextSnapshot, validate_trusted_context_snapshot
 
 
@@ -27,7 +28,7 @@ def compiled_state_to_trusted_snapshot(
         policies[active_object] = {
             "required_functions": functions,
             "required_dependencies": dependencies,
-            "allowed_outcome_classes": ["INTERNAL", "EXTERNAL", "HUMAN"],
+            "allowed_outcome_classes": sorted(OUTCOME_CLASSES),
         }
 
     raw = {
