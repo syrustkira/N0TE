@@ -39,6 +39,8 @@ def test_current_manifest_encodes_observed_context_and_routing_failures():
     assert constraints["economic_selection"]["forbidden_shortcut"] == "LOW_CASH=>LOWEST_VALUE_JOB"
     assert "retrieval" in constraints["anti_loop"]["rule"].lower()
     assert "runtime" in constraints["runtime_precedence"]["rule"].lower()
+    assert "planning" in constraints["build_does_not_stop_at_pr"]["rule"].lower()
+    assert "parallel" in constraints["parallel_construction"]["rule"].lower()
 
     acquisition_functions = set(manifest["lens_dispatch"]["service_acquisition"])
     assert {
@@ -52,6 +54,17 @@ def test_current_manifest_encodes_observed_context_and_routing_failures():
         "friction_memory",
     }.issubset(acquisition_functions)
 
+    n0te_fronts = set(manifest["dependency_graph"]["n0te"])
+    assert {
+        "n0te_runtime_context",
+        "n0te_parallel_construction",
+        "n0te_daw_integration",
+        "n0te_music_intelligence",
+        "n0te_collaboration",
+        "n0te_release_rights",
+        "n0te_desktop_runtime",
+    }.issubset(n0te_fronts)
+
     cursor = json.loads(Path("governance/current_execution_cursor.json").read_text(encoding="utf-8"))
-    assert cursor["job_id"] == "SERVICE-ACQUISITION-001"
-    assert cursor["active_object"] == "service_acquisition"
+    assert cursor["job_id"] == "N0TE-CONSTRUCTION-001"
+    assert cursor["active_object"] == "n0te"
