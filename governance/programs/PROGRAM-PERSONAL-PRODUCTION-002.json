@@ -2,7 +2,7 @@
   "schema_version": 1,
   "program_id": "PROGRAM-PERSONAL-PRODUCTION-002",
   "state": "ACTIVE",
-  "authority_source": "User selected AFTER CLOSEOUT, CONTINUE PRODUCT option 3 on 2026-09-08, then explicitly directed on 2026-09-09 to alter the durable product truth and build the optimal Artist/Song companion design. Canonical work therefore resumes the interrupted REQ-SCOPE-079/090 Produce reachability package and admits the path-disjoint REQ-SCOPE-068/077 Guided-fallback resolver correction exposed by the verified host-adaptive product design. This remains bounded Personal Production construction and grants no external provider mutation authority.",
+  "authority_source": "User selected AFTER CLOSEOUT, CONTINUE PRODUCT option 3 on 2026-09-08, then explicitly directed on 2026-09-09 to alter the durable product truth and build the optimal Artist/Song companion design. Canonical work therefore resumes the interrupted REQ-SCOPE-079/090 Produce reachability package and admits the path-disjoint REQ-SCOPE-068/077 Guided-fallback resolver correction exposed by the verified host-adaptive product design. This remains bounded Personal Production construction and grants no external provider mutation authority. The 2026-09-09 resulting-main Produce closeout exposed two transition-frozen governance assertions; their bounded regression repair is attached to the remaining Guided sibling so the already-earned Produce evidence can be reconciled without reopening product work or weakening validation.",
   "allowed_paths": [
     "n0te/musical_plan.py",
     "tests/daw/test_musical_plan.py",
@@ -13,7 +13,9 @@
     "n0te/memory.py",
     "tests/acceptance/test_req_scope_079_090_produce_reachability.py",
     "n0te/capabilities.py",
-    "tests/core/test_guided_fallback_policy.py"
+    "tests/core/test_guided_fallback_policy.py",
+    "tests/governance/test_fast_pipeline_activation.py",
+    "tests/governance/test_first_real_construction_program.py"
   ],
   "allowed_requirement_ids": [
     "REQ-SCOPE-068",
@@ -74,7 +76,7 @@
     {
       "work_id": "WP-079-090-PRODUCE-REACHABILITY",
       "parent_program_id": "PROGRAM-PERSONAL-PRODUCTION-002",
-      "state": "ACTIVE",
+      "state": "COMPLETE",
       "paths": [
         "n0te/consumer_shell.py",
         "n0te/produce_shell.py",
@@ -87,14 +89,22 @@
       "mechanical_closeout_allowlist": ["IMPLEMENTED", "INTEGRATED", "REACHABLE", "VERIFIED", "AUTHORITY_SAFE"],
       "evidence": {
         "MAPPED": {"state": "PROVEN", "evidence_refs": ["N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-079", "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-090"]},
-        "IMPLEMENTED": {"state": "UNPROVEN", "evidence_refs": []},
-        "INTEGRATED": {"state": "UNPROVEN", "evidence_refs": []},
-        "REACHABLE": {"state": "UNPROVEN", "evidence_refs": []},
-        "VERIFIED": {"state": "UNPROVEN", "evidence_refs": []},
+        "IMPLEMENTED": {"state": "PROVEN", "evidence_refs": ["governance/evidence/REQ-SCOPE-079-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json", "governance/evidence/REQ-SCOPE-090-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json"]},
+        "INTEGRATED": {"state": "PROVEN", "evidence_refs": ["governance/evidence/REQ-SCOPE-079-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json", "governance/evidence/REQ-SCOPE-090-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json"]},
+        "REACHABLE": {"state": "PROVEN", "evidence_refs": ["governance/evidence/REQ-SCOPE-079-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json", "governance/evidence/REQ-SCOPE-090-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json"]},
+        "VERIFIED": {"state": "PROVEN", "evidence_refs": ["governance/evidence/REQ-SCOPE-079-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json", "governance/evidence/REQ-SCOPE-090-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json"]},
         "RECOVERABLE": {"state": "UNPROVEN", "evidence_refs": []},
-        "AUTHORITY_SAFE": {"state": "UNPROVEN", "evidence_refs": []},
+        "AUTHORITY_SAFE": {"state": "PROVEN", "evidence_refs": ["governance/evidence/REQ-SCOPE-079-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json", "governance/evidence/REQ-SCOPE-090-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json"]},
         "CONSUMER_ACCEPTED": {"state": "UNPROVEN", "evidence_refs": []},
         "VALUE_EVIDENCED": {"state": "UNPROVEN", "evidence_refs": []}
+      },
+      "mechanical_closeout": {
+        "resulting_main_execution_commit": "90cc239b31b82d83882bf1d34e89347b924d05f0",
+        "resulting_main_execution_ci_run": 34395868164,
+        "evidence_receipts": [
+          "governance/evidence/REQ-SCOPE-079-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json",
+          "governance/evidence/REQ-SCOPE-090-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json"
+        ]
       }
     },
     {
@@ -103,7 +113,9 @@
       "state": "ACTIVE",
       "paths": [
         "n0te/capabilities.py",
-        "tests/core/test_guided_fallback_policy.py"
+        "tests/core/test_guided_fallback_policy.py",
+        "tests/governance/test_fast_pipeline_activation.py",
+        "tests/governance/test_first_real_construction_program.py"
       ],
       "requirement_ids": ["REQ-SCOPE-068", "REQ-SCOPE-077"],
       "authority_class": "REVERSIBLE_WRITE",
