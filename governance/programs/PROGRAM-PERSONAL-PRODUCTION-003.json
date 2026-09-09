@@ -2,16 +2,20 @@
   "schema_version": 1,
   "program_id": "PROGRAM-PERSONAL-PRODUCTION-003",
   "state": "ACTIVE",
-  "authority_source": "User issued CONTINUE on 2026-09-09 after PROGRAM-PERSONAL-PRODUCTION-002 closed. Current Personal Production acceptance still requires a provider/model-agnostic callable LLM substrate with truthful AI-OFF behavior. N0TE_PRODUCT_DB marks REQ-SCOPE-171 as REQUIRED BASE CHASSIS and a Gate-B blocker; live repository inspection found adjacent egress, relevance, tool, authority, context and transaction primitives but no callable model runtime or credential-profile layer. This program builds only that bounded substrate foundation. It does not claim or purchase a real cloud provider route.",
+  "authority_source": "User issued CONTINUE on 2026-09-09 after PROGRAM-PERSONAL-PRODUCTION-002 closed. Current Personal Production acceptance still requires a provider/model-agnostic callable LLM substrate with truthful AI-OFF behavior. N0TE_PRODUCT_DB marks REQ-SCOPE-171 as REQUIRED BASE CHASSIS and a Gate-B blocker; live repository inspection found adjacent egress, relevance, tool, authority, context and transaction primitives but no callable model runtime or credential-profile layer. Exact-head CI for the first REQ-SCOPE-171 implementation then proved a construction-pipeline transition defect: governance/ci_plan.py refused any base revision with no active construction program, making the first legitimate program activation after terminal closeout impossible. This program therefore also admits the bounded REQ-SCOPE-172 repair exposed by that execution failure. It grants no provider mutation authority and does not claim or purchase a real cloud provider route.",
   "allowed_paths": [
     "n0te/llm.py",
-    "tests/core/test_llm_substrate.py"
+    "tests/core/test_llm_substrate.py",
+    "governance/ci_plan.py",
+    "tests/governance/test_ci_plan.py"
   ],
   "allowed_requirement_ids": [
-    "REQ-SCOPE-171"
+    "REQ-SCOPE-171",
+    "REQ-SCOPE-172"
   ],
   "allowed_authority_classes": [
-    "ADVISE"
+    "ADVISE",
+    "GOVERNANCE"
   ],
   "work_packages": [
     {
@@ -38,6 +42,42 @@
           "state": "PROVEN",
           "evidence_refs": [
             "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-171"
+          ]
+        },
+        "IMPLEMENTED": {"state": "UNPROVEN", "evidence_refs": []},
+        "INTEGRATED": {"state": "UNPROVEN", "evidence_refs": []},
+        "REACHABLE": {"state": "UNPROVEN", "evidence_refs": []},
+        "VERIFIED": {"state": "UNPROVEN", "evidence_refs": []},
+        "RECOVERABLE": {"state": "UNPROVEN", "evidence_refs": []},
+        "AUTHORITY_SAFE": {"state": "UNPROVEN", "evidence_refs": []},
+        "CONSUMER_ACCEPTED": {"state": "UNPROVEN", "evidence_refs": []},
+        "VALUE_EVIDENCED": {"state": "UNPROVEN", "evidence_refs": []}
+      }
+    },
+    {
+      "work_id": "WP-172-NEXT-PROGRAM-ACTIVATION",
+      "parent_program_id": "PROGRAM-PERSONAL-PRODUCTION-003",
+      "state": "ACTIVE",
+      "paths": [
+        "governance/ci_plan.py",
+        "tests/governance/test_ci_plan.py"
+      ],
+      "requirement_ids": [
+        "REQ-SCOPE-172"
+      ],
+      "authority_class": "GOVERNANCE",
+      "dependencies": [],
+      "mechanical_closeout_allowlist": [
+        "IMPLEMENTED",
+        "INTEGRATED",
+        "VERIFIED",
+        "AUTHORITY_SAFE"
+      ],
+      "evidence": {
+        "MAPPED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-172"
           ]
         },
         "IMPLEMENTED": {"state": "UNPROVEN", "evidence_refs": []},
