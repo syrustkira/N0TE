@@ -76,6 +76,25 @@ def _state(program_ref, evidence_ref="governance/evidence/REQ-SCOPE-172.json"):
     }
 
 
+def _terminal_state(
+    program_ref,
+    *,
+    program_id="PROGRAM-A",
+    evidence_ref="governance/evidence/REQ-SCOPE-172-terminal.json",
+    completion_ref="governance/evidence/PROGRAM-A-completion.json",
+):
+    return {
+        "current_requirement_evidence": {
+            "REQ-SCOPE-172": evidence_ref,
+        },
+        "last_completed_construction_program": {
+            "program_id": program_id,
+            "program_path": program_ref,
+            "completion_receipt": completion_ref,
+        },
+    }
+
+
 def _program(program_id, active_paths=(), complete_paths=()):
     packages = []
     if active_paths:
@@ -96,8 +115,20 @@ def _program(program_id, active_paths=(), complete_paths=()):
         )
     return {
         "program_id": program_id,
+        "state": "ACTIVE" if active_paths else "COMPLETE",
         "work_packages": packages,
     }
+
+
+def _completed_program(
+    program_id,
+    paths,
+    *,
+    completion_ref="governance/evidence/PROGRAM-A-completion.json",
+):
+    program = _program(program_id, complete_paths=paths)
+    program["completion_receipt"] = completion_ref
+    return program
 
 
 def test_change_scope_rejects_substantive_path_outside_active_package():
@@ -226,4 +257,103 @@ def test_program_transition_authorizes_only_new_active_program_substantive_paths
             head_program=head_program,
             actor="syrustkira",
             repository_owner="syrustkira",
+        )
+
+
+def test_terminal_completion_accepts_exact_closeout_control_plane_for_owner():
+    ref = "governance/programs/PROGRAM-A.json"
+    base_state = _state(ref)
+    head_state = _terminal_state(ref)
+    base_program = _program("PROGRAM-A", active_paths=("n0te/final.py",))
+    head_program = _completed_program("PROGRAM-A", ("n0te/final.py",))
+
+    authorized = validate_change_scope(
+        [
+            "governance/current_state.json",
+            ref,
+            "governance/evidence/REQ-SCOPE-172-terminal.json",
+            "governance/evidence/PROGRAM-A-completion.json",
+        ],
+        base_state=base_state,
+        base_program=base_program,
+        head_state=head_state,
+        head_program=head_program,
+        actor="syrustkira",
+        repository_owner="syrustkira",
+        event_name="pull_request",
+    )
+    assert authorized == ("n0te/final.py",)
+
+
+def test_terminal_completion_accepts_mechanical_closeout_bot_only_on_push():
+    ref = "governance/programs/PROGRAM-A.json"
+    base_state = _state(ref)
+    head_state = _terminal_state(ref)
+    base_program = _program("PROGRAM-A", active_paths=("n0te/final.py",))
+    head_program = _completed_program("PROGRAM-A", ("n0te/final.py",))
+    paths = [
+        "governance/current_state.json",
+        ref,
+        "governance/evidence/REQ-SCOPE-172-terminal.json",
+        "governance/evidence/PROGRAM-A-completion.json",
+    ]
+
+    validate_change_scope(
+        paths,
+        base_state=base_state,
+        base_program=base_program,
+        head_state=head_state,
+        head_program=head_program,
+        actor="github-actions[bot]",
+        repository_owner="syrustkira",
+        event_name="push",
+    )
+
+    with pytest.raises(
+        ChangeScopeError,
+        match="mechanical-closeout authority",
+    ):
+        validate_change_scope(
+            paths,
+            base_state=base_state,
+            base_program=base_program,
+            head_state=head_state,
+            head_program=head_program,
+            actor="github-actions[bot]",
+            repository_owner="syrustkira",
+            event_name="pull_request",
+        )
+
+
+def test_terminal_completion_rejects_incomplete_or_mismatched_program_state():
+    ref = "governance/programs/PROGRAM-A.json"
+    base_state = _state(ref)
+    head_state = _terminal_state(ref)
+    base_program = _program("PROGRAM-A", active_paths=("n0te/final.py",))
+
+    incomplete = _program("PROGRAM-A", active_paths=("n0te/final.py",))
+    incomplete["completion_receipt"] = "governance/evidence/PROGRAM-A-completion.json"
+    with pytest.raises(ChangeScopeError, match="COMPLETE program state"):
+        validate_change_scope(
+            ["governance/current_state.json", ref],
+            base_state=base_state,
+            base_program=base_program,
+            head_state=head_state,
+            head_program=incomplete,
+            actor="syrustkira",
+            repository_owner="syrustkira",
+            event_name="pull_request",
+        )
+
+    mismatch = _completed_program("PROGRAM-B", ("n0te/final.py",))
+    with pytest.raises(ChangeScopeError, match="program id mismatch"):
+        validate_change_scope(
+            ["governance/current_state.json", ref],
+            base_state=base_state,
+            base_program=base_program,
+            head_state=head_state,
+            head_program=mismatch,
+            actor="syrustkira",
+            repository_owner="syrustkira",
+            event_name="pull_request",
         )
