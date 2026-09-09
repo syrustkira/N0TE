@@ -148,7 +148,50 @@ def test_same_program_closeout_accepts_path_active_in_base_even_if_complete_in_h
     assert authorized == ("n0te/fix.py",)
 
 
-def test_program_transition_authorizes_only_new_active_program_substantive_paths():
+def test_program_transition_requires_repository_owner_identity():
+    base_ref = "governance/programs/PROGRAM-OLD.json"
+    head_ref = "governance/programs/PROGRAM-NEW.json"
+    base_state = _state(base_ref)
+    head_state = _state(head_ref)
+    base_program = _program("PROGRAM-OLD", active_paths=("n0te/old.py",))
+    head_program = _program("PROGRAM-NEW", active_paths=("governance/ci_plan.py",))
+
+    with pytest.raises(
+        ChangeScopeError,
+        match="repository-owner identity evidence",
+    ):
+        validate_change_scope(
+            [
+                "governance/current_state.json",
+                head_ref,
+                "governance/ci_plan.py",
+            ],
+            base_state=base_state,
+            base_program=base_program,
+            head_state=head_state,
+            head_program=head_program,
+        )
+
+    with pytest.raises(
+        ChangeScopeError,
+        match="repository-owner authority",
+    ):
+        validate_change_scope(
+            [
+                "governance/current_state.json",
+                head_ref,
+                "governance/ci_plan.py",
+            ],
+            base_state=base_state,
+            base_program=base_program,
+            head_state=head_state,
+            head_program=head_program,
+            actor="automation-bot",
+            repository_owner="syrustkira",
+        )
+
+
+def test_program_transition_authorizes_only_new_active_program_substantive_paths_for_owner():
     base_ref = "governance/programs/PROGRAM-OLD.json"
     head_ref = "governance/programs/PROGRAM-NEW.json"
     base_state = _state(base_ref)
@@ -166,6 +209,8 @@ def test_program_transition_authorizes_only_new_active_program_substantive_paths
         base_program=base_program,
         head_state=head_state,
         head_program=head_program,
+        actor="SyRusTKira",
+        repository_owner="syrustkira",
     )
 
     with pytest.raises(ChangeScopeError, match="n0te/old.py"):
@@ -179,4 +224,6 @@ def test_program_transition_authorizes_only_new_active_program_substantive_paths
             base_program=base_program,
             head_state=head_state,
             head_program=head_program,
+            actor="syrustkira",
+            repository_owner="syrustkira",
         )
