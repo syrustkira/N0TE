@@ -326,8 +326,8 @@ class FileTrustedContextProvider:
     The MCP/model-facing surface deliberately has no method that creates or edits
     these snapshots. If the canonical sync has not produced one, permit issuance
     fails closed instead of asking the model to invent its own context authority.
-    The store must also name exactly one current snapshot so callers cannot revive
-    superseded approvals or authority profiles by selecting an older snapshot ID.
+    Multi-snapshot stores must also name exactly one current snapshot so callers
+    cannot revive superseded approvals or authority profiles with an older ID.
     """
 
     def __init__(self, path: str | Path):
@@ -350,10 +350,28 @@ class FileTrustedContextProvider:
             raise TrustedContextError(
                 "trusted context snapshot store must contain snapshots list"
             )
-        current_snapshot_id = _text(
-            raw.get("current_snapshot_id"),
-            "current_snapshot_id",
-        )
+
+        raw_current_snapshot_id = raw.get("current_snapshot_id")
+        if raw_current_snapshot_id is None:
+            if len(snapshots) != 1:
+                raise TrustedContextError(
+                    "multi-snapshot trusted context store requires current_snapshot_id"
+                )
+            only = snapshots[0]
+            if not isinstance(only, dict):
+                raise TrustedContextError(
+                    "trusted context snapshot store contains invalid snapshot"
+                )
+            current_snapshot_id = _text(
+                only.get("snapshot_id"),
+                "snapshots[0].snapshot_id",
+            )
+        else:
+            current_snapshot_id = _text(
+                raw_current_snapshot_id,
+                "current_snapshot_id",
+            )
+
         if snapshot_id != current_snapshot_id:
             raise TrustedContextError(
                 f"trusted context snapshot is not current: {snapshot_id}"
