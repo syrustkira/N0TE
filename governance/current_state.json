@@ -57,11 +57,11 @@
     }
   },
   "last_completed_construction_program": {
-    "program_id": "PROGRAM-PERSONAL-PRODUCTION-002",
-    "program_path": "governance/programs/PROGRAM-PERSONAL-PRODUCTION-002.json",
-    "completion_receipt": "governance/evidence/PROGRAM-PERSONAL-PRODUCTION-002-completion-c826994314ac.json",
-    "resulting_main_execution_commit": "c826994314acd3341438217ae9b3a89ac7aa265d",
-    "resulting_main_execution_ci_run": 34396732114
+    "program_id": "PROGRAM-PERSONAL-PRODUCTION-003",
+    "program_path": "governance/programs/PROGRAM-PERSONAL-PRODUCTION-003.json",
+    "completion_receipt": "governance/evidence/PROGRAM-PERSONAL-PRODUCTION-003-completion-ffebb9d4ff69.json",
+    "resulting_main_execution_commit": "ffebb9d4ff6994c4e93b1de93e630686808c8940",
+    "resulting_main_execution_ci_run": 34400368396
   },
   "current_requirement_evidence": {
     "REQ-SCOPE-003": "governance/evidence/REQ-SCOPE-003-headquarters-reachability-2026-09-08.json",
@@ -70,9 +70,9 @@
     "REQ-SCOPE-090": "governance/evidence/REQ-SCOPE-090-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json",
     "REQ-SCOPE-172": "governance/evidence/REQ-SCOPE-172-WP-172-NEXT-PROGRAM-ACTIVATION-ac21858d0416.json",
     "REQ-SCOPE-068": "governance/evidence/REQ-SCOPE-068-WP-068-077-GUIDED-FALLBACK-c826994314ac.json",
-    "REQ-SCOPE-077": "governance/evidence/REQ-SCOPE-077-WP-068-077-GUIDED-FALLBACK-c826994314ac.json"
+    "REQ-SCOPE-077": "governance/evidence/REQ-SCOPE-077-WP-068-077-GUIDED-FALLBACK-c826994314ac.json",
+    "REQ-SCOPE-171": "governance/evidence/REQ-SCOPE-171-WP-171-MODEL-RUNTIME-FOUNDATION-ffebb9d4ff69.json"
   },
-  "active_construction_program": "governance/programs/PROGRAM-PERSONAL-PRODUCTION-003.json",
   "work_selection_rule": "Resume durable unfinished construction programs or work packages first unless explicit current human direction validly reprioritizes portfolio work and that direction is reconciled into a bounded current construction program. For an active construction program, validate the parent and expose every dependency-valid, authority-bounded, path-disjoint sibling package not blocked by evidenced blast radius. Otherwise select from current canonical scope and current evidence only.",
   "normal_reconstruction": "Begin from the clean N0TE START HERE, current semantic owners, current repository state, and requirement-level evidence."
 }

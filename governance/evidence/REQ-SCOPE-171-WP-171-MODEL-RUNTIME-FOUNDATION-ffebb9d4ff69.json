@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "kind": "REQUIREMENT_EVIDENCE_RECEIPT",
+  "requirement_id": "REQ-SCOPE-171",
+  "semantic_owner": "N0TE_PRODUCT_DB/SCOPE_LEDGER",
+  "observed_at": "2026-09-09T20:21:46Z",
+  "claims": {
+    "MAPPED": {
+      "state": "UNPROVEN",
+      "evidence_refs": []
+    },
+    "IMPLEMENTED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/llm.py",
+        "n0te/cloudflare_workers_ai.py",
+        "main:ffebb9d4ff6994c4e93b1de93e630686808c8940",
+        "ci-run:34400368396"
+      ]
+    },
+    "INTEGRATED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/llm.py",
+        "n0te/cloudflare_workers_ai.py",
+        "tests/core/test_llm_substrate.py",
+        "tests/core/test_cloudflare_workers_ai.py",
+        "main:ffebb9d4ff6994c4e93b1de93e630686808c8940",
+        "ci-run:34400368396"
+      ]
+    },
+    "REACHABLE": {
+      "state": "UNPROVEN",
+      "evidence_refs": []
+    },
+    "VERIFIED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "tests/core/test_llm_substrate.py",
+        "tests/core/test_cloudflare_workers_ai.py",
+        "main:ffebb9d4ff6994c4e93b1de93e630686808c8940",
+        "ci-run:34400368396"
+      ]
+    },
+    "RECOVERABLE": {
+      "state": "UNPROVEN",
+      "evidence_refs": []
+    },
+    "AUTHORITY_SAFE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/llm.py",
+        "n0te/cloudflare_workers_ai.py",
+        "tests/core/test_cloudflare_workers_ai.py",
+        "main:ffebb9d4ff6994c4e93b1de93e630686808c8940",
+        "ci-run:34400368396"
+      ]
+    },
+    "CONSUMER_ACCEPTED": {
+      "state": "UNPROVEN",
+      "evidence_refs": []
+    },
+    "VALUE_EVIDENCED": {
+      "state": "UNPROVEN",
+      "evidence_refs": []
+    }
+  },
+  "mechanical_closeout": {
+    "program_id": "PROGRAM-PERSONAL-PRODUCTION-003",
+    "work_id": "WP-171-MODEL-RUNTIME-FOUNDATION",
+    "resulting_main_execution_commit": "ffebb9d4ff6994c4e93b1de93e630686808c8940",
+    "resulting_main_execution_ci_run": 34400368396,
+    "automatic_consumer_acceptance": false,
+    "automatic_value_evidence": false
+  },
+  "anti_collapse_rule": "Mechanical closeout may promote only dimensions pre-authorized by the work package. CONSUMER_ACCEPTED and VALUE_EVIDENCED are never automated."
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "program_id": "PROGRAM-PERSONAL-PRODUCTION-003",
-  "state": "ACTIVE",
+  "state": "COMPLETE",
   "authority_source": "User issued CONTINUE on 2026-09-09 after PROGRAM-PERSONAL-PRODUCTION-002 closed. Current Personal Production acceptance still requires a provider/model-agnostic callable LLM substrate with truthful AI-OFF behavior. N0TE_PRODUCT_DB marks REQ-SCOPE-171 as REQUIRED BASE CHASSIS and a Gate-B blocker; live repository inspection found adjacent egress, relevance, tool, authority, context and transaction primitives but no callable model runtime or credential-profile layer. Exact-head CI for the first REQ-SCOPE-171 implementation then proved a construction-pipeline transition defect: governance/ci_plan.py refused any base revision with no active construction program, making the first legitimate program activation after terminal closeout impossible. That bounded REQ-SCOPE-172 defect is now mechanically closed. Current REQ-SCOPE-171 work extends the same active foundation package with a concrete Cloudflare Workers AI REST adapter because current provider evidence confirms Workers AI exposes an OpenAI-compatible cloud inference endpoint on the Free plan. This program grants no provider mutation authority and does not claim that a live credential/account proof has occurred yet.",
   "allowed_paths": [
     "n0te/llm.py",
@@ -23,7 +23,7 @@
     {
       "work_id": "WP-171-MODEL-RUNTIME-FOUNDATION",
       "parent_program_id": "PROGRAM-PERSONAL-PRODUCTION-003",
-      "state": "ACTIVE",
+      "state": "COMPLETE",
       "paths": [
         "n0te/llm.py",
         "n0te/cloudflare_workers_ai.py",
@@ -49,28 +49,36 @@
           ]
         },
         "IMPLEMENTED": {
-          "state": "UNPROVEN",
-          "evidence_refs": []
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-171-WP-171-MODEL-RUNTIME-FOUNDATION-ffebb9d4ff69.json"
+          ]
         },
         "INTEGRATED": {
-          "state": "UNPROVEN",
-          "evidence_refs": []
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-171-WP-171-MODEL-RUNTIME-FOUNDATION-ffebb9d4ff69.json"
+          ]
         },
         "REACHABLE": {
           "state": "UNPROVEN",
           "evidence_refs": []
         },
         "VERIFIED": {
-          "state": "UNPROVEN",
-          "evidence_refs": []
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-171-WP-171-MODEL-RUNTIME-FOUNDATION-ffebb9d4ff69.json"
+          ]
         },
         "RECOVERABLE": {
           "state": "UNPROVEN",
           "evidence_refs": []
         },
         "AUTHORITY_SAFE": {
-          "state": "UNPROVEN",
-          "evidence_refs": []
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-171-WP-171-MODEL-RUNTIME-FOUNDATION-ffebb9d4ff69.json"
+          ]
         },
         "CONSUMER_ACCEPTED": {
           "state": "UNPROVEN",
@@ -80,6 +88,13 @@
           "state": "UNPROVEN",
           "evidence_refs": []
         }
+      },
+      "mechanical_closeout": {
+        "resulting_main_execution_commit": "ffebb9d4ff6994c4e93b1de93e630686808c8940",
+        "resulting_main_execution_ci_run": 34400368396,
+        "evidence_receipts": [
+          "governance/evidence/REQ-SCOPE-171-WP-171-MODEL-RUNTIME-FOUNDATION-ffebb9d4ff69.json"
+        ]
       }
     },
     {
@@ -157,5 +172,6 @@
         ]
       }
     }
-  ]
+  ],
+  "completion_receipt": "governance/evidence/PROGRAM-PERSONAL-PRODUCTION-003-completion-ffebb9d4ff69.json"
 }
