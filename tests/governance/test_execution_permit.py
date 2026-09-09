@@ -46,8 +46,15 @@ def envelope():
             "business",
         ],
         "dependencies": {
-            "upstream": ["full-entry-service-funnel", "typed-inquiry-routing"],
-            "downstream": ["qualified-inquiry", "quote", "paid-start"],
+            "upstream": [
+                "full-entry-service-funnel",
+                "typed-inquiry-routing",
+            ],
+            "downstream": [
+                "qualified-inquiry",
+                "quote",
+                "paid-start",
+            ],
         },
         "truth_owners": {
             "WHY": "TELLMEN0TE MASTER CONTEXT",
@@ -100,13 +107,22 @@ def envelope():
         },
         "acceptance": {
             "outcome_class": "EXTERNAL_STATE",
-            "observable_condition": "A bounded acquisition action is actually published/sent through an authorized channel and fresh readback confirms it reached the intended surface.",
-            "evidence_required": ["provider-receipt", "fresh-readback"],
+            "observable_condition": (
+                "A bounded acquisition action is actually published/sent through "
+                "an authorized channel and fresh readback confirms it reached the "
+                "intended surface."
+            ),
+            "evidence_required": [
+                "provider-receipt",
+                "fresh-readback",
+            ],
             "artifact_is_not_completion": True,
         },
         "next_causal_dependency": {
             "state": "KNOWN",
-            "description": "Measure qualified response through inquiry to paid start.",
+            "description": (
+                "Measure qualified response through inquiry to paid start."
+            ),
             "source_ref": "TELLMEN0TE_OS:REVENUE_PIPELINE",
         },
     }
@@ -126,8 +142,17 @@ def snapshot_raw():
                 "required_functions": env["required_functions"],
                 "required_dependencies": env["dependencies"],
                 "allowed_outcome_classes": ["EXTERNAL_STATE"],
+                "authority_by_action_class": {
+                    "REVERSIBLE": {
+                        "requires_human": False,
+                        "source_refs": [
+                            "coordinator:bounded-reversible-authority"
+                        ],
+                    }
+                },
             }
         },
+        "approvals": [],
     }
 
 
@@ -147,7 +172,11 @@ def action():
 
 
 def authority(tmp_path, now=None):
-    now_fn = (lambda: now[0]) if now is not None else __import__("time").time
+    now_fn = (
+        (lambda: now[0])
+        if now is not None
+        else __import__("time").time
+    )
     return ExecutionPermitAuthority(
         secret=b"0123456789abcdef0123456789abcdef",
         ledger=SQLitePermitLedger(tmp_path / "permits.sqlite3"),
@@ -157,7 +186,9 @@ def authority(tmp_path, now=None):
 
 def context_file(tmp_path):
     path = tmp_path / "trusted-context.json"
-    path.write_text(json.dumps({"snapshots": [snapshot_raw()]}))
+    path.write_text(
+        json.dumps({"snapshots": [snapshot_raw()]})
+    )
     return path
 
 
@@ -165,27 +196,97 @@ def test_trusted_context_rejects_model_scope_omission():
     env = envelope()
     env["retained_scope_refs"].remove("licensing")
     with pytest.raises(TrustedContextError, match="retained scope"):
-        crosscheck_execution_envelope(env, validate_trusted_context_snapshot(snapshot_raw()))
+        crosscheck_execution_envelope(
+            env,
+            validate_trusted_context_snapshot(snapshot_raw()),
+        )
 
 
 def test_trusted_context_rejects_missing_canonical_function_even_when_envelope_is_internally_valid():
     env = envelope()
     env["required_functions"].remove("sales")
     env["invoked_functions"].remove("sales")
-    with pytest.raises(TrustedContextError, match="canonically required functions"):
-        crosscheck_execution_envelope(env, validate_trusted_context_snapshot(snapshot_raw()))
+    with pytest.raises(
+        TrustedContextError,
+        match="canonically required functions",
+    ):
+        crosscheck_execution_envelope(
+            env,
+            validate_trusted_context_snapshot(snapshot_raw()),
+        )
 
 
-def test_one_time_permit_is_bound_to_context_and_action_and_cannot_replay(tmp_path):
+def test_trusted_context_rejects_authority_source_forgery():
+    env = envelope()
+    env["authority"]["source_ref"] = "caller:self-authorized"
+    with pytest.raises(
+        TrustedContextError,
+        match="authority source is not trusted",
+    ):
+        crosscheck_execution_envelope(
+            env,
+            validate_trusted_context_snapshot(snapshot_raw()),
+        )
+
+
+def test_trusted_context_rejects_human_requirement_underclaim():
+    env = envelope()
+    raw = snapshot_raw()
+    raw["policies"]["professional-music-acquisition"][
+        "authority_by_action_class"
+    ]["REVERSIBLE"]["requires_human"] = True
+    with pytest.raises(
+        TrustedContextError,
+        match="human approval requirement mismatch",
+    ):
+        crosscheck_execution_envelope(
+            env,
+            validate_trusted_context_snapshot(raw),
+        )
+
+
+def test_trusted_context_requires_explicit_stateful_authority_profile():
+    raw = snapshot_raw()
+    del raw["policies"]["professional-music-acquisition"][
+        "authority_by_action_class"
+    ]
+    with pytest.raises(
+        TrustedContextError,
+        match="authority_by_action_class",
+    ):
+        validate_trusted_context_snapshot(raw)
+
+
+def test_one_time_permit_is_bound_to_context_and_action_and_cannot_replay(
+    tmp_path,
+):
     permits = authority(tmp_path)
     env = envelope()
     snap = validate_trusted_context_snapshot(snapshot_raw())
     act = action()
-    issued = permits.issue(envelope=env, action=act, snapshot=snap, ttl_seconds=300)
-    consumed = permits.consume(token=issued.token, envelope=env, action=act, snapshot=snap)
+    issued = permits.issue(
+        envelope=env,
+        action=act,
+        snapshot=snap,
+        ttl_seconds=300,
+    )
+    consumed = permits.consume(
+        token=issued.token,
+        envelope=env,
+        action=act,
+        snapshot=snap,
+    )
     assert consumed.permit_id == issued.permit_id
-    with pytest.raises(ExecutionPermitError, match="already been consumed"):
-        permits.consume(token=issued.token, envelope=env, action=act, snapshot=snap)
+    with pytest.raises(
+        ExecutionPermitError,
+        match="already been consumed",
+    ):
+        permits.consume(
+            token=issued.token,
+            envelope=env,
+            action=act,
+            snapshot=snap,
+        )
 
 
 def test_permit_rejects_action_changed_after_issuance(tmp_path):
@@ -193,10 +294,27 @@ def test_permit_rejects_action_changed_after_issuance(tmp_path):
     env = envelope()
     snap = validate_trusted_context_snapshot(snapshot_raw())
     act = action()
-    issued = permits.issue(envelope=env, action=act, snapshot=snap)
-    changed = ActionIntent(**{**act.material_fields(), "payload_fingerprint": "sha256:creative-v2"})
-    with pytest.raises(ExecutionPermitError, match="action_intent_fingerprint"):
-        permits.consume(token=issued.token, envelope=env, action=changed, snapshot=snap)
+    issued = permits.issue(
+        envelope=env,
+        action=act,
+        snapshot=snap,
+    )
+    changed = ActionIntent(
+        **{
+            **act.material_fields(),
+            "payload_fingerprint": "sha256:creative-v2",
+        }
+    )
+    with pytest.raises(
+        ExecutionPermitError,
+        match="action_intent_fingerprint",
+    ):
+        permits.consume(
+            token=issued.token,
+            envelope=env,
+            action=changed,
+            snapshot=snap,
+        )
 
 
 def test_permit_rejects_envelope_changed_after_issuance(tmp_path):
@@ -204,10 +322,24 @@ def test_permit_rejects_envelope_changed_after_issuance(tmp_path):
     env = envelope()
     snap = validate_trusted_context_snapshot(snapshot_raw())
     act = action()
-    issued = permits.issue(envelope=env, action=act, snapshot=snap)
-    env["acceptance"]["observable_condition"] = "Different completion condition"
-    with pytest.raises(ExecutionPermitError, match="envelope_fingerprint"):
-        permits.consume(token=issued.token, envelope=env, action=act, snapshot=snap)
+    issued = permits.issue(
+        envelope=env,
+        action=act,
+        snapshot=snap,
+    )
+    env["acceptance"][
+        "observable_condition"
+    ] = "Different completion condition"
+    with pytest.raises(
+        ExecutionPermitError,
+        match="envelope_fingerprint",
+    ):
+        permits.consume(
+            token=issued.token,
+            envelope=env,
+            action=act,
+            snapshot=snap,
+        )
 
 
 def test_permit_expires_fail_closed(tmp_path):
@@ -216,51 +348,152 @@ def test_permit_expires_fail_closed(tmp_path):
     env = envelope()
     snap = validate_trusted_context_snapshot(snapshot_raw())
     act = action()
-    issued = permits.issue(envelope=env, action=act, snapshot=snap, ttl_seconds=1)
+    issued = permits.issue(
+        envelope=env,
+        action=act,
+        snapshot=snap,
+        ttl_seconds=1,
+    )
     clock[0] = 1002
-    with pytest.raises(ExecutionPermitError, match="expired"):
-        permits.consume(token=issued.token, envelope=env, action=act, snapshot=snap)
+    with pytest.raises(
+        ExecutionPermitError,
+        match="expired",
+    ):
+        permits.consume(
+            token=issued.token,
+            envelope=env,
+            action=act,
+            snapshot=snap,
+        )
 
 
-def test_human_required_action_needs_exact_action_approval(tmp_path):
+def _irreversible_case(*, trust_approval):
     env = envelope()
     env["authority"].update(
         action_class="IRREVERSIBLE",
         requires_human=True,
         source_ref="artist:explicit-approval-required",
     )
-    act = ActionIntent(**{**action().material_fields(), "action_class": "IRREVERSIBLE"})
+    act = ActionIntent(
+        **{
+            **action().material_fields(),
+            "action_class": "IRREVERSIBLE",
+        }
+    )
+    approval = AuthorityService.bind_approval(
+        act,
+        "artist:approval:001",
+    )
+    raw = snapshot_raw()
+    raw["policies"]["professional-music-acquisition"][
+        "authority_by_action_class"
+    ] = {
+        "IRREVERSIBLE": {
+            "requires_human": True,
+            "source_refs": [
+                "artist:explicit-approval-required"
+            ],
+        }
+    }
+    if trust_approval:
+        raw["approvals"].append(
+            {
+                "approval_id": approval.approval_id,
+                "intent_fingerprint": approval.intent_fingerprint,
+                "source_ref": approval.source_ref,
+            }
+        )
+    return env, act, approval, validate_trusted_context_snapshot(raw)
+
+
+def test_human_required_action_needs_exact_trusted_action_approval(
+    tmp_path,
+):
+    env, act, approval, snap = _irreversible_case(
+        trust_approval=True
+    )
     permits = authority(tmp_path)
-    snap = validate_trusted_context_snapshot(snapshot_raw())
-    with pytest.raises(ExecutionPermitError, match="lacks exact approval"):
-        permits.issue(envelope=env, action=act, snapshot=snap)
-    approval = AuthorityService.bind_approval(act, "artist:approval:001")
-    issued = permits.issue(envelope=env, action=act, snapshot=snap, approval=approval)
+    with pytest.raises(
+        ExecutionPermitError,
+        match="lacks exact approval",
+    ):
+        permits.issue(
+            envelope=env,
+            action=act,
+            snapshot=snap,
+        )
+    issued = permits.issue(
+        envelope=env,
+        action=act,
+        snapshot=snap,
+        approval=approval,
+    )
     assert issued.action_intent_fingerprint == act.intent_fingerprint
 
 
+def test_caller_constructed_human_approval_not_in_trusted_snapshot_is_rejected(
+    tmp_path,
+):
+    env, act, approval, snap = _irreversible_case(
+        trust_approval=False
+    )
+    permits = authority(tmp_path)
+    with pytest.raises(
+        ExecutionPermitError,
+        match="not present in trusted context",
+    ):
+        permits.issue(
+            envelope=env,
+            action=act,
+            snapshot=snap,
+            approval=approval,
+        )
+
+
 def _gateway(tmp_path, *, verified=True):
-    contexts = FileTrustedContextProvider(context_file(tmp_path))
+    contexts = FileTrustedContextProvider(
+        context_file(tmp_path)
+    )
     permits = authority(tmp_path)
     calls = []
     reconciled = []
-    gateway = CoordinatorMutationGateway(permits=permits, contexts=contexts)
+    gateway = CoordinatorMutationGateway(
+        permits=permits,
+        contexts=contexts,
+    )
     gateway.register(
         "publish-acquisition-test",
         action_class="REVERSIBLE",
-        executor=lambda act: calls.append(act.action_id) or "published",
+        executor=lambda act: (
+            calls.append(act.action_id) or "published"
+        ),
         verifier=lambda act, result: MutationVerification(
             verified=verified,
-            evidence_refs=("provider:receipt", "fresh:readback") if verified else ("fresh:readback",),
-            observation="fresh readback confirmed publication" if verified else "fresh readback could not confirm publication",
+            evidence_refs=(
+                ("provider:receipt", "fresh:readback")
+                if verified
+                else ("fresh:readback",)
+            ),
+            observation=(
+                "fresh readback confirmed publication"
+                if verified
+                else "fresh readback could not confirm publication"
+            ),
         ),
-        reconciler=lambda act, result, verification: reconciled.append(act.action_id) or "TELLMEN0TE_OS:receipt:001",
+        reconciler=lambda act, result, verification: (
+            reconciled.append(act.action_id)
+            or "TELLMEN0TE_OS:receipt:001"
+        ),
     )
     return gateway, permits, contexts, calls, reconciled
 
 
-def test_mutation_gateway_never_calls_executor_without_valid_permit(tmp_path):
-    gateway, permits, contexts, calls, reconciled = _gateway(tmp_path)
+def test_mutation_gateway_never_calls_executor_without_valid_permit(
+    tmp_path,
+):
+    gateway, permits, contexts, calls, reconciled = _gateway(
+        tmp_path
+    )
     with pytest.raises(ExecutionPermitError):
         gateway.execute(
             "publish-acquisition-test",
@@ -273,7 +506,11 @@ def test_mutation_gateway_never_calls_executor_without_valid_permit(tmp_path):
     assert reconciled == []
 
     snap = contexts.get("ctx-001")
-    issued = permits.issue(envelope=envelope(), action=action(), snapshot=snap)
+    issued = permits.issue(
+        envelope=envelope(),
+        action=action(),
+        snapshot=snap,
+    )
     result = gateway.execute(
         "publish-acquisition-test",
         permit_token=issued.token,
@@ -288,10 +525,22 @@ def test_mutation_gateway_never_calls_executor_without_valid_permit(tmp_path):
     assert reconciled == ["publish:acq-test-001"]
 
 
-def test_unverified_mutation_is_not_reconciled_or_reported_complete(tmp_path):
-    gateway, permits, contexts, calls, reconciled = _gateway(tmp_path, verified=False)
-    issued = permits.issue(envelope=envelope(), action=action(), snapshot=contexts.get("ctx-001"))
-    with pytest.raises(MutationVerificationError, match="unverified"):
+def test_unverified_mutation_is_not_reconciled_or_reported_complete(
+    tmp_path,
+):
+    gateway, permits, contexts, calls, reconciled = _gateway(
+        tmp_path,
+        verified=False,
+    )
+    issued = permits.issue(
+        envelope=envelope(),
+        action=action(),
+        snapshot=contexts.get("ctx-001"),
+    )
+    with pytest.raises(
+        MutationVerificationError,
+        match="unverified",
+    ):
         gateway.execute(
             "publish-acquisition-test",
             permit_token=issued.token,
@@ -301,7 +550,10 @@ def test_unverified_mutation_is_not_reconciled_or_reported_complete(tmp_path):
         )
     assert calls == ["publish:acq-test-001"]
     assert reconciled == []
-    with pytest.raises(ExecutionPermitError, match="already been consumed"):
+    with pytest.raises(
+        ExecutionPermitError,
+        match="already been consumed",
+    ):
         gateway.execute(
             "publish-acquisition-test",
             permit_token=issued.token,
@@ -313,13 +565,22 @@ def test_unverified_mutation_is_not_reconciled_or_reported_complete(tmp_path):
 
 def test_mcp_surface_exposes_gate_but_no_mutation_bypass():
     async def check():
-        async with Client(mcp, raise_exceptions=True) as client:
+        async with Client(
+            mcp,
+            raise_exceptions=True,
+        ) as client:
             tools = await client.list_tools()
             names = {item.name for item in tools.tools}
             assert "evaluate_execution_gate" in names
             assert "request_execution_permit" in names
-            assert not any(name.startswith("execute_") for name in names)
-            result = await client.call_tool("evaluate_execution_gate", {"envelope": envelope()})
+            assert not any(
+                name.startswith("execute_")
+                for name in names
+            )
+            result = await client.call_tool(
+                "evaluate_execution_gate",
+                {"envelope": envelope()},
+            )
             assert result.is_error is False
 
     asyncio.run(check())

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import json
+import os
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -42,6 +44,11 @@ _TEST_ROOTS = {
     "ops",
     "unit",
 }
+_CURRENT_STATE_PATH = "governance/current_state.json"
+
+
+class ChangeScopeError(ValueError):
+    """A repository change falls outside the selected construction authority."""
 
 
 @dataclass(frozen=True)
@@ -122,8 +129,170 @@ def classify(paths, *, event_name: str) -> CIPlan:
     return CIPlan(FULL, ("tests",), normalized)
 
 
-def plan_from_git(*, event_name: str, base_sha: str | None, head_sha: str | None) -> CIPlan:
+def _active_package_paths(program) -> set[str]:
+    if not isinstance(program, dict):
+        raise ChangeScopeError("construction program must be an object")
+    packages = program.get("work_packages")
+    if not isinstance(packages, list):
+        raise ChangeScopeError("construction program work_packages must be a list")
+    allowed = set()
+    for package in packages:
+        if not isinstance(package, dict):
+            raise ChangeScopeError("construction work package must be an object")
+        if package.get("state") != "ACTIVE":
+            continue
+        allowed.update(_normalize(package.get("paths", [])))
+    return allowed
+
+
+def _control_plane_paths(state) -> set[str]:
+    if not isinstance(state, dict):
+        raise ChangeScopeError("current state must be an object")
+    allowed = {_CURRENT_STATE_PATH}
+    program_ref = str(state.get("active_construction_program", "")).strip()
+    if program_ref:
+        allowed.add(program_ref)
+    evidence = state.get("current_requirement_evidence", {})
+    if evidence is not None and not isinstance(evidence, dict):
+        raise ChangeScopeError("current_requirement_evidence must be an object")
+    if isinstance(evidence, dict):
+        for ref in evidence.values():
+            text = str(ref).strip().replace("\\", "/")
+            if text:
+                allowed.add(text)
+    return allowed
+
+
+def _require_owner_program_transition(*, actor, repository_owner):
+    actor_text = str(actor or "").strip()
+    owner_text = str(repository_owner or "").strip()
+    if not actor_text or not owner_text:
+        raise ChangeScopeError(
+            "program transition requires repository-owner identity evidence"
+        )
+    if actor_text.casefold() != owner_text.casefold():
+        raise ChangeScopeError(
+            "program transition requires repository-owner authority: "
+            f"actor={actor_text} owner={owner_text}"
+        )
+    return actor_text
+
+
+def validate_change_scope(
+    paths,
+    *,
+    base_state,
+    base_program,
+    head_state,
+    head_program,
+    actor=None,
+    repository_owner=None,
+):
+    """Fail closed when changes exceed selected construction authority.
+
+    A same-program closeout may use paths that were ACTIVE at either side of the
+    comparison. A program transition requires external GitHub repository-owner
+    identity and then authorizes substantive work only from ACTIVE packages in the
+    newly selected head program. Current-state, selected program records, and
+    requirement-evidence records are control-plane records; they do not grant
+    authority to any other changed path.
+    """
+
+    normalized = set(_normalize(paths))
+    base_ref = str(base_state.get("active_construction_program", "")).strip()
+    head_ref = str(head_state.get("active_construction_program", "")).strip()
+    if not head_ref:
+        raise ChangeScopeError("head current state has no active construction program")
+
+    if base_ref == head_ref:
+        authorized = _active_package_paths(base_program) | _active_package_paths(head_program)
+    else:
+        _require_owner_program_transition(
+            actor=actor,
+            repository_owner=repository_owner,
+        )
+        authorized = _active_package_paths(head_program)
+
+    control = _control_plane_paths(base_state) | _control_plane_paths(head_state)
+    unauthorized = sorted(normalized - authorized - control)
+    if unauthorized:
+        raise ChangeScopeError(
+            "changed paths exceed selected construction authority: "
+            f"{unauthorized}"
+        )
+    return tuple(sorted(authorized))
+
+
+def _git_json(sha: str, path: str):
+    if not sha or set(sha) == {"0"}:
+        raise ChangeScopeError(f"cannot read governance state from revision: {sha!r}")
+    completed = subprocess.run(
+        ["git", "show", f"{sha}:{path}"],
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    try:
+        return json.loads(completed.stdout)
+    except json.JSONDecodeError as exc:
+        raise ChangeScopeError(
+            f"invalid JSON at {sha}:{path}"
+        ) from exc
+
+
+def _governance_at_revision(sha: str):
+    state = _git_json(sha, _CURRENT_STATE_PATH)
+    program_ref = str(state.get("active_construction_program", "")).strip()
+    if not program_ref:
+        raise ChangeScopeError(
+            f"{sha}:{_CURRENT_STATE_PATH} has no active construction program"
+        )
+    program = _git_json(sha, program_ref)
+    return state, program
+
+
+def validate_git_change_scope(
+    *,
+    paths,
+    base_sha: str | None,
+    head_sha: str | None,
+    actor=None,
+    repository_owner=None,
+):
+    if not base_sha or not head_sha or set(base_sha) == {"0"}:
+        raise ChangeScopeError(
+            "base and head revisions are required for construction authority validation"
+        )
+    base_state, base_program = _governance_at_revision(base_sha)
+    head_state, head_program = _governance_at_revision(head_sha)
+    return validate_change_scope(
+        paths,
+        base_state=base_state,
+        base_program=base_program,
+        head_state=head_state,
+        head_program=head_program,
+        actor=actor,
+        repository_owner=repository_owner,
+    )
+
+
+def plan_from_git(
+    *,
+    event_name: str,
+    base_sha: str | None,
+    head_sha: str | None,
+    actor=None,
+    repository_owner=None,
+) -> CIPlan:
     paths = changed_paths(base_sha, head_sha)
+    validate_git_change_scope(
+        paths=paths,
+        base_sha=base_sha,
+        head_sha=head_sha,
+        actor=actor,
+        repository_owner=repository_owner,
+    )
     return classify(paths, event_name=event_name)
 
 
@@ -142,6 +311,8 @@ def main(argv=None) -> int:
     parser.add_argument("--base-sha")
     parser.add_argument("--head-sha")
     parser.add_argument("--paths-file")
+    parser.add_argument("--actor")
+    parser.add_argument("--repository-owner")
     parser.add_argument("--execute-tests", action="store_true")
     args = parser.parse_args(argv)
 
@@ -149,10 +320,19 @@ def main(argv=None) -> int:
         paths = Path(args.paths_file).read_text(encoding="utf-8").splitlines()
         plan = classify(paths, event_name=args.event)
     else:
+        repository_owner = args.repository_owner or os.environ.get(
+            "GITHUB_REPOSITORY_OWNER"
+        )
+        if not repository_owner:
+            repository = os.environ.get("GITHUB_REPOSITORY", "")
+            if "/" in repository:
+                repository_owner = repository.split("/", 1)[0]
         plan = plan_from_git(
             event_name=args.event,
             base_sha=args.base_sha,
             head_sha=args.head_sha,
+            actor=args.actor or os.environ.get("GITHUB_ACTOR"),
+            repository_owner=repository_owner,
         )
 
     print(f"tier={plan.tier}")
