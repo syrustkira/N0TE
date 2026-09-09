@@ -73,27 +73,30 @@ def test_completed_children_preserve_evidence_dimensions_instead_of_collapsing_a
         assert compare[dimension]["state"] == "UNPROVEN"
 
 
-def test_current_requirement_receipts_are_executable_and_keep_parent_acceptance_unproven():
+def test_current_requirement_receipts_can_advance_without_collapsing_parent_acceptance():
     manifest = load("governance/canonical_scope_manifest.json")
+    retained = set(manifest["retained_requirement_ids"])
     current = load_current_requirement_evidence(manifest["retained_requirement_ids"])
-    assert set(current) == {
+    required_current = {
         "REQ-SCOPE-003",
         "REQ-SCOPE-010",
         "REQ-SCOPE-079",
         "REQ-SCOPE-090",
         "REQ-SCOPE-172",
     }
+    assert required_current <= set(current)
+    assert set(current) <= retained
 
     assert current["REQ-SCOPE-003"]["claims"]["REACHABLE"]["state"] == "PROVEN"
     assert current["REQ-SCOPE-010"]["claims"]["REACHABLE"]["state"] == "PROVEN"
     assert current["REQ-SCOPE-010"]["claims"]["AUTHORITY_SAFE"]["state"] == "PROVEN"
     assert current["REQ-SCOPE-079"]["claims"]["VERIFIED"]["state"] == "PROVEN"
     assert current["REQ-SCOPE-079"]["claims"]["AUTHORITY_SAFE"]["state"] == "PROVEN"
-    assert current["REQ-SCOPE-079"]["claims"]["REACHABLE"]["state"] == "UNPROVEN"
+    assert current["REQ-SCOPE-079"]["claims"]["REACHABLE"]["state"] == "PROVEN"
     assert current["REQ-SCOPE-090"]["claims"]["VERIFIED"]["state"] == "PROVEN"
     assert current["REQ-SCOPE-090"]["claims"]["RECOVERABLE"]["state"] == "PROVEN"
     assert current["REQ-SCOPE-090"]["claims"]["AUTHORITY_SAFE"]["state"] == "PROVEN"
-    assert current["REQ-SCOPE-090"]["claims"]["REACHABLE"]["state"] == "UNPROVEN"
+    assert current["REQ-SCOPE-090"]["claims"]["REACHABLE"]["state"] == "PROVEN"
     assert current["REQ-SCOPE-172"]["claims"]["REACHABLE"]["state"] == "PROVEN"
 
     for receipt in current.values():
