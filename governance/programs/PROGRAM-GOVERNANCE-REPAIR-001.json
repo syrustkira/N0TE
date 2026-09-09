@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "program_id": "PROGRAM-GOVERNANCE-REPAIR-001",
+  "state": "ACTIVE",
+  "authority_source": "Explicit current human direction on 2026-09-09: properly fix governance for N0TE implementation/operation. TELLMEN0TE MASTER CONTEXT grants explicit current human direction portfolio priority, reconciled through canonical REQ-SCOPE-172 whole-product construction governance. This program grants repository governance repair authority only and does not grant provider mutation authority.",
+  "allowed_paths": [
+    "README.md",
+    "governance/trusted_context.py",
+    "governance/execution_permit.py",
+    "governance/ci_plan.py",
+    "tests/governance/test_execution_permit.py",
+    "tests/governance/test_ci_plan.py"
+  ],
+  "allowed_requirement_ids": [
+    "REQ-SCOPE-172"
+  ],
+  "allowed_authority_classes": [
+    "GOVERNANCE"
+  ],
+  "work_packages": [
+    {
+      "work_id": "WP-172-TRUSTED-EXECUTION-AUTHORITY",
+      "parent_program_id": "PROGRAM-GOVERNANCE-REPAIR-001",
+      "state": "ACTIVE",
+      "paths": [
+        "README.md",
+        "governance/trusted_context.py",
+        "governance/execution_permit.py",
+        "tests/governance/test_execution_permit.py"
+      ],
+      "requirement_ids": [
+        "REQ-SCOPE-172"
+      ],
+      "authority_class": "GOVERNANCE",
+      "dependencies": [],
+      "mechanical_closeout_allowlist": [
+        "IMPLEMENTED",
+        "INTEGRATED",
+        "VERIFIED",
+        "AUTHORITY_SAFE"
+      ],
+      "evidence": {
+        "MAPPED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-172"
+          ]
+        },
+        "IMPLEMENTED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "INTEGRATED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "REACHABLE": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "VERIFIED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "RECOVERABLE": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "AUTHORITY_SAFE": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "CONSUMER_ACCEPTED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "VALUE_EVIDENCED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        }
+      }
+    },
+    {
+      "work_id": "WP-172-CHANGE-SCOPE-GATE",
+      "parent_program_id": "PROGRAM-GOVERNANCE-REPAIR-001",
+      "state": "ACTIVE",
+      "paths": [
+        "governance/ci_plan.py",
+        "tests/governance/test_ci_plan.py"
+      ],
+      "requirement_ids": [
+        "REQ-SCOPE-172"
+      ],
+      "authority_class": "GOVERNANCE",
+      "dependencies": [],
+      "mechanical_closeout_allowlist": [
+        "IMPLEMENTED",
+        "INTEGRATED",
+        "VERIFIED",
+        "AUTHORITY_SAFE"
+      ],
+      "evidence": {
+        "MAPPED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-172"
+          ]
+        },
+        "IMPLEMENTED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "INTEGRATED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "REACHABLE": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "VERIFIED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "RECOVERABLE": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "AUTHORITY_SAFE": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "CONSUMER_ACCEPTED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "VALUE_EVIDENCED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        }
+      }
+    }
+  ]
+}
