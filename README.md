@@ -10,6 +10,7 @@ Current clean-room N0TE implementation repository.
 - Parent acceptance is derived from required child obligations.
 - Fresh contradictory evidence reopens the affected current claim.
 - Historical migration material is non-commanding.
+- Changing `active_construction_program` requires the GitHub event actor to match the repository owner. A proposed program may bound selected work after that external identity check, but program content cannot authorize its own selection.
 
 ## Coordinator execution gate
 
