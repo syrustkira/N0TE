@@ -4,6 +4,7 @@
   "migration_state": "CUTOVER_COMPLETE",
   "cutover_receipt": "migration/receipts/cleanroom-cutover-2026-09-08.json",
   "unfinished_work": [],
+  "active_construction_program": "governance/programs/PROGRAM-PERSONAL-PRODUCTION-004.json",
   "construction_program_governance": {
     "state": "ACTIVE",
     "requirement_id": "REQ-SCOPE-172",
