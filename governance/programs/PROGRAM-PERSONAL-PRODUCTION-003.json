@@ -44,20 +44,44 @@
             "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-171"
           ]
         },
-        "IMPLEMENTED": {"state": "UNPROVEN", "evidence_refs": []},
-        "INTEGRATED": {"state": "UNPROVEN", "evidence_refs": []},
-        "REACHABLE": {"state": "UNPROVEN", "evidence_refs": []},
-        "VERIFIED": {"state": "UNPROVEN", "evidence_refs": []},
-        "RECOVERABLE": {"state": "UNPROVEN", "evidence_refs": []},
-        "AUTHORITY_SAFE": {"state": "UNPROVEN", "evidence_refs": []},
-        "CONSUMER_ACCEPTED": {"state": "UNPROVEN", "evidence_refs": []},
-        "VALUE_EVIDENCED": {"state": "UNPROVEN", "evidence_refs": []}
+        "IMPLEMENTED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "INTEGRATED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "REACHABLE": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "VERIFIED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "RECOVERABLE": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "AUTHORITY_SAFE": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "CONSUMER_ACCEPTED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "VALUE_EVIDENCED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        }
       }
     },
     {
       "work_id": "WP-172-NEXT-PROGRAM-ACTIVATION",
       "parent_program_id": "PROGRAM-PERSONAL-PRODUCTION-003",
-      "state": "ACTIVE",
+      "state": "COMPLETE",
       "paths": [
         "governance/ci_plan.py",
         "tests/governance/test_ci_plan.py"
@@ -80,14 +104,53 @@
             "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-172"
           ]
         },
-        "IMPLEMENTED": {"state": "UNPROVEN", "evidence_refs": []},
-        "INTEGRATED": {"state": "UNPROVEN", "evidence_refs": []},
-        "REACHABLE": {"state": "UNPROVEN", "evidence_refs": []},
-        "VERIFIED": {"state": "UNPROVEN", "evidence_refs": []},
-        "RECOVERABLE": {"state": "UNPROVEN", "evidence_refs": []},
-        "AUTHORITY_SAFE": {"state": "UNPROVEN", "evidence_refs": []},
-        "CONSUMER_ACCEPTED": {"state": "UNPROVEN", "evidence_refs": []},
-        "VALUE_EVIDENCED": {"state": "UNPROVEN", "evidence_refs": []}
+        "IMPLEMENTED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-172-WP-172-NEXT-PROGRAM-ACTIVATION-ac21858d0416.json"
+          ]
+        },
+        "INTEGRATED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-172-WP-172-NEXT-PROGRAM-ACTIVATION-ac21858d0416.json"
+          ]
+        },
+        "REACHABLE": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "VERIFIED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-172-WP-172-NEXT-PROGRAM-ACTIVATION-ac21858d0416.json"
+          ]
+        },
+        "RECOVERABLE": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "AUTHORITY_SAFE": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "governance/evidence/REQ-SCOPE-172-WP-172-NEXT-PROGRAM-ACTIVATION-ac21858d0416.json"
+          ]
+        },
+        "CONSUMER_ACCEPTED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        },
+        "VALUE_EVIDENCED": {
+          "state": "UNPROVEN",
+          "evidence_refs": []
+        }
+      },
+      "mechanical_closeout": {
+        "resulting_main_execution_commit": "ac21858d0416acd455f8a1e5581977893825a88e",
+        "resulting_main_execution_ci_run": 34399358180,
+        "evidence_receipts": [
+          "governance/evidence/REQ-SCOPE-172-WP-172-NEXT-PROGRAM-ACTIVATION-ac21858d0416.json"
+        ]
       }
     }
   ]

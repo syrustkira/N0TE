@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "kind": "REQUIREMENT_EVIDENCE_RECEIPT",
+  "requirement_id": "REQ-SCOPE-172",
+  "semantic_owner": "N0TE_PRODUCT_DB/SCOPE_LEDGER",
+  "observed_at": "2026-09-09T20:11:05Z",
+  "claims": {
+    "MAPPED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-172"
+      ]
+    },
+    "IMPLEMENTED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "pr:17",
+        "pr-head:797f282e22a22094268d34dce5c7ac65951307df",
+        "main:30bf813b1de176d9a8c463c2b799fe39bb8b9c69",
+        "governance/ci_plan.py",
+        "main:ac21858d0416acd455f8a1e5581977893825a88e",
+        "ci-run:34399358180"
+      ]
+    },
+    "INTEGRATED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "main:30bf813b1de176d9a8c463c2b799fe39bb8b9c69",
+        "ci-run:34365651432",
+        "governance/ci_plan.py",
+        "tests/governance/test_ci_plan.py",
+        "main:ac21858d0416acd455f8a1e5581977893825a88e",
+        "ci-run:34399358180"
+      ]
+    },
+    "REACHABLE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "ci-run:34391650569"
+      ],
+      "observed_result": "The active construction change-scope gate rejected PR #18 product paths because they were outside the selected governance-repair program, proving the repaired gate is live in the actual pull-request path."
+    },
+    "VERIFIED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "ci-run:34364617991",
+        "ci-run:34365651432",
+        "ci-run:34391650569",
+        "tests/governance/test_ci_plan.py",
+        "main:ac21858d0416acd455f8a1e5581977893825a88e",
+        "ci-run:34399358180"
+      ]
+    },
+    "RECOVERABLE": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "Repository proof does not independently establish rollback/recovery of the governance state itself."
+    },
+    "AUTHORITY_SAFE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "pr:17",
+        "ci-run:34364617991",
+        "ci-run:34391650569",
+        "governance/ci_plan.py",
+        "tests/governance/test_ci_plan.py",
+        "main:ac21858d0416acd455f8a1e5581977893825a88e",
+        "ci-run:34399358180"
+      ]
+    },
+    "CONSUMER_ACCEPTED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "Governance repair verification is not Personal Production consumer acceptance."
+    },
+    "VALUE_EVIDENCED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "No real artist-work value consequence is claimed by this governance repair."
+    }
+  },
+  "mechanical_closeout": {
+    "program_id": "PROGRAM-PERSONAL-PRODUCTION-003",
+    "work_id": "WP-172-NEXT-PROGRAM-ACTIVATION",
+    "resulting_main_execution_commit": "ac21858d0416acd455f8a1e5581977893825a88e",
+    "resulting_main_execution_ci_run": 34399358180,
+    "automatic_consumer_acceptance": false,
+    "automatic_value_evidence": false
+  },
+  "anti_collapse_rule": "Mechanical closeout may promote only dimensions pre-authorized by the work package. CONSUMER_ACCEPTED and VALUE_EVIDENCED are never automated."
+}

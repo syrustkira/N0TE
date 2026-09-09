@@ -37,14 +37,21 @@
     },
     "pull_request_verification": "EXACT_HEAD",
     "branch_push_duplication": "DISABLED_EXCEPT_MAIN",
-    "risk_tiers": ["FULL", "TARGETED", "GOVERNANCE"],
+    "risk_tiers": [
+      "FULL",
+      "TARGETED",
+      "GOVERNANCE"
+    ],
     "stale_pr_runs": "CANCELLED",
     "dependency_cache": "PIP_BY_REQUIREMENTS",
     "mechanical_closeout": {
       "trigger": "SUCCESSFUL_RESULTING_MAIN_RUN_WITH_EXPLICIT_N0TE_CLOSEOUT_MARKER",
       "scope": "CURRENT_ACTIVE_WORK_PACKAGE_ONLY",
       "dimension_authority": "PREDECLARED_MECHANICAL_CLOSEOUT_ALLOWLIST_ONLY",
-      "never_automatic": ["CONSUMER_ACCEPTED", "VALUE_EVIDENCED"],
+      "never_automatic": [
+        "CONSUMER_ACCEPTED",
+        "VALUE_EVIDENCED"
+      ],
       "write_mode": "VALIDATE_EXACT_GENERATED_TREE_THEN_FAST_FORWARD_FROM_GREEN_MAIN",
       "race_behavior": "FAIL_IF_MAIN_MOVED"
     }
@@ -61,7 +68,7 @@
     "REQ-SCOPE-010": "governance/evidence/REQ-SCOPE-010-compare-decide-reachability-2026-09-08.json",
     "REQ-SCOPE-079": "governance/evidence/REQ-SCOPE-079-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json",
     "REQ-SCOPE-090": "governance/evidence/REQ-SCOPE-090-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json",
-    "REQ-SCOPE-172": "governance/evidence/REQ-SCOPE-172-governance-repair-2026-09-09.json",
+    "REQ-SCOPE-172": "governance/evidence/REQ-SCOPE-172-WP-172-NEXT-PROGRAM-ACTIVATION-ac21858d0416.json",
     "REQ-SCOPE-068": "governance/evidence/REQ-SCOPE-068-WP-068-077-GUIDED-FALLBACK-c826994314ac.json",
     "REQ-SCOPE-077": "governance/evidence/REQ-SCOPE-077-WP-068-077-GUIDED-FALLBACK-c826994314ac.json"
   },
