@@ -6,16 +6,21 @@ from governance.continuation import advance_after_acceptance, decide_continue
 
 def _state(blockers=(), state="READY"):
     return compile_execution_state({
-        "retained_scope_refs": ["service_acquisition"],
+        "retained_scope_refs": ["n0te", "runtime_context", "daw_integration", "music_intelligence"],
         "truth_owners": {"WHY": "w", "WHAT": "x", "HOW": "y", "NOW": "n", "PROOF": "p"},
-        "dependency_graph": {"service_acquisition": ["qualified_inquiry"]},
-        "lens_dispatch": {"service_acquisition": ["epistemology", "distribution", "sales"]},
+        "dependency_graph": {
+            "n0te": ["runtime_context", "daw_integration", "music_intelligence"],
+            "runtime_context": [],
+            "daw_integration": [],
+            "music_intelligence": [],
+        },
+        "lens_dispatch": {"n0te": ["epistemology", "parallelization", "integration"]},
         "cursor": {
             "job_id": "job",
-            "outcome": "demand evidence",
-            "active_object": "service_acquisition",
-            "current_step": "run acquisition increment",
-            "acceptance": "external evidence",
+            "outcome": "build N0TE",
+            "active_object": "n0te",
+            "current_step": "continue construction",
+            "acceptance": "verified integration",
             "state": state,
             "blockers": list(blockers),
         },
@@ -28,14 +33,19 @@ def _state(blockers=(), state="READY"):
 
 def test_continue_resumes_cursor_instead_of_rediscovering_project():
     decision = decide_continue(_state())
-    assert decision.active_object == "service_acquisition"
-    assert decision.current_step == "run acquisition increment"
-    assert decision.required_functions == ("epistemology", "distribution", "sales")
+    assert decision.active_object == "n0te"
+    assert decision.current_step == "continue construction"
+    assert decision.required_functions == ("epistemology", "parallelization", "integration")
+    assert decision.next_dependencies == ("runtime_context", "daw_integration", "music_intelligence")
 
 
 def test_continue_stops_at_real_blocker():
     assert decide_continue(_state(blockers=("approval",))).stop_reason == "BLOCKED"
 
 
-def test_acceptance_traverses_canonical_dependency_not_model_salience():
-    assert advance_after_acceptance(_state(), completed_object="service_acquisition") == "qualified_inquiry"
+def test_acceptance_preserves_all_parallel_canonical_successors():
+    assert advance_after_acceptance(_state(), completed_object="n0te") == (
+        "runtime_context",
+        "daw_integration",
+        "music_intelligence",
+    )
