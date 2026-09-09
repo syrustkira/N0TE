@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "kind": "REQUIREMENT_EVIDENCE_RECEIPT",
+  "requirement_id": "REQ-SCOPE-068",
+  "semantic_owner": "N0TE_PRODUCT_DB/SCOPE_LEDGER",
+  "observed_at": "2026-09-09T19:43:49Z",
+  "claims": {
+    "MAPPED": {
+      "state": "UNPROVEN",
+      "evidence_refs": []
+    },
+    "IMPLEMENTED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/capabilities.py",
+        "main:c826994314acd3341438217ae9b3a89ac7aa265d",
+        "ci-run:34396732114"
+      ]
+    },
+    "INTEGRATED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/capabilities.py",
+        "tests/core/test_guided_fallback_policy.py",
+        "main:c826994314acd3341438217ae9b3a89ac7aa265d",
+        "ci-run:34396732114"
+      ]
+    },
+    "REACHABLE": {
+      "state": "UNPROVEN",
+      "evidence_refs": []
+    },
+    "VERIFIED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "tests/core/test_guided_fallback_policy.py",
+        "tests/governance/test_fast_pipeline_activation.py",
+        "tests/governance/test_first_real_construction_program.py",
+        "main:c826994314acd3341438217ae9b3a89ac7aa265d",
+        "ci-run:34396732114"
+      ]
+    },
+    "RECOVERABLE": {
+      "state": "UNPROVEN",
+      "evidence_refs": []
+    },
+    "AUTHORITY_SAFE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/capabilities.py",
+        "main:c826994314acd3341438217ae9b3a89ac7aa265d",
+        "ci-run:34396732114"
+      ]
+    },
+    "CONSUMER_ACCEPTED": {
+      "state": "UNPROVEN",
+      "evidence_refs": []
+    },
+    "VALUE_EVIDENCED": {
+      "state": "UNPROVEN",
+      "evidence_refs": []
+    }
+  },
+  "mechanical_closeout": {
+    "program_id": "PROGRAM-PERSONAL-PRODUCTION-002",
+    "work_id": "WP-068-077-GUIDED-FALLBACK",
+    "resulting_main_execution_commit": "c826994314acd3341438217ae9b3a89ac7aa265d",
+    "resulting_main_execution_ci_run": 34396732114,
+    "automatic_consumer_acceptance": false,
+    "automatic_value_evidence": false
+  },
+  "anti_collapse_rule": "Mechanical closeout may promote only dimensions pre-authorized by the work package. CONSUMER_ACCEPTED and VALUE_EVIDENCED are never automated."
+}

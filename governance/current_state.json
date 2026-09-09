@@ -37,33 +37,41 @@
     },
     "pull_request_verification": "EXACT_HEAD",
     "branch_push_duplication": "DISABLED_EXCEPT_MAIN",
-    "risk_tiers": ["FULL", "TARGETED", "GOVERNANCE"],
+    "risk_tiers": [
+      "FULL",
+      "TARGETED",
+      "GOVERNANCE"
+    ],
     "stale_pr_runs": "CANCELLED",
     "dependency_cache": "PIP_BY_REQUIREMENTS",
     "mechanical_closeout": {
       "trigger": "SUCCESSFUL_RESULTING_MAIN_RUN_WITH_EXPLICIT_N0TE_CLOSEOUT_MARKER",
       "scope": "CURRENT_ACTIVE_WORK_PACKAGE_ONLY",
       "dimension_authority": "PREDECLARED_MECHANICAL_CLOSEOUT_ALLOWLIST_ONLY",
-      "never_automatic": ["CONSUMER_ACCEPTED", "VALUE_EVIDENCED"],
+      "never_automatic": [
+        "CONSUMER_ACCEPTED",
+        "VALUE_EVIDENCED"
+      ],
       "write_mode": "VALIDATE_EXACT_GENERATED_TREE_THEN_FAST_FORWARD_FROM_GREEN_MAIN",
       "race_behavior": "FAIL_IF_MAIN_MOVED"
     }
   },
   "last_completed_construction_program": {
-    "program_id": "PROGRAM-GOVERNANCE-REPAIR-001",
-    "program_path": "governance/programs/PROGRAM-GOVERNANCE-REPAIR-001.json",
-    "completion_receipt": "governance/evidence/REQ-SCOPE-172-governance-repair-2026-09-09.json",
-    "resulting_main_execution_commit": "30bf813b1de176d9a8c463c2b799fe39bb8b9c69",
-    "resulting_main_execution_ci_run": 34365651432
+    "program_id": "PROGRAM-PERSONAL-PRODUCTION-002",
+    "program_path": "governance/programs/PROGRAM-PERSONAL-PRODUCTION-002.json",
+    "completion_receipt": "governance/evidence/PROGRAM-PERSONAL-PRODUCTION-002-completion-c826994314ac.json",
+    "resulting_main_execution_commit": "c826994314acd3341438217ae9b3a89ac7aa265d",
+    "resulting_main_execution_ci_run": 34396732114
   },
   "current_requirement_evidence": {
     "REQ-SCOPE-003": "governance/evidence/REQ-SCOPE-003-headquarters-reachability-2026-09-08.json",
     "REQ-SCOPE-010": "governance/evidence/REQ-SCOPE-010-compare-decide-reachability-2026-09-08.json",
     "REQ-SCOPE-079": "governance/evidence/REQ-SCOPE-079-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json",
     "REQ-SCOPE-090": "governance/evidence/REQ-SCOPE-090-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json",
-    "REQ-SCOPE-172": "governance/evidence/REQ-SCOPE-172-governance-repair-2026-09-09.json"
+    "REQ-SCOPE-172": "governance/evidence/REQ-SCOPE-172-governance-repair-2026-09-09.json",
+    "REQ-SCOPE-068": "governance/evidence/REQ-SCOPE-068-WP-068-077-GUIDED-FALLBACK-c826994314ac.json",
+    "REQ-SCOPE-077": "governance/evidence/REQ-SCOPE-077-WP-068-077-GUIDED-FALLBACK-c826994314ac.json"
   },
-  "active_construction_program": "governance/programs/PROGRAM-PERSONAL-PRODUCTION-002.json",
   "work_selection_rule": "Resume durable unfinished construction programs or work packages first unless explicit current human direction validly reprioritizes portfolio work and that direction is reconciled into a bounded current construction program. For an active construction program, validate the parent and expose every dependency-valid, authority-bounded, path-disjoint sibling package not blocked by evidenced blast radius. Otherwise select from current canonical scope and current evidence only.",
   "normal_reconstruction": "Begin from the clean N0TE START HERE, current semantic owners, current repository state, and requirement-level evidence."
 }

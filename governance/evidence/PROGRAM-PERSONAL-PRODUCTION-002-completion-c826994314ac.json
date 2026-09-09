@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "kind": "CONSTRUCTION_PROGRAM_COMPLETION_RECEIPT",
+  "program_id": "PROGRAM-PERSONAL-PRODUCTION-002",
+  "observed_at": "2026-09-09T19:43:49Z",
+  "resulting_main_execution_commit": "c826994314acd3341438217ae9b3a89ac7aa265d",
+  "resulting_main_execution_ci_run": 34396732114,
+  "work_package_ids": [
+    "WP-079-MUSICAL-PLAN-IR",
+    "WP-090-MUSICAL-TRANSACTION-BRIDGE",
+    "WP-079-090-PRODUCE-REACHABILITY",
+    "WP-068-077-GUIDED-FALLBACK"
+  ],
+  "consumer_acceptance_derived_separately": true,
+  "value_evidence_derived_separately": true
+}
