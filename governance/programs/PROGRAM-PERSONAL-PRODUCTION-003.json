@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "program_id": "PROGRAM-PERSONAL-PRODUCTION-003",
+  "state": "ACTIVE",
+  "authority_source": "User issued CONTINUE on 2026-09-09 after PROGRAM-PERSONAL-PRODUCTION-002 closed. Current Personal Production acceptance still requires a provider/model-agnostic callable LLM substrate with truthful AI-OFF behavior. N0TE_PRODUCT_DB marks REQ-SCOPE-171 as REQUIRED BASE CHASSIS and a Gate-B blocker; live repository inspection found adjacent egress, relevance, tool, authority, context and transaction primitives but no callable model runtime or credential-profile layer. This program builds only that bounded substrate foundation. It does not claim or purchase a real cloud provider route.",
+  "allowed_paths": [
+    "n0te/llm.py",
+    "tests/core/test_llm_substrate.py"
+  ],
+  "allowed_requirement_ids": [
+    "REQ-SCOPE-171"
+  ],
+  "allowed_authority_classes": [
+    "ADVISE"
+  ],
+  "work_packages": [
+    {
+      "work_id": "WP-171-MODEL-RUNTIME-FOUNDATION",
+      "parent_program_id": "PROGRAM-PERSONAL-PRODUCTION-003",
+      "state": "ACTIVE",
+      "paths": [
+        "n0te/llm.py",
+        "tests/core/test_llm_substrate.py"
+      ],
+      "requirement_ids": [
+        "REQ-SCOPE-171"
+      ],
+      "authority_class": "ADVISE",
+      "dependencies": [],
+      "mechanical_closeout_allowlist": [
+        "IMPLEMENTED",
+        "INTEGRATED",
+        "VERIFIED",
+        "AUTHORITY_SAFE"
+      ],
+      "evidence": {
+        "MAPPED": {
+          "state": "PROVEN",
+          "evidence_refs": [
+            "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-171"
+          ]
+        },
+        "IMPLEMENTED": {"state": "UNPROVEN", "evidence_refs": []},
+        "INTEGRATED": {"state": "UNPROVEN", "evidence_refs": []},
+        "REACHABLE": {"state": "UNPROVEN", "evidence_refs": []},
+        "VERIFIED": {"state": "UNPROVEN", "evidence_refs": []},
+        "RECOVERABLE": {"state": "UNPROVEN", "evidence_refs": []},
+        "AUTHORITY_SAFE": {"state": "UNPROVEN", "evidence_refs": []},
+        "CONSUMER_ACCEPTED": {"state": "UNPROVEN", "evidence_refs": []},
+        "VALUE_EVIDENCED": {"state": "UNPROVEN", "evidence_refs": []}
+      }
+    }
+  ]
+}
