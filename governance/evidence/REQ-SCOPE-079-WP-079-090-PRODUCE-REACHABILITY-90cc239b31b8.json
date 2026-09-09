@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "REQUIREMENT_EVIDENCE_RECEIPT",
+  "requirement_id": "REQ-SCOPE-079",
+  "semantic_owner": "N0TE_PRODUCT_DB/SCOPE_LEDGER",
+  "observed_at": "2026-09-09T19:36:05Z",
+  "claims": {
+    "MAPPED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-079"
+      ]
+    },
+    "IMPLEMENTED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/musical_plan.py",
+        "tests/daw/test_musical_plan.py",
+        "pull-request:7",
+        "pull-request:8",
+        "n0te/produce_shell.py",
+        "n0te/memory.py",
+        "main:90cc239b31b82d83882bf1d34e89347b924d05f0",
+        "ci-run:34395868164"
+      ]
+    },
+    "INTEGRATED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/focus.py",
+        "n0te/hosts.py",
+        "main:1ab4a1707330ca485badbe5855115bd2e3223697",
+        "n0te/produce_shell.py",
+        "n0te/memory.py",
+        "tests/acceptance/test_req_scope_079_090_produce_reachability.py",
+        "main:90cc239b31b82d83882bf1d34e89347b924d05f0",
+        "ci-run:34395868164"
+      ]
+    },
+    "REACHABLE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "tests/acceptance/test_req_scope_079_090_produce_reachability.py",
+        "main:90cc239b31b82d83882bf1d34e89347b924d05f0",
+        "ci-run:34395868164"
+      ]
+    },
+    "VERIFIED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "ci-run:34264191306",
+        "ci-run:34264416954",
+        "ci-run:34264818670",
+        "ci-run:34264839360",
+        "ci-run:34265048243",
+        "tests/acceptance/test_req_scope_079_090_produce_reachability.py",
+        "main:90cc239b31b82d83882bf1d34e89347b924d05f0",
+        "ci-run:34395868164"
+      ]
+    },
+    "RECOVERABLE": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "WP-079 does not execute mutations or own recovery. Transaction rollback and recovery semantics belong to REQ-SCOPE-090."
+    },
+    "AUTHORITY_SAFE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/musical_plan.py",
+        "tests/daw/test_musical_plan.py",
+        "ci-run:34265048243",
+        "n0te/produce_shell.py",
+        "tests/acceptance/test_req_scope_079_090_produce_reachability.py",
+        "main:90cc239b31b82d83882bf1d34e89347b924d05f0",
+        "ci-run:34395868164"
+      ]
+    },
+    "CONSUMER_ACCEPTED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "Automated semantic/compiler verification is not artist acceptance."
+    },
+    "VALUE_EVIDENCED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "No real production session or consumer value observation was recorded in WP-079."
+    }
+  },
+  "mechanical_closeout": {
+    "program_id": "PROGRAM-PERSONAL-PRODUCTION-002",
+    "work_id": "WP-079-090-PRODUCE-REACHABILITY",
+    "resulting_main_execution_commit": "90cc239b31b82d83882bf1d34e89347b924d05f0",
+    "resulting_main_execution_ci_run": 34395868164,
+    "automatic_consumer_acceptance": false,
+    "automatic_value_evidence": false
+  },
+  "anti_collapse_rule": "Mechanical closeout may promote only dimensions pre-authorized by the work package. CONSUMER_ACCEPTED and VALUE_EVIDENCED are never automated."
+}
