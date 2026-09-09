@@ -193,9 +193,10 @@ def validate_change_scope(
     A same-program closeout may use paths that were ACTIVE at either side of the
     comparison. A program transition requires external GitHub repository-owner
     identity and then authorizes substantive work only from ACTIVE packages in the
-    newly selected head program. Current-state, selected program records, and
-    requirement-evidence records are control-plane records; they do not grant
-    authority to any other changed path.
+    newly selected head program. The base revision may legitimately have no active
+    program after terminal closeout; that absence grants no substantive authority.
+    Current-state, selected program records, and requirement-evidence records are
+    control-plane records; they do not grant authority to any other changed path.
     """
 
     normalized = set(_normalize(paths))
@@ -241,13 +242,15 @@ def _git_json(sha: str, path: str):
         ) from exc
 
 
-def _governance_at_revision(sha: str):
+def _governance_at_revision(sha: str, *, require_active_program: bool = True):
     state = _git_json(sha, _CURRENT_STATE_PATH)
     program_ref = str(state.get("active_construction_program", "")).strip()
     if not program_ref:
-        raise ChangeScopeError(
-            f"{sha}:{_CURRENT_STATE_PATH} has no active construction program"
-        )
+        if require_active_program:
+            raise ChangeScopeError(
+                f"{sha}:{_CURRENT_STATE_PATH} has no active construction program"
+            )
+        return state, {}
     program = _git_json(sha, program_ref)
     return state, program
 
@@ -264,7 +267,10 @@ def validate_git_change_scope(
         raise ChangeScopeError(
             "base and head revisions are required for construction authority validation"
         )
-    base_state, base_program = _governance_at_revision(base_sha)
+    base_state, base_program = _governance_at_revision(
+        base_sha,
+        require_active_program=False,
+    )
     head_state, head_program = _governance_at_revision(head_sha)
     return validate_change_scope(
         paths,

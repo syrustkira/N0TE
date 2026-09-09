@@ -1,5 +1,6 @@
 import pytest
 
+import governance.ci_plan as ci_plan_module
 from governance.ci_plan import (
     FULL,
     GOVERNANCE,
@@ -7,6 +8,7 @@ from governance.ci_plan import (
     ChangeScopeError,
     classify,
     validate_change_scope,
+    validate_git_change_scope,
 )
 
 
@@ -224,6 +226,81 @@ def test_program_transition_authorizes_only_new_active_program_substantive_paths
             base_program=base_program,
             head_state=head_state,
             head_program=head_program,
+            actor="syrustkira",
+            repository_owner="syrustkira",
+        )
+
+
+def test_git_change_scope_allows_owner_activation_after_terminal_closeout(monkeypatch):
+    head_ref = "governance/programs/PROGRAM-NEW.json"
+    base_state = {
+        "current_requirement_evidence": {
+            "REQ-SCOPE-172": "governance/evidence/REQ-SCOPE-172.json",
+        }
+    }
+    head_state = _state(head_ref)
+    head_program = _program(
+        "PROGRAM-NEW",
+        active_paths=("governance/ci_plan.py",),
+    )
+
+    def fake_git_json(sha, path):
+        if sha == "base" and path == "governance/current_state.json":
+            return base_state
+        if sha == "head" and path == "governance/current_state.json":
+            return head_state
+        if sha == "head" and path == head_ref:
+            return head_program
+        raise AssertionError(f"unexpected governance read: {sha}:{path}")
+
+    monkeypatch.setattr(ci_plan_module, "_git_json", fake_git_json)
+
+    authorized = validate_git_change_scope(
+        paths=(
+            "governance/current_state.json",
+            head_ref,
+            "governance/ci_plan.py",
+        ),
+        base_sha="base",
+        head_sha="head",
+        actor="syrustkira",
+        repository_owner="syrustkira",
+    )
+
+    assert authorized == ("governance/ci_plan.py",)
+
+
+def test_terminal_closeout_does_not_weaken_owner_or_path_checks(monkeypatch):
+    head_ref = "governance/programs/PROGRAM-NEW.json"
+    base_state = {"current_requirement_evidence": {}}
+    head_state = _state(head_ref)
+    head_program = _program("PROGRAM-NEW", active_paths=("n0te/allowed.py",))
+
+    def fake_git_json(sha, path):
+        if sha == "base" and path == "governance/current_state.json":
+            return base_state
+        if sha == "head" and path == "governance/current_state.json":
+            return head_state
+        if sha == "head" and path == head_ref:
+            return head_program
+        raise AssertionError(f"unexpected governance read: {sha}:{path}")
+
+    monkeypatch.setattr(ci_plan_module, "_git_json", fake_git_json)
+
+    with pytest.raises(ChangeScopeError, match="repository-owner authority"):
+        validate_git_change_scope(
+            paths=("governance/current_state.json", head_ref, "n0te/allowed.py"),
+            base_sha="base",
+            head_sha="head",
+            actor="automation-bot",
+            repository_owner="syrustkira",
+        )
+
+    with pytest.raises(ChangeScopeError, match="n0te/outside.py"):
+        validate_git_change_scope(
+            paths=("governance/current_state.json", head_ref, "n0te/outside.py"),
+            base_sha="base",
+            head_sha="head",
             actor="syrustkira",
             repository_owner="syrustkira",
         )

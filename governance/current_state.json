@@ -37,21 +37,14 @@
     },
     "pull_request_verification": "EXACT_HEAD",
     "branch_push_duplication": "DISABLED_EXCEPT_MAIN",
-    "risk_tiers": [
-      "FULL",
-      "TARGETED",
-      "GOVERNANCE"
-    ],
+    "risk_tiers": ["FULL", "TARGETED", "GOVERNANCE"],
     "stale_pr_runs": "CANCELLED",
     "dependency_cache": "PIP_BY_REQUIREMENTS",
     "mechanical_closeout": {
       "trigger": "SUCCESSFUL_RESULTING_MAIN_RUN_WITH_EXPLICIT_N0TE_CLOSEOUT_MARKER",
       "scope": "CURRENT_ACTIVE_WORK_PACKAGE_ONLY",
       "dimension_authority": "PREDECLARED_MECHANICAL_CLOSEOUT_ALLOWLIST_ONLY",
-      "never_automatic": [
-        "CONSUMER_ACCEPTED",
-        "VALUE_EVIDENCED"
-      ],
+      "never_automatic": ["CONSUMER_ACCEPTED", "VALUE_EVIDENCED"],
       "write_mode": "VALIDATE_EXACT_GENERATED_TREE_THEN_FAST_FORWARD_FROM_GREEN_MAIN",
       "race_behavior": "FAIL_IF_MAIN_MOVED"
     }
@@ -72,6 +65,7 @@
     "REQ-SCOPE-068": "governance/evidence/REQ-SCOPE-068-WP-068-077-GUIDED-FALLBACK-c826994314ac.json",
     "REQ-SCOPE-077": "governance/evidence/REQ-SCOPE-077-WP-068-077-GUIDED-FALLBACK-c826994314ac.json"
   },
+  "active_construction_program": "governance/programs/PROGRAM-PERSONAL-PRODUCTION-003.json",
   "work_selection_rule": "Resume durable unfinished construction programs or work packages first unless explicit current human direction validly reprioritizes portfolio work and that direction is reconciled into a bounded current construction program. For an active construction program, validate the parent and expose every dependency-valid, authority-bounded, path-disjoint sibling package not blocked by evidenced blast radius. Otherwise select from current canonical scope and current evidence only.",
   "normal_reconstruction": "Begin from the clean N0TE START HERE, current semantic owners, current repository state, and requirement-level evidence."
 }
