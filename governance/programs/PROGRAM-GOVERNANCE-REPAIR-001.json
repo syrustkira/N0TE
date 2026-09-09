@@ -9,6 +9,7 @@
     "governance/execution_permit.py",
     "governance/ci_plan.py",
     "tests/governance/test_execution_permit.py",
+    "tests/governance/test_trusted_context_store.py",
     "tests/governance/test_ci_plan.py"
   ],
   "allowed_requirement_ids": [
@@ -26,7 +27,8 @@
         "README.md",
         "governance/trusted_context.py",
         "governance/execution_permit.py",
-        "tests/governance/test_execution_permit.py"
+        "tests/governance/test_execution_permit.py",
+        "tests/governance/test_trusted_context_store.py"
       ],
       "requirement_ids": [
         "REQ-SCOPE-172"
