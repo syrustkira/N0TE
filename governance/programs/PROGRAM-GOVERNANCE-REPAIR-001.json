@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "program_id": "PROGRAM-GOVERNANCE-REPAIR-001",
-  "state": "ACTIVE",
-  "authority_source": "Explicit current human direction on 2026-09-09: properly fix governance for N0TE implementation/operation. TELLMEN0TE MASTER CONTEXT grants explicit current human direction portfolio priority, reconciled through canonical REQ-SCOPE-172 whole-product construction governance. This program grants repository governance repair authority only and does not grant provider mutation authority.",
+  "state": "COMPLETE",
+  "authority_source": "Explicit current human direction on 2026-09-09: properly fix governance for N0TE implementation/operation. TELLMEN0TE MASTER CONTEXT grants explicit current human direction portfolio priority, reconciled through canonical REQ-SCOPE-172 whole-product construction governance. This program granted repository governance repair authority only and did not grant provider mutation authority. PR #17 merged the bounded repair to main; exact-head and resulting-main CI passed, and the repaired change-scope gate subsequently rejected unrelated product paths as designed.",
   "allowed_paths": [
     "README.md",
     "governance/trusted_context.py",
@@ -22,7 +22,7 @@
     {
       "work_id": "WP-172-TRUSTED-EXECUTION-AUTHORITY",
       "parent_program_id": "PROGRAM-GOVERNANCE-REPAIR-001",
-      "state": "ACTIVE",
+      "state": "COMPLETE",
       "paths": [
         "README.md",
         "governance/trusted_context.py",
@@ -44,33 +44,31 @@
       "evidence": {
         "MAPPED": {
           "state": "PROVEN",
-          "evidence_refs": [
-            "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-172"
-          ]
+          "evidence_refs": ["N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-172"]
         },
         "IMPLEMENTED": {
-          "state": "UNPROVEN",
-          "evidence_refs": []
+          "state": "PROVEN",
+          "evidence_refs": ["governance/evidence/REQ-SCOPE-172-governance-repair-2026-09-09.json"]
         },
         "INTEGRATED": {
-          "state": "UNPROVEN",
-          "evidence_refs": []
+          "state": "PROVEN",
+          "evidence_refs": ["governance/evidence/REQ-SCOPE-172-governance-repair-2026-09-09.json"]
         },
         "REACHABLE": {
           "state": "UNPROVEN",
           "evidence_refs": []
         },
         "VERIFIED": {
-          "state": "UNPROVEN",
-          "evidence_refs": []
+          "state": "PROVEN",
+          "evidence_refs": ["governance/evidence/REQ-SCOPE-172-governance-repair-2026-09-09.json"]
         },
         "RECOVERABLE": {
           "state": "UNPROVEN",
           "evidence_refs": []
         },
         "AUTHORITY_SAFE": {
-          "state": "UNPROVEN",
-          "evidence_refs": []
+          "state": "PROVEN",
+          "evidence_refs": ["governance/evidence/REQ-SCOPE-172-governance-repair-2026-09-09.json"]
         },
         "CONSUMER_ACCEPTED": {
           "state": "UNPROVEN",
@@ -85,7 +83,7 @@
     {
       "work_id": "WP-172-CHANGE-SCOPE-GATE",
       "parent_program_id": "PROGRAM-GOVERNANCE-REPAIR-001",
-      "state": "ACTIVE",
+      "state": "COMPLETE",
       "paths": [
         "governance/ci_plan.py",
         "tests/governance/test_ci_plan.py"
@@ -104,33 +102,31 @@
       "evidence": {
         "MAPPED": {
           "state": "PROVEN",
-          "evidence_refs": [
-            "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-172"
-          ]
+          "evidence_refs": ["N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-172"]
         },
         "IMPLEMENTED": {
-          "state": "UNPROVEN",
-          "evidence_refs": []
+          "state": "PROVEN",
+          "evidence_refs": ["governance/evidence/REQ-SCOPE-172-governance-repair-2026-09-09.json"]
         },
         "INTEGRATED": {
-          "state": "UNPROVEN",
-          "evidence_refs": []
+          "state": "PROVEN",
+          "evidence_refs": ["governance/evidence/REQ-SCOPE-172-governance-repair-2026-09-09.json"]
         },
         "REACHABLE": {
           "state": "UNPROVEN",
           "evidence_refs": []
         },
         "VERIFIED": {
-          "state": "UNPROVEN",
-          "evidence_refs": []
+          "state": "PROVEN",
+          "evidence_refs": ["governance/evidence/REQ-SCOPE-172-governance-repair-2026-09-09.json"]
         },
         "RECOVERABLE": {
           "state": "UNPROVEN",
           "evidence_refs": []
         },
         "AUTHORITY_SAFE": {
-          "state": "UNPROVEN",
-          "evidence_refs": []
+          "state": "PROVEN",
+          "evidence_refs": ["governance/evidence/REQ-SCOPE-172-governance-repair-2026-09-09.json"]
         },
         "CONSUMER_ACCEPTED": {
           "state": "UNPROVEN",
