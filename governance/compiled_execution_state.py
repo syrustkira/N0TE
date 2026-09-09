@@ -4,110 +4,48 @@ import hashlib
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Iterable, Mapping
-
-
-EPISTEMIC_STATES = frozenset({
-    "OBSERVED",
-    "DERIVED",
-    "CLAIMED",
-    "ASSUMED",
-    "STALE",
-    "UNKNOWN",
-    "UNTESTED",
-    "TESTING",
-    "SUPPORTED",
-    "WEAK",
-    "FAILED_TEST",
-    "BLOCKED",
-    "REJECTED",
-    "RISKY",
-    "PREPARED",
-    "SUBMITTED",
-    "ACCEPTED",
-    "LIVE",
-    "VERIFIED",
-})
-
-# Explicitly legal semantic transitions. Anything not listed is rejected.
-_ALLOWED_TRANSITIONS = {
-    "UNKNOWN": {"OBSERVED", "DERIVED", "CLAIMED", "ASSUMED", "STALE", "UNTESTED", "BLOCKED", "REJECTED", "RISKY"},
-    "UNTESTED": {"TESTING", "BLOCKED", "REJECTED", "RISKY"},
-    "TESTING": {"SUPPORTED", "WEAK", "FAILED_TEST", "BLOCKED"},
-    "PREPARED": {"SUBMITTED", "BLOCKED", "REJECTED"},
-    "SUBMITTED": {"ACCEPTED", "REJECTED", "BLOCKED"},
-    "ACCEPTED": {"LIVE", "BLOCKED"},
-    "LIVE": {"VERIFIED", "STALE", "BLOCKED"},
-    "OBSERVED": {"STALE", "DERIVED"},
-    "DERIVED": {"STALE", "OBSERVED"},
-    "CLAIMED": {"OBSERVED", "STALE", "REJECTED"},
-    "ASSUMED": {"OBSERVED", "DERIVED", "STALE", "REJECTED"},
-    "STALE": {"OBSERVED", "DERIVED", "UNKNOWN", "BLOCKED"},
-    "SUPPORTED": {"STALE", "TESTING"},
-    "WEAK": {"STALE", "TESTING"},
-    "FAILED_TEST": {"STALE", "TESTING"},
-    "BLOCKED": {"UNTESTED", "TESTING", "PREPARED", "OBSERVED", "UNKNOWN"},
-    "RISKY": {"REJECTED", "UNTESTED", "BLOCKED"},
-    "REJECTED": {"STALE"},
-    "VERIFIED": {"STALE"},
-}
-
-# These collapses caused real regressions and are never accepted as shorthand.
-_FORBIDDEN_COLLAPSES = {
-    ("REJECTED", "FAILED_TEST"),
-    ("RISKY", "FAILED_TEST"),
-    ("UNTESTED", "FAILED_TEST"),
-    ("PREPARED", "VERIFIED"),
-    ("SUBMITTED", "VERIFIED"),
-    ("ACCEPTED", "VERIFIED"),
-}
+from typing import Mapping
 
 
 class CompiledStateError(ValueError):
     pass
 
 
-def _text(value: object, field: str) -> str:
-    if not isinstance(value, str) or not value.strip():
-        raise CompiledStateError(f"{field} must be non-empty text")
-    return value.strip()
+def _text(value: object, label: str) -> str:
+    text = str(value or "").strip()
+    if not text:
+        raise CompiledStateError(f"{label} must be non-empty")
+    return text
 
 
-def _unique_text(values: Iterable[object], field: str) -> tuple[str, ...]:
-    out = tuple(_text(item, field) for item in values)
-    if len(out) != len(set(out)):
-        raise CompiledStateError(f"{field} contains duplicates")
-    return out
+def _unique_text(values: object, label: str) -> tuple[str, ...]:
+    if not isinstance(values, (list, tuple)):
+        raise CompiledStateError(f"{label} must be a list")
+    result: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        item = _text(value, label)
+        if item in seen:
+            continue
+        seen.add(item)
+        result.append(item)
+    return tuple(result)
 
 
-def _iso(value: object, field: str) -> datetime:
-    text = _text(value, field)
+def _iso(value: object, label: str) -> datetime:
     try:
-        dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(_text(value, label).replace("Z", "+00:00"))
     except ValueError as exc:
-        raise CompiledStateError(f"{field} must be ISO-8601") from exc
-    if dt.tzinfo is None:
-        raise CompiledStateError(f"{field} must include timezone")
-    return dt.astimezone(timezone.utc)
-
-
-def assert_epistemic_transition(previous: str, current: str) -> None:
-    previous = _text(previous, "previous_state").upper()
-    current = _text(current, "current_state").upper()
-    if previous not in EPISTEMIC_STATES or current not in EPISTEMIC_STATES:
-        raise CompiledStateError("unsupported epistemic state")
-    if previous == current:
-        return
-    if (previous, current) in _FORBIDDEN_COLLAPSES:
-        raise CompiledStateError(f"forbidden epistemic collapse {previous}->{current}")
-    if current not in _ALLOWED_TRANSITIONS.get(previous, set()):
-        raise CompiledStateError(f"illegal epistemic transition {previous}->{current}")
+        raise CompiledStateError(f"{label} must be ISO-8601") from exc
+    if parsed.tzinfo is None:
+        raise CompiledStateError(f"{label} must include timezone")
+    return parsed.astimezone(timezone.utc)
 
 
 @dataclass(frozen=True)
 class StateFact:
     fact_id: str
-    value: str
+    value: object
     state: str
     source_ref: str
     observed_at: datetime
@@ -115,13 +53,10 @@ class StateFact:
 
     @classmethod
     def from_raw(cls, raw: Mapping[str, object]) -> "StateFact":
-        state = _text(raw.get("state"), "fact.state").upper()
-        if state not in EPISTEMIC_STATES:
-            raise CompiledStateError(f"unsupported fact state: {state}")
         return cls(
             fact_id=_text(raw.get("fact_id"), "fact.fact_id"),
-            value=_text(raw.get("value"), "fact.value"),
-            state=state,
+            value=raw.get("value"),
+            state=_text(raw.get("state"), "fact.state"),
             source_ref=_text(raw.get("source_ref"), "fact.source_ref"),
             observed_at=_iso(raw.get("observed_at"), "fact.observed_at"),
             source_revision=_text(raw.get("source_revision"), "fact.source_revision"),
@@ -146,29 +81,62 @@ class JobCursor:
             active_object=_text(raw.get("active_object"), "cursor.active_object"),
             current_step=_text(raw.get("current_step"), "cursor.current_step"),
             acceptance=_text(raw.get("acceptance"), "cursor.acceptance"),
-            state=_text(raw.get("state"), "cursor.state").upper(),
+            state=_text(raw.get("state"), "cursor.state"),
             blockers=_unique_text(raw.get("blockers") or (), "cursor.blockers"),
         )
+
+
+_ALLOWED_EPISTEMIC_TRANSITIONS = {
+    "UNKNOWN": {"UNKNOWN", "OBSERVED", "DERIVED", "CLAIMED", "ASSUMED", "STALE"},
+    "OBSERVED": {"OBSERVED", "DERIVED", "STALE", "SUPPORTED", "WEAK", "FAILED_TEST"},
+    "DERIVED": {"DERIVED", "STALE", "SUPPORTED", "WEAK", "FAILED_TEST"},
+    "CLAIMED": {"CLAIMED", "OBSERVED", "DERIVED", "STALE"},
+    "ASSUMED": {"ASSUMED", "OBSERVED", "DERIVED", "STALE"},
+    "STALE": {"STALE", "OBSERVED", "DERIVED", "UNKNOWN"},
+    "UNTESTED": {"UNTESTED", "TESTING"},
+    "TESTING": {"TESTING", "SUPPORTED", "WEAK", "FAILED_TEST"},
+    "SUPPORTED": {"SUPPORTED", "TESTING", "STALE"},
+    "WEAK": {"WEAK", "TESTING", "SUPPORTED", "FAILED_TEST", "STALE"},
+    "FAILED_TEST": {"FAILED_TEST", "TESTING", "STALE"},
+    "RISKY": {"RISKY", "REJECTED"},
+    "REJECTED": {"REJECTED"},
+    "PREPARED": {"PREPARED", "STAGED", "SUBMITTED"},
+    "STAGED": {"STAGED", "SUBMITTED"},
+    "SUBMITTED": {"SUBMITTED", "ACCEPTED"},
+    "ACCEPTED": {"ACCEPTED", "LIVE"},
+    "LIVE": {"LIVE", "VERIFIED"},
+    "VERIFIED": {"VERIFIED", "STALE"},
+}
+
+
+def assert_epistemic_transition(current: str, nxt: str) -> None:
+    current = _text(current, "current epistemic state")
+    nxt = _text(nxt, "next epistemic state")
+    allowed = _ALLOWED_EPISTEMIC_TRANSITIONS.get(current)
+    if allowed is None:
+        raise CompiledStateError(f"unknown epistemic state: {current}")
+    if nxt not in allowed:
+        raise CompiledStateError(f"illegal epistemic transition: {current} -> {nxt}")
 
 
 @dataclass(frozen=True)
 class CompiledExecutionState:
     retained_scope_refs: tuple[str, ...]
-    truth_owners: dict[str, str]
-    dependency_graph: dict[str, tuple[str, ...]]
-    lens_dispatch: dict[str, tuple[str, ...]]
+    truth_owners: Mapping[str, str]
+    dependency_graph: Mapping[str, tuple[str, ...]]
+    lens_dispatch: Mapping[str, tuple[str, ...]]
     cursor: JobCursor
-    facts: dict[str, StateFact]
+    facts: Mapping[str, StateFact]
     incidents: tuple[str, ...]
     source_fingerprint: str
     compiled_at: datetime
     fingerprint: str
 
+    def required_functions(self) -> tuple[str, ...]:
+        return self.lens_dispatch[self.cursor.active_object]
+
     def next_dependencies(self) -> tuple[str, ...]:
         return self.dependency_graph.get(self.cursor.active_object, ())
-
-    def required_functions(self) -> tuple[str, ...]:
-        return self.lens_dispatch.get(self.cursor.active_object, ())
 
 
 def compile_execution_state(raw: Mapping[str, object]) -> CompiledExecutionState:
@@ -204,7 +172,8 @@ def compile_execution_state(raw: Mapping[str, object]) -> CompiledExecutionState
     if cursor.active_object not in dispatch:
         raise CompiledStateError("active_object has no deterministic lens dispatch")
 
-    facts_raw = raw.get("facts") or ()
+    facts_value = raw.get("facts")
+    facts_raw = [] if facts_value is None else facts_value
     if not isinstance(facts_raw, list):
         raise CompiledStateError("facts must be a list")
     facts: dict[str, StateFact] = {}
@@ -268,23 +237,4 @@ def compile_execution_state(raw: Mapping[str, object]) -> CompiledExecutionState
 
 def prefer_fresher_fact(projected: StateFact, observed: StateFact) -> StateFact:
     """Current observed provider/runtime evidence wins over an older projection."""
-    if projected.fact_id != observed.fact_id:
-        raise CompiledStateError("cannot reconcile different facts")
-    if observed.observed_at < projected.observed_at:
-        return projected
-    return observed
-
-
-def recurrence_fingerprint(*, objective: str, failure_class: str, active_object: str, missing_refs: Iterable[str] = ()) -> str:
-    payload = {
-        "objective": _text(objective, "objective").lower(),
-        "failure_class": _text(failure_class, "failure_class").upper(),
-        "active_object": _text(active_object, "active_object").lower(),
-        "missing_refs": sorted(_unique_text(missing_refs, "missing_refs")),
-    }
-    return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
-
-
-def classify_recurrence(fingerprint: str, previous_fingerprints: Iterable[str]) -> bool:
-    fingerprint = _text(fingerprint, "fingerprint")
-    return fingerprint in set(_unique_text(previous_fingerprints, "previous_fingerprints"))
+    return observed if observed.observed_at >= projected.observed_at else projected
