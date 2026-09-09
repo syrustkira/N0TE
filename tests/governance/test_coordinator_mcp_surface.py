@@ -8,6 +8,7 @@ from n0te.coordinator_mcp import mcp
 
 
 EXPECTED_GATE_TOOLS = {
+    "continue_execution",
     "evaluate_execution_gate",
     "inspect_trusted_context",
     "request_execution_permit",

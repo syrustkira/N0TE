@@ -1,0 +1,144 @@
+{
+  "version": 3,
+  "retained_scope_refs": [
+    "artist",
+    "producer",
+    "songwriter",
+    "engineer",
+    "catalog",
+    "services",
+    "service_acquisition",
+    "qualified_inquiry",
+    "brief",
+    "quote",
+    "paid_start",
+    "licensing",
+    "audience",
+    "relationships",
+    "business",
+    "n0te",
+    "n0te_runtime_context",
+    "n0te_parallel_construction",
+    "n0te_daw_integration",
+    "n0te_music_intelligence",
+    "n0te_collaboration",
+    "n0te_release_rights",
+    "n0te_desktop_runtime",
+    "finance"
+  ],
+  "truth_owners": {
+    "WHY": "TELLMEN0TE MASTER CONTEXT",
+    "WHAT": "N0TE - CURRENT PRODUCT VISION + PUBLIC_SCOPE_CANON",
+    "HOW": "N0TE_PRODUCT_DB + executable governance",
+    "NOW": "TELLMEN0TE_OS + live N0TE repository state",
+    "PROOF": "live repository/provider/runtime evidence"
+  },
+  "dependency_graph": {
+    "services": ["service_acquisition"],
+    "service_acquisition": ["qualified_inquiry"],
+    "qualified_inquiry": ["brief"],
+    "brief": ["quote"],
+    "quote": ["paid_start"],
+    "paid_start": [],
+    "artist": ["audience", "catalog"],
+    "producer": [],
+    "songwriter": [],
+    "engineer": [],
+    "catalog": ["licensing"],
+    "licensing": [],
+    "audience": [],
+    "relationships": [],
+    "business": [],
+    "n0te": [
+      "n0te_runtime_context",
+      "n0te_parallel_construction",
+      "n0te_daw_integration",
+      "n0te_music_intelligence",
+      "n0te_collaboration",
+      "n0te_release_rights",
+      "n0te_desktop_runtime"
+    ],
+    "n0te_runtime_context": [],
+    "n0te_parallel_construction": [],
+    "n0te_daw_integration": [],
+    "n0te_music_intelligence": [],
+    "n0te_collaboration": [],
+    "n0te_release_rights": [],
+    "n0te_desktop_runtime": [],
+    "finance": []
+  },
+  "lens_dispatch": {
+    "services": ["epistemology", "anti_flattening", "positioning", "offer", "proof", "customer_experience", "finance", "agency_velocity"],
+    "service_acquisition": ["epistemology", "anti_flattening", "positioning", "offer", "discovery", "distribution", "sales", "experiments", "finance", "friction_memory", "success_memory", "agency_velocity"],
+    "qualified_inquiry": ["epistemology", "customer_experience", "sales", "offer", "pricing", "authority"],
+    "brief": ["epistemology", "customer_experience", "scope", "authority"],
+    "quote": ["epistemology", "pricing", "negotiation", "finance", "authority"],
+    "paid_start": ["epistemology", "finance", "customer_experience", "verification", "reconciliation"],
+    "artist": ["epistemology", "anti_flattening", "taste", "positioning", "story", "audience_development"],
+    "producer": ["epistemology", "production", "arrangement", "finishing", "feedback_literacy"],
+    "songwriter": ["epistemology", "songwriting", "composition", "arrangement", "feedback_literacy"],
+    "engineer": ["epistemology", "recording", "editing", "mixing", "mastering", "quality_control", "finishing"],
+    "catalog": ["epistemology", "rights", "release", "licensing", "distribution", "finance"],
+    "licensing": ["epistemology", "rights", "offer", "sales", "finance", "authority"],
+    "audience": ["epistemology", "content", "distribution", "discovery", "audience_development", "experiments"],
+    "relationships": ["epistemology", "relationship_management", "authority", "friction_memory"],
+    "business": ["epistemology", "finance", "revenue_portfolio", "sales", "leverage", "agency_velocity"],
+    "n0te": ["epistemology", "anti_flattening", "scope", "capability_evidence", "finishing", "failure_recovery", "parallelization", "integration"],
+    "n0te_runtime_context": ["epistemology", "context_compilation", "retrieval", "authority", "reconciliation", "failure_recovery"],
+    "n0te_parallel_construction": ["dependency_resolution", "parallelization", "collision_detection", "integration", "verification"],
+    "n0te_daw_integration": ["host_capabilities", "focus_context", "musical_plan", "execution", "verification", "recovery"],
+    "n0te_music_intelligence": ["audio_analysis", "references", "arrangement", "mixing", "mastering", "feedback_literacy"],
+    "n0te_collaboration": ["collaboration", "authorship", "provenance", "versioning", "handoff", "authority"],
+    "n0te_release_rights": ["rights", "credits", "splits", "metadata", "release", "provenance"],
+    "n0te_desktop_runtime": ["desktop_runtime", "lifecycle", "persistence", "credentials", "recovery", "accessibility"],
+    "finance": ["epistemology", "finance", "agency_velocity", "opportunity_cost", "risk"]
+  },
+  "decision_constraints": {
+    "focus_does_not_delete_scope": {
+      "rule": "Activating one room never retires accepted retained scope.",
+      "failure_class": "ACTIVE_SUBSYSTEM_ERASED_RETAINED_SCOPE"
+    },
+    "build_does_not_stop_at_pr": {
+      "rule": "Planning alone does not create a pull request. A pull request exists only for real implementation and remains incomplete until verified integration or a truthful blocker is recorded.",
+      "failure_class": "PLANNING_ARTIFACT_MISTAKEN_FOR_IMPLEMENTATION"
+    },
+    "parallel_construction": {
+      "rule": "Expose every dependency-valid, authority-bounded, path-disjoint ready construction front. Vertical journeys verify integration; they do not serialize construction by default.",
+      "failure_class": "SAFE_PARALLEL_WORK_SERIALIZED"
+    },
+    "production_entry": {
+      "requires_rough_demo": false,
+      "valid_starting_material": ["idea", "reference", "story", "mood", "lyrics", "melody", "voice_note", "instrumental_need", "unfinished_session", "rough_demo", "approved_mix"],
+      "rule": "Creating the first workable demo can itself be the production job."
+    },
+    "service_demand": {
+      "meaningful_exposure_required_before_failure_conclusion": true,
+      "rule": "No meaningful acquisition exposure means demand remains UNTESTED, not FAILED_TEST."
+    },
+    "economic_selection": {
+      "forbidden_shortcut": "LOW_CASH=>LOWEST_VALUE_JOB",
+      "rule": "Compare time-to-cash, probability, user hours, opportunity cost, sustainability, downside and impact on higher-leverage work."
+    },
+    "completion": {
+      "rule": "A file, page, PR, merge, prepared artifact, submission or local PASS is not an external or human outcome unless it is the acceptance object and fresh evidence verifies it."
+    },
+    "anti_loop": {
+      "rule": "A repeated already-owned correction is a retrieval, propagation, function-invocation or completion incident before it is a reason to add doctrine."
+    },
+    "runtime_precedence": {
+      "rule": "Fresh observed provider/runtime evidence outranks stale projected current state."
+    }
+  },
+  "standing_authority": {
+    "auto": ["READ_ONLY", "REVERSIBLE"],
+    "human_required_when": [
+      "spend_money",
+      "enter_contract",
+      "transfer_rights",
+      "irreversible_publication",
+      "destructive_delete",
+      "financial_transaction",
+      "person_directed_outreach_when_not_preapproved"
+    ]
+  }
+}
