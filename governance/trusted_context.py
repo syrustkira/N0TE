@@ -71,6 +71,10 @@ def _authority_profiles(value, field):
             raise TrustedContextError(
                 f"{field} contains unsupported stateful action class: {action_class}"
             )
+        if action_class in profiles:
+            raise TrustedContextError(
+                f"{field} contains duplicate normalized action class: {action_class}"
+            )
         if not isinstance(raw_profile, dict):
             raise TrustedContextError(f"{field}.{action_class} must be an object")
         requires_human = raw_profile.get("requires_human")
@@ -322,6 +326,8 @@ class FileTrustedContextProvider:
     The MCP/model-facing surface deliberately has no method that creates or edits
     these snapshots. If the canonical sync has not produced one, permit issuance
     fails closed instead of asking the model to invent its own context authority.
+    The store must also name exactly one current snapshot so callers cannot revive
+    superseded approvals or authority profiles by selecting an older snapshot ID.
     """
 
     def __init__(self, path: str | Path):
@@ -344,12 +350,26 @@ class FileTrustedContextProvider:
             raise TrustedContextError(
                 "trusted context snapshot store must contain snapshots list"
             )
-        for item in snapshots:
-            if (
-                isinstance(item, dict)
-                and item.get("snapshot_id") == snapshot_id
-            ):
-                return validate_trusted_context_snapshot(item)
-        raise TrustedContextError(
-            f"trusted context snapshot not found: {snapshot_id}"
+        current_snapshot_id = _text(
+            raw.get("current_snapshot_id"),
+            "current_snapshot_id",
         )
+        if snapshot_id != current_snapshot_id:
+            raise TrustedContextError(
+                f"trusted context snapshot is not current: {snapshot_id}"
+            )
+        matches = [
+            item
+            for item in snapshots
+            if isinstance(item, dict)
+            and item.get("snapshot_id") == current_snapshot_id
+        ]
+        if not matches:
+            raise TrustedContextError(
+                f"current trusted context snapshot not found: {current_snapshot_id}"
+            )
+        if len(matches) != 1:
+            raise TrustedContextError(
+                f"duplicate current trusted context snapshot: {current_snapshot_id}"
+            )
+        return validate_trusted_context_snapshot(matches[0])
