@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "kind": "REQUIREMENT_EVIDENCE_RECEIPT",
+  "requirement_id": "REQ-SCOPE-090",
+  "semantic_owner": "N0TE_PRODUCT_DB/SCOPE_LEDGER",
+  "observed_at": "2026-09-09T19:36:05Z",
+  "claims": {
+    "MAPPED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-090"
+      ]
+    },
+    "IMPLEMENTED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/musical_transactions.py",
+        "tests/ops/test_musical_transactions.py",
+        "pull-request:10",
+        "n0te/produce_shell.py",
+        "n0te/memory.py",
+        "main:90cc239b31b82d83882bf1d34e89347b924d05f0",
+        "ci-run:34395868164"
+      ]
+    },
+    "INTEGRATED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/musical_plan.py",
+        "n0te/authority.py",
+        "n0te/operations.py",
+        "n0te/song_transactions.py",
+        "n0te/transactions.py",
+        "main:83f95d1dc6abf30cf7ffb7e538a5bc38c44002a5",
+        "n0te/produce_shell.py",
+        "n0te/memory.py",
+        "tests/acceptance/test_req_scope_079_090_produce_reachability.py",
+        "main:90cc239b31b82d83882bf1d34e89347b924d05f0",
+        "ci-run:34395868164"
+      ]
+    },
+    "REACHABLE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "tests/acceptance/test_req_scope_079_090_produce_reachability.py",
+        "main:90cc239b31b82d83882bf1d34e89347b924d05f0",
+        "ci-run:34395868164"
+      ]
+    },
+    "VERIFIED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "ci-run:34269522207",
+        "ci-run:34269544978",
+        "ci-run:34269805074",
+        "tests/acceptance/test_req_scope_079_090_produce_reachability.py",
+        "main:90cc239b31b82d83882bf1d34e89347b924d05f0",
+        "ci-run:34395868164"
+      ]
+    },
+    "RECOVERABLE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "tests/ops/test_musical_transactions.py",
+        "n0te/song_transactions.py",
+        "n0te/transactions.py",
+        "n0te/operations.py",
+        "ci-run:34269805074"
+      ],
+      "observed_result": "The exercised bridge compensates prior applied actions after a known downstream failure, persists UNKNOWN execution as RECOVERY_REQUIRED, exposes durable recovery review through the existing transaction history, and clears that review only after canonical OperationJournal reconciliation evidence."
+    },
+    "AUTHORITY_SAFE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "n0te/musical_transactions.py",
+        "tests/ops/test_musical_transactions.py",
+        "n0te/authority.py",
+        "n0te/operations.py",
+        "ci-run:34269805074",
+        "n0te/produce_shell.py",
+        "tests/acceptance/test_req_scope_079_090_produce_reachability.py",
+        "main:90cc239b31b82d83882bf1d34e89347b924d05f0",
+        "ci-run:34395868164"
+      ]
+    },
+    "CONSUMER_ACCEPTED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "Automated bridge execution and recovery verification is not artist acceptance."
+    },
+    "VALUE_EVIDENCED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "No real production-session value observation was recorded in WP-090."
+    }
+  },
+  "mechanical_closeout": {
+    "program_id": "PROGRAM-PERSONAL-PRODUCTION-002",
+    "work_id": "WP-079-090-PRODUCE-REACHABILITY",
+    "resulting_main_execution_commit": "90cc239b31b82d83882bf1d34e89347b924d05f0",
+    "resulting_main_execution_ci_run": 34395868164,
+    "automatic_consumer_acceptance": false,
+    "automatic_value_evidence": false
+  },
+  "anti_collapse_rule": "Mechanical closeout may promote only dimensions pre-authorized by the work package. CONSUMER_ACCEPTED and VALUE_EVIDENCED are never automated."
+}
