@@ -44,11 +44,14 @@ def advance_after_acceptance(
     state: CompiledExecutionState,
     *,
     completed_object: str,
-) -> str | None:
+) -> tuple[str, ...]:
+    """Return every canonical successor that becomes available after acceptance.
+
+    Construction must not silently serialize safe sibling work by selecting only the
+    first successor. Collision, authority and dependency checks happen at the work
+    allocator/integration boundary; this function preserves the complete canonical
+    ready set for that decision.
+    """
     if completed_object != state.cursor.active_object:
         raise ContinuationError("cannot advance a cursor for a different active object")
-    successors = state.next_dependencies()
-    if not successors:
-        return None
-    # Graph ordering is canonical ordering, not model salience.
-    return successors[0]
+    return state.next_dependencies()
