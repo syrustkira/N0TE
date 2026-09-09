@@ -59,8 +59,8 @@
   "current_requirement_evidence": {
     "REQ-SCOPE-003": "governance/evidence/REQ-SCOPE-003-headquarters-reachability-2026-09-08.json",
     "REQ-SCOPE-010": "governance/evidence/REQ-SCOPE-010-compare-decide-reachability-2026-09-08.json",
-    "REQ-SCOPE-079": "governance/evidence/REQ-SCOPE-079-musical-plan-ir-2026-09-08.json",
-    "REQ-SCOPE-090": "governance/evidence/REQ-SCOPE-090-musical-transaction-bridge-2026-09-08.json",
+    "REQ-SCOPE-079": "governance/evidence/REQ-SCOPE-079-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json",
+    "REQ-SCOPE-090": "governance/evidence/REQ-SCOPE-090-WP-079-090-PRODUCE-REACHABILITY-90cc239b31b8.json",
     "REQ-SCOPE-172": "governance/evidence/REQ-SCOPE-172-governance-repair-2026-09-09.json"
   },
   "active_construction_program": "governance/programs/PROGRAM-PERSONAL-PRODUCTION-002.json",

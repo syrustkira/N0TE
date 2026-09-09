@@ -50,14 +50,13 @@ def test_fast_pipeline_is_durably_active_after_independent_and_activation_proof(
     assert receipt["product_acceptance_effect"] == "NONE"
 
 
-def test_active_produce_package_predeclares_only_safe_mechanical_closeout_dimensions():
+def test_produce_package_predeclares_only_safe_mechanical_closeout_dimensions():
     program = load_json("governance/programs/PROGRAM-PERSONAL-PRODUCTION-002.json")
     package = next(
         item
         for item in program["work_packages"]
         if item["work_id"] == "WP-079-090-PRODUCE-REACHABILITY"
     )
-    assert package["state"] == "ACTIVE"
     assert set(package["mechanical_closeout_allowlist"]) == {
         "IMPLEMENTED",
         "INTEGRATED",
@@ -68,6 +67,11 @@ def test_active_produce_package_predeclares_only_safe_mechanical_closeout_dimens
     assert "RECOVERABLE" not in package["mechanical_closeout_allowlist"]
     assert "CONSUMER_ACCEPTED" not in package["mechanical_closeout_allowlist"]
     assert "VALUE_EVIDENCED" not in package["mechanical_closeout_allowlist"]
+    if package["state"] == "COMPLETE":
+        closeout = package.get("mechanical_closeout")
+        assert isinstance(closeout, dict)
+        assert closeout["resulting_main_execution_commit"]
+        assert closeout["resulting_main_execution_ci_run"]
 
 
 def test_ci_workflow_removes_duplicate_branch_pushes_and_keeps_exact_head_and_main_proof():
