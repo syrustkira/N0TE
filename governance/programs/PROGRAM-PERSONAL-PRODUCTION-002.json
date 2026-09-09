@@ -9,6 +9,8 @@
     "n0te/musical_transactions.py",
     "tests/ops/test_musical_transactions.py",
     "n0te/consumer_shell.py",
+    "n0te/produce_shell.py",
+    "n0te/memory.py",
     "tests/acceptance/test_req_scope_079_090_produce_reachability.py",
     "n0te/capabilities.py",
     "tests/core/test_guided_fallback_policy.py"
@@ -75,6 +77,8 @@
       "state": "ACTIVE",
       "paths": [
         "n0te/consumer_shell.py",
+        "n0te/produce_shell.py",
+        "n0te/memory.py",
         "tests/acceptance/test_req_scope_079_090_produce_reachability.py"
       ],
       "requirement_ids": ["REQ-SCOPE-079", "REQ-SCOPE-090"],
