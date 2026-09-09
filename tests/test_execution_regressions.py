@@ -40,7 +40,9 @@ def test_current_manifest_encodes_observed_context_and_routing_failures():
     assert "retrieval" in constraints["anti_loop"]["rule"].lower()
     assert "runtime" in constraints["runtime_precedence"]["rule"].lower()
     assert "planning" in constraints["build_does_not_stop_at_pr"]["rule"].lower()
-    assert "parallel" in constraints["parallel_construction"]["rule"].lower()
+    parallel_rule = constraints["parallel_construction"]["rule"].lower()
+    assert "path-disjoint" in parallel_rule
+    assert "do not serialize" in parallel_rule
 
     acquisition_functions = set(manifest["lens_dispatch"]["service_acquisition"])
     assert {
