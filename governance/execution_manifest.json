@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "retained_scope_refs": [
     "artist",
     "producer",
@@ -17,13 +17,20 @@
     "relationships",
     "business",
     "n0te",
+    "n0te_runtime_context",
+    "n0te_parallel_construction",
+    "n0te_daw_integration",
+    "n0te_music_intelligence",
+    "n0te_collaboration",
+    "n0te_release_rights",
+    "n0te_desktop_runtime",
     "finance"
   ],
   "truth_owners": {
     "WHY": "TELLMEN0TE MASTER CONTEXT",
     "WHAT": "N0TE - CURRENT PRODUCT VISION + PUBLIC_SCOPE_CANON",
     "HOW": "N0TE_PRODUCT_DB + executable governance",
-    "NOW": "TELLMEN0TE_OS",
+    "NOW": "TELLMEN0TE_OS + live N0TE repository state",
     "PROOF": "live repository/provider/runtime evidence"
   },
   "dependency_graph": {
@@ -42,7 +49,22 @@
     "audience": [],
     "relationships": [],
     "business": [],
-    "n0te": [],
+    "n0te": [
+      "n0te_runtime_context",
+      "n0te_parallel_construction",
+      "n0te_daw_integration",
+      "n0te_music_intelligence",
+      "n0te_collaboration",
+      "n0te_release_rights",
+      "n0te_desktop_runtime"
+    ],
+    "n0te_runtime_context": [],
+    "n0te_parallel_construction": [],
+    "n0te_daw_integration": [],
+    "n0te_music_intelligence": [],
+    "n0te_collaboration": [],
+    "n0te_release_rights": [],
+    "n0te_desktop_runtime": [],
     "finance": []
   },
   "lens_dispatch": {
@@ -61,13 +83,28 @@
     "audience": ["epistemology", "content", "distribution", "discovery", "audience_development", "experiments"],
     "relationships": ["epistemology", "relationship_management", "authority", "friction_memory"],
     "business": ["epistemology", "finance", "revenue_portfolio", "sales", "leverage", "agency_velocity"],
-    "n0te": ["epistemology", "anti_flattening", "scope", "capability_evidence", "finishing", "failure_recovery"],
+    "n0te": ["epistemology", "anti_flattening", "scope", "capability_evidence", "finishing", "failure_recovery", "parallelization", "integration"],
+    "n0te_runtime_context": ["epistemology", "context_compilation", "retrieval", "authority", "reconciliation", "failure_recovery"],
+    "n0te_parallel_construction": ["dependency_resolution", "parallelization", "collision_detection", "integration", "verification"],
+    "n0te_daw_integration": ["host_capabilities", "focus_context", "musical_plan", "execution", "verification", "recovery"],
+    "n0te_music_intelligence": ["audio_analysis", "references", "arrangement", "mixing", "mastering", "feedback_literacy"],
+    "n0te_collaboration": ["collaboration", "authorship", "provenance", "versioning", "handoff", "authority"],
+    "n0te_release_rights": ["rights", "credits", "splits", "metadata", "release", "provenance"],
+    "n0te_desktop_runtime": ["desktop_runtime", "lifecycle", "persistence", "credentials", "recovery", "accessibility"],
     "finance": ["epistemology", "finance", "agency_velocity", "opportunity_cost", "risk"]
   },
   "decision_constraints": {
     "focus_does_not_delete_scope": {
       "rule": "Activating one room never retires accepted retained scope.",
       "failure_class": "ACTIVE_SUBSYSTEM_ERASED_RETAINED_SCOPE"
+    },
+    "build_does_not_stop_at_pr": {
+      "rule": "Planning alone does not create a pull request. A pull request exists only for real implementation and remains incomplete until verified integration or a truthful blocker is recorded.",
+      "failure_class": "PLANNING_ARTIFACT_MISTAKEN_FOR_IMPLEMENTATION"
+    },
+    "parallel_construction": {
+      "rule": "Expose every dependency-valid, authority-bounded, path-disjoint ready construction front. Vertical journeys verify integration; they do not serialize construction by default.",
+      "failure_class": "SAFE_PARALLEL_WORK_SERIALIZED"
     },
     "production_entry": {
       "requires_rough_demo": false,
