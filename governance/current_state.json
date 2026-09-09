@@ -37,50 +37,33 @@
     },
     "pull_request_verification": "EXACT_HEAD",
     "branch_push_duplication": "DISABLED_EXCEPT_MAIN",
-    "risk_tiers": [
-      "FULL",
-      "TARGETED",
-      "GOVERNANCE"
-    ],
+    "risk_tiers": ["FULL", "TARGETED", "GOVERNANCE"],
     "stale_pr_runs": "CANCELLED",
     "dependency_cache": "PIP_BY_REQUIREMENTS",
     "mechanical_closeout": {
       "trigger": "SUCCESSFUL_RESULTING_MAIN_RUN_WITH_EXPLICIT_N0TE_CLOSEOUT_MARKER",
       "scope": "CURRENT_ACTIVE_WORK_PACKAGE_ONLY",
       "dimension_authority": "PREDECLARED_MECHANICAL_CLOSEOUT_ALLOWLIST_ONLY",
-      "never_automatic": [
-        "CONSUMER_ACCEPTED",
-        "VALUE_EVIDENCED"
-      ],
+      "never_automatic": ["CONSUMER_ACCEPTED", "VALUE_EVIDENCED"],
       "write_mode": "VALIDATE_EXACT_GENERATED_TREE_THEN_FAST_FORWARD_FROM_GREEN_MAIN",
       "race_behavior": "FAIL_IF_MAIN_MOVED"
     }
   },
   "last_completed_construction_program": {
-    "program_id": "PROGRAM-PERSONAL-PRODUCTION-001",
-    "program_path": "governance/programs/PROGRAM-PERSONAL-PRODUCTION-001.json",
-    "completion_receipt": "governance/evidence/PROGRAM-PERSONAL-PRODUCTION-001-completion-2026-09-08.json",
-    "resulting_main_execution_commit": "c0cb39fe47779f7a36f6bec877c4861ab73776cf",
-    "resulting_main_execution_ci_run": 34261064328
+    "program_id": "PROGRAM-GOVERNANCE-REPAIR-001",
+    "program_path": "governance/programs/PROGRAM-GOVERNANCE-REPAIR-001.json",
+    "completion_receipt": "governance/evidence/REQ-SCOPE-172-governance-repair-2026-09-09.json",
+    "resulting_main_execution_commit": "30bf813b1de176d9a8c463c2b799fe39bb8b9c69",
+    "resulting_main_execution_ci_run": 34365651432
   },
   "current_requirement_evidence": {
     "REQ-SCOPE-003": "governance/evidence/REQ-SCOPE-003-headquarters-reachability-2026-09-08.json",
     "REQ-SCOPE-010": "governance/evidence/REQ-SCOPE-010-compare-decide-reachability-2026-09-08.json",
     "REQ-SCOPE-079": "governance/evidence/REQ-SCOPE-079-musical-plan-ir-2026-09-08.json",
     "REQ-SCOPE-090": "governance/evidence/REQ-SCOPE-090-musical-transaction-bridge-2026-09-08.json",
-    "REQ-SCOPE-172": "governance/evidence/REQ-SCOPE-172-first-program-reachability-2026-09-08.json"
+    "REQ-SCOPE-172": "governance/evidence/REQ-SCOPE-172-governance-repair-2026-09-09.json"
   },
-  "active_construction_program": "governance/programs/PROGRAM-GOVERNANCE-REPAIR-001.json",
-  "interrupted_construction_program": {
-    "program_id": "PROGRAM-PERSONAL-PRODUCTION-002",
-    "program_path": "governance/programs/PROGRAM-PERSONAL-PRODUCTION-002.json",
-    "state_at_interrupt": "ACTIVE",
-    "active_work_package_ids": [
-      "WP-079-090-PRODUCE-REACHABILITY"
-    ],
-    "reason": "Explicit current human direction on 2026-09-09 reprioritized bounded REQ-SCOPE-172 governance repair after a verified authority-enforcement defect was found.",
-    "resume_condition": "Resume after the bounded governance implementation repair reaches verified resulting-main state, unless fresher canonical evidence or explicit current human direction changes priority."
-  },
+  "active_construction_program": "governance/programs/PROGRAM-PERSONAL-PRODUCTION-002.json",
   "work_selection_rule": "Resume durable unfinished construction programs or work packages first unless explicit current human direction validly reprioritizes portfolio work and that direction is reconciled into a bounded current construction program. For an active construction program, validate the parent and expose every dependency-valid, authority-bounded, path-disjoint sibling package not blocked by evidenced blast radius. Otherwise select from current canonical scope and current evidence only.",
   "normal_reconstruction": "Begin from the clean N0TE START HERE, current semantic owners, current repository state, and requirement-level evidence."
 }

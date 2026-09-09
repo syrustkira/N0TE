@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "kind": "REQUIREMENT_EVIDENCE_RECEIPT",
+  "requirement_id": "REQ-SCOPE-172",
+  "semantic_owner": "N0TE_PRODUCT_DB/SCOPE_LEDGER",
+  "observed_at": "2026-09-09T18:56:00Z",
+  "claims": {
+    "MAPPED": {
+      "state": "PROVEN",
+      "evidence_refs": ["N0TE_PRODUCT_DB/SCOPE_LEDGER:REQ-SCOPE-172"]
+    },
+    "IMPLEMENTED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "pr:17",
+        "pr-head:797f282e22a22094268d34dce5c7ac65951307df",
+        "main:30bf813b1de176d9a8c463c2b799fe39bb8b9c69"
+      ]
+    },
+    "INTEGRATED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "main:30bf813b1de176d9a8c463c2b799fe39bb8b9c69",
+        "ci-run:34365651432"
+      ],
+      "observed_result": "Trusted-context authority binding and changed-path construction authority are present on resulting main and exercised by repository CI."
+    },
+    "REACHABLE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "ci-run:34391650569"
+      ],
+      "observed_result": "The active construction change-scope gate rejected PR #18 product paths because they were outside the selected governance-repair program, proving the repaired gate is live in the actual pull-request path."
+    },
+    "VERIFIED": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "ci-run:34364617991",
+        "ci-run:34365651432",
+        "ci-run:34391650569"
+      ]
+    },
+    "RECOVERABLE": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "Repository proof does not independently establish rollback/recovery of the governance state itself."
+    },
+    "AUTHORITY_SAFE": {
+      "state": "PROVEN",
+      "evidence_refs": [
+        "pr:17",
+        "ci-run:34364617991",
+        "ci-run:34391650569"
+      ],
+      "observed_result": "Caller-supplied authority was bound to server-owned trusted context, and unrelated substantive paths were rejected by the selected-program gate."
+    },
+    "CONSUMER_ACCEPTED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "Governance repair verification is not Personal Production consumer acceptance."
+    },
+    "VALUE_EVIDENCED": {
+      "state": "UNPROVEN",
+      "evidence_refs": [],
+      "reason": "No real artist-work value consequence is claimed by this governance repair."
+    }
+  },
+  "anti_collapse_rule": "This receipt proves the bounded REQ-SCOPE-172 governance repair is implemented, integrated, reachable, verified and authority-safe in repository operation. It does not prove governance recoverability, Personal Production acceptance or user value."
+}

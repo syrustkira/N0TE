@@ -177,7 +177,7 @@ class CapabilityCandidate:
         object.__setattr__(
             self,
             "capability",
-            _required_text(self.capability, "candidate.capability"),
+            _required_text(self.capability, "candidate.capability")
         )
         object.__setattr__(
             self,
@@ -270,6 +270,8 @@ class CapabilityResolver:
     Route kind, brand and display name never contribute to score. They are
     descriptive metadata only. Legitimacy is filtered before scoring, so user
     preference cannot resurrect an unverified, incompatible or forbidden route.
+    GUIDED remains a terminal fallback: it may resolve only when no legitimate
+    automated HOST_NATIVE/N0TE_NATIVE/OWNED_TOOL/PROVIDER route is available.
     """
 
     @staticmethod
@@ -368,7 +370,35 @@ class CapabilityResolver:
             else:
                 legitimate.append(self._assessment(candidate))
 
+        # Invalid candidates retain the historical deterministic ordering. Guided
+        # candidates are policy-excluded only after legitimacy is established so
+        # an unverified automated route never blocks truthful manual fallback.
         rejected.sort(key=lambda item: item.candidate_id)
+        automated = [
+            item for item in legitimate if item.candidate.route_kind != "GUIDED"
+        ]
+        guided_excluded = False
+        if automated:
+            guided = sorted(
+                (
+                    item
+                    for item in legitimate
+                    if item.candidate.route_kind == "GUIDED"
+                ),
+                key=lambda item: item.candidate.candidate_id,
+            )
+            guided_excluded = bool(guided)
+            rejected.extend(
+                CandidateRejection(
+                    candidate_id=item.candidate.candidate_id,
+                    route_kind=item.candidate.route_kind,
+                    display_name=item.candidate.display_name,
+                    reason_codes=("GUIDED_FALLBACK_ONLY_AUTOMATION_AVAILABLE",),
+                )
+                for item in guided
+            )
+            legitimate = automated
+
         legitimate.sort(key=lambda item: (-item.score, item.candidate.candidate_id))
 
         if not legitimate:
@@ -389,6 +419,8 @@ class CapabilityResolver:
 
         top = legitimate[0]
         resolution_reasons = ["RECOMMENDED_HIGHEST_EXPLICIT_SCORE"]
+        if guided_excluded:
+            resolution_reasons.append("AUTOMATION_AVAILABLE_GUIDED_EXCLUDED")
         tied = [
             item for item in legitimate if abs(item.score - top.score) <= 1e-12
         ]
