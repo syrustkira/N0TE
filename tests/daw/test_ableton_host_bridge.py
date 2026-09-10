@@ -136,6 +136,7 @@ def test_snapshot_parser_is_strict_and_builds_only_observed_evidence():
     assert snapshot.runtime.family == "ABLETON_LIVE"
     assert snapshot.runtime.version == "12.4.5"
     assert snapshot.location_ref == "ableton-session:session-123"
+    assert snapshot.session_location_ref == "ableton-session:session-123"
     assert snapshot.has_durable_set_location is False
     assert snapshot.selected_track.ref == "track:1"
     assert {item.capability for item in snapshot.capabilities()} == {
@@ -202,6 +203,24 @@ def test_remote_script_capture_hashes_saved_set_path_and_never_exposes_or_writes
     assert song.set_data_calls == []
 
 
+def test_bridge_session_id_survives_save_but_rotates_when_live_song_object_changes():
+    song_a = _Song()
+    c_instance = _CInstance(song_a)
+    bridge = N0TEBridge(c_instance, start_server=False)
+    try:
+        unsaved = bridge._capture_snapshot()
+        song_a.file_path = "/tmp/TellMeN0TE/Saved Same Document.als"
+        saved = bridge._capture_snapshot()
+        assert saved["bridge_session_id"] == unsaved["bridge_session_id"]
+        assert saved["set_path_fingerprint"] is not None
+
+        c_instance._song = _Song(file_path="/tmp/TellMeN0TE/Another Set.als")
+        replacement = bridge._capture_snapshot()
+        assert replacement["bridge_session_id"] != saved["bridge_session_id"]
+    finally:
+        bridge.disconnect()
+
+
 def test_remote_script_http_is_loopback_get_only_and_external_client_reads_it():
     song = _Song()
     bridge = N0TEBridge(_CInstance(song), port=0, start_server=True)
@@ -261,6 +280,87 @@ def test_live_snapshot_roundtrips_into_canonical_reference_workflow(tmp_path):
             for fact in shadow.facts
         )
         assert live_song.set_data_calls == []
+    finally:
+        if bridge is not None:
+            bridge.disconnect()
+        headquarters.close()
+
+
+def test_unsaved_set_reconciles_same_workspace_when_first_saved(tmp_path):
+    headquarters = HeadquartersMemory.create(tmp_path, "Ableton Bridge Artist")
+    bridge = None
+    saved_path = "/tmp/TellMeN0TE/Album/First Save.als"
+    try:
+        headquarters.store.create_song("Bridge Song")
+        live_song = _Song()
+        bridge = N0TEBridge(_CInstance(live_song), port=0, start_server=True)
+        reference_client = _ReferenceClient()
+        workflow = HostSessionReferenceWorkflow(
+            headquarters.host_observation,
+            reference_client,
+        )
+        client = AbletonRemoteScriptClient(
+            endpoint=f"http://127.0.0.1:{bridge.port}",
+        )
+
+        first = asyncio.run(
+            client.observe_and_discover(workflow, provider_id="session-local")
+        )
+        workspace_id = first.observation.binding.workspace_id
+        session_location = first.handshake.workspace.current_observation.location_ref
+        assert first.handshake.status == "CREATED"
+        assert session_location.startswith("ableton-session:")
+
+        live_song.file_path = saved_path
+        second = asyncio.run(
+            client.observe_and_discover(workflow, provider_id="session-local")
+        )
+        durable_location = second.handshake.workspace.current_observation.location_ref
+
+        assert second.handshake.status == "RECONCILED"
+        assert second.observation.binding.workspace_id == workspace_id
+        assert durable_location.startswith("ableton-set:sha256:")
+        assert durable_location != session_location
+        assert saved_path not in durable_location
+        assert len(headquarters.workspaces.history(workspace_id)) == 2
+        assert live_song.set_data_calls == []
+    finally:
+        if bridge is not None:
+            bridge.disconnect()
+        headquarters.close()
+
+
+def test_different_live_song_object_cannot_inherit_prior_unsaved_workspace(tmp_path):
+    headquarters = HeadquartersMemory.create(tmp_path, "Ableton Bridge Artist")
+    bridge = None
+    try:
+        headquarters.store.create_song("Bridge Song")
+        song_a = _Song()
+        c_instance = _CInstance(song_a)
+        bridge = N0TEBridge(c_instance, port=0, start_server=True)
+        workflow = HostSessionReferenceWorkflow(
+            headquarters.host_observation,
+            _ReferenceClient(),
+        )
+        client = AbletonRemoteScriptClient(
+            endpoint=f"http://127.0.0.1:{bridge.port}",
+        )
+
+        first = asyncio.run(
+            client.observe_and_discover(workflow, provider_id="session-local")
+        )
+        first_workspace = first.observation.binding.workspace_id
+
+        c_instance._song = _Song(file_path="/tmp/TellMeN0TE/Completely Different Set.als")
+        second = asyncio.run(
+            client.observe_and_discover(workflow, provider_id="session-local")
+        )
+
+        assert second.handshake.status == "CREATED"
+        assert second.observation.binding.workspace_id != first_workspace
+        assert second.handshake.workspace.current_observation.location_ref.startswith(
+            "ableton-set:sha256:"
+        )
     finally:
         if bridge is not None:
             bridge.disconnect()

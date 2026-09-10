@@ -175,6 +175,10 @@ class AbletonObservationSnapshot:
         return f"ableton-session:{self.bridge_session_id}"
 
     @property
+    def session_location_ref(self) -> str:
+        return f"ableton-session:{self.bridge_session_id}"
+
+    @property
     def has_durable_set_location(self) -> bool:
         return self.set_path_fingerprint is not None
 
@@ -411,6 +415,27 @@ class AbletonRemoteScriptClient:
             raise AbletonHostBridgeError("Ableton bridge response is not valid UTF-8 JSON") from exc
         return AbletonObservationSnapshot.from_payload(payload)
 
+    @staticmethod
+    def _known_workspace_id_for_snapshot(
+        workflow: HostSessionReferenceWorkflow,
+        snapshot: AbletonObservationSnapshot,
+    ) -> str | None:
+        if snapshot.workspace_id is not None:
+            return snapshot.workspace_id
+        if not snapshot.has_durable_set_location:
+            return None
+
+        candidates = workflow.handshake.workspaces.current_candidates_at_location(
+            snapshot.session_location_ref
+        )
+        if len(candidates) > 1:
+            raise AbletonHostBridgeError(
+                "multiple current workspaces claim this Ableton document session"
+            )
+        if not candidates:
+            return None
+        return candidates[0].id
+
     async def observe_and_discover(
         self,
         workflow: HostSessionReferenceWorkflow,
@@ -427,10 +452,11 @@ class AbletonRemoteScriptClient:
         if not isinstance(workflow, HostSessionReferenceWorkflow):
             raise TypeError("workflow must be HostSessionReferenceWorkflow")
         snapshot = await asyncio.to_thread(self.fetch_snapshot)
+        known_workspace_id = self._known_workspace_id_for_snapshot(workflow, snapshot)
         return await workflow.observe_and_discover(
             runtime=snapshot.runtime,
             location_ref=snapshot.location_ref,
-            known_workspace_id=snapshot.workspace_id,
+            known_workspace_id=known_workspace_id,
             display_name="Ableton Live Set",
             provider_id=provider_id,
             capabilities=snapshot.capabilities(),

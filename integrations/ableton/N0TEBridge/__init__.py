@@ -137,13 +137,16 @@ class N0TEBridge(ControlSurface):
     The bridge intentionally exposes no setters, transport controls, device writes,
     calibration fields, Song selection, or provider requests. It observes Live on
     Live's main thread and serves one bounded JSON snapshot over IPv4 loopback.
+    The bridge session identifier is scoped to the current Live Song object so a
+    save keeps continuity while loading another Set rotates session identity.
     """
 
     def __init__(self, c_instance, host=HOST, port=PORT, start_server=True):
         ControlSurface.__init__(self, c_instance)
         self._queue_lock = threading.Lock()
         self._pending_live_calls = []
-        self._bridge_session_id = uuid.uuid4().hex
+        self._observed_song = None
+        self._bridge_session_id = None
         self._server = None
         self._server_thread = None
         self.host = host
@@ -186,6 +189,8 @@ class N0TEBridge(ControlSurface):
             finally:
                 server.server_close()
         self._server_thread = None
+        self._observed_song = None
+        self._bridge_session_id = None
         ControlSurface.disconnect(self)
 
     def _drain_live_calls(self):
@@ -216,6 +221,12 @@ class N0TEBridge(ControlSurface):
 
     def request_snapshot(self):
         return self._call_live_thread(self._capture_snapshot)
+
+    def _session_id_for_song(self, song):
+        if song is not self._observed_song or self._bridge_session_id is None:
+            self._observed_song = song
+            self._bridge_session_id = uuid.uuid4().hex
+        return self._bridge_session_id
 
     @staticmethod
     def _index_by_identity(items, target):
@@ -280,7 +291,7 @@ class N0TEBridge(ControlSurface):
         payload = {
             "schema": SCHEMA,
             "adapter": {"id": ADAPTER_ID, "version": ADAPTER_VERSION},
-            "bridge_session_id": self._bridge_session_id,
+            "bridge_session_id": self._session_id_for_song(song),
             "workspace_id": self._workspace_id(song),
             "set_path_fingerprint": _set_path_fingerprint(song),
             "runtime": self._runtime(),
@@ -292,7 +303,6 @@ class N0TEBridge(ControlSurface):
             },
             "selected_track": self._selected_track(song),
         }
-        # Force JSON's finite-number rules here before crossing the HTTP boundary.
         json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
         return payload
 
