@@ -5,6 +5,7 @@ import asyncio
 import pytest
 from mcp import Client
 
+import n0te.coordinator_mcp as coordinator_mcp_module
 from n0te.coordinator_gateway import (
     ReferenceDiscoveryGateway,
     ReferenceDiscoveryGatewayError,
@@ -157,3 +158,112 @@ def test_local_reference_provider_remains_usable_while_offline():
     assert execution.route_kind == "LOCALHOST"
     assert "LOCALHOST_PERMITTED" in execution.transport_reason_codes
     assert execution.action_authority_granted is False
+
+
+def test_reference_runtime_bootstraps_configured_http_provider(monkeypatch):
+    constructed = {}
+
+    class _ConfiguredProvider(_Provider):
+        def __init__(
+            self,
+            *,
+            endpoint,
+            provider_source_ref,
+            headers,
+            timeout_seconds,
+        ):
+            super().__init__()
+            self.endpoint = endpoint
+            constructed.update(
+                endpoint=endpoint,
+                provider_source_ref=provider_source_ref,
+                headers=headers,
+                timeout_seconds=timeout_seconds,
+                instance=self,
+            )
+
+    monkeypatch.setattr(
+        coordinator_mcp_module,
+        "HttpJsonReferenceProvider",
+        _ConfiguredProvider,
+    )
+    monkeypatch.setenv("N0TE_NETWORK_MODE", "CONNECTED")
+    monkeypatch.setenv(
+        "N0TE_REFERENCE_SEARCH_ENDPOINT",
+        "https://references.example.test/search",
+    )
+    monkeypatch.setenv("N0TE_REFERENCE_SEARCH_PROVIDER_ID", "web-reference-search")
+    monkeypatch.setenv(
+        "N0TE_REFERENCE_SEARCH_PROVIDER_SOURCE_REF",
+        "provider:web-reference-search:v1",
+    )
+    monkeypatch.setenv("N0TE_REFERENCE_SEARCH_BEARER_TOKEN", "secret-test-token")
+    monkeypatch.setenv("N0TE_REFERENCE_SEARCH_TIMEOUT_SECONDS", "4.5")
+    coordinator_mcp_module._reference_runtime.cache_clear()
+    try:
+        gateway = coordinator_mcp_module._reference_runtime()
+        assert gateway.network_mode == "CONNECTED"
+        assert gateway.registered_providers == ("web-reference-search",)
+        assert constructed == {
+            "endpoint": "https://references.example.test/search",
+            "provider_source_ref": "provider:web-reference-search:v1",
+            "headers": {"Authorization": "Bearer secret-test-token"},
+            "timeout_seconds": 4.5,
+            "instance": constructed["instance"],
+        }
+
+        execution = gateway.discover_ranked(
+            "web-reference-search",
+            target=ReferenceCalibrationProfile.create(tempo_bpm=128.0),
+            comparison_dimensions=("tempo",),
+            result_limit=1,
+        )
+        assert execution.route_kind == "INTERNET"
+        assert execution.registration_source_ref == (
+            "environment:N0TE_REFERENCE_SEARCH_ENDPOINT"
+        )
+        assert constructed["instance"].calls
+    finally:
+        coordinator_mcp_module._reference_runtime.cache_clear()
+
+
+def test_bootstrapped_internet_provider_still_obeys_offline_mode(monkeypatch):
+    instance = _Provider()
+
+    class _ConfiguredProvider:
+        def __init__(self, *, endpoint, provider_source_ref, headers, timeout_seconds):
+            self.endpoint = endpoint
+
+        def discover_references(self, *, target, comparison_dimensions, limit):
+            return instance.discover_references(
+                target=target,
+                comparison_dimensions=comparison_dimensions,
+                limit=limit,
+            )
+
+    monkeypatch.setattr(
+        coordinator_mcp_module,
+        "HttpJsonReferenceProvider",
+        _ConfiguredProvider,
+    )
+    monkeypatch.setenv("N0TE_NETWORK_MODE", "OFFLINE")
+    monkeypatch.setenv(
+        "N0TE_REFERENCE_SEARCH_ENDPOINT",
+        "https://references.example.test/search",
+    )
+    monkeypatch.delenv("N0TE_REFERENCE_SEARCH_PROVIDER_ID", raising=False)
+    coordinator_mcp_module._reference_runtime.cache_clear()
+    try:
+        gateway = coordinator_mcp_module._reference_runtime()
+        with pytest.raises(
+            ReferenceDiscoveryGatewayError,
+            match="OFFLINE_BLOCKS_INTERNET",
+        ):
+            gateway.discover_ranked(
+                "configured-reference-search",
+                target=ReferenceCalibrationProfile.create(tempo_bpm=128.0),
+                comparison_dimensions=("tempo",),
+            )
+        assert instance.calls == []
+    finally:
+        coordinator_mcp_module._reference_runtime.cache_clear()

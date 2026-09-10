@@ -4,6 +4,7 @@ import os
 from dataclasses import asdict
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import urlparse
 
 from mcp.server import MCPServer
 
@@ -16,6 +17,7 @@ from .authority import ActionIntent, ApprovalBinding
 from .coordinator_gateway import ReferenceDiscoveryGateway
 from .network import NetworkPolicy, NetworkRoute
 from .reference_calibration import ReferenceCalibrationProfile, ReferenceDiscoveryProvider
+from .reference_providers import HttpJsonReferenceProvider
 
 mcp = MCPServer(
     "N0TE Coordinator Gate",
@@ -142,10 +144,56 @@ def _runtime():
     return contexts, permits
 
 
+def _bootstrap_configured_reference_provider(
+    gateway: ReferenceDiscoveryGateway,
+) -> None:
+    endpoint = os.environ.get("N0TE_REFERENCE_SEARCH_ENDPOINT")
+    if not endpoint:
+        return
+
+    provider_id = os.environ.get(
+        "N0TE_REFERENCE_SEARCH_PROVIDER_ID",
+        "configured-reference-search",
+    )
+    provider_source_ref = os.environ.get(
+        "N0TE_REFERENCE_SEARCH_PROVIDER_SOURCE_REF",
+        f"provider:{provider_id}",
+    )
+    token = os.environ.get("N0TE_REFERENCE_SEARCH_BEARER_TOKEN")
+    headers = {"Authorization": f"Bearer {token}"} if token else None
+    timeout_seconds = os.environ.get("N0TE_REFERENCE_SEARCH_TIMEOUT_SECONDS", "8")
+
+    provider = HttpJsonReferenceProvider(
+        endpoint=endpoint,
+        provider_source_ref=provider_source_ref,
+        headers=headers,
+        timeout_seconds=float(timeout_seconds),
+    )
+    parsed = urlparse(provider.endpoint)
+    host = (parsed.hostname or "").casefold()
+    route_kind = (
+        "LOCALHOST"
+        if host in {"localhost", "127.0.0.1", "::1"}
+        else "INTERNET"
+    )
+    gateway.register(
+        provider_id,
+        provider=provider,
+        route=NetworkRoute(
+            route_id=f"reference-search:{provider_id}",
+            kind=route_kind,
+            description="Configured read-only reference discovery endpoint",
+        ),
+        registration_source_ref="environment:N0TE_REFERENCE_SEARCH_ENDPOINT",
+    )
+
+
 @lru_cache(maxsize=1)
 def _reference_runtime() -> ReferenceDiscoveryGateway:
     mode = os.environ.get("N0TE_NETWORK_MODE", "OFFLINE")
-    return ReferenceDiscoveryGateway(network_policy=NetworkPolicy(mode))
+    gateway = ReferenceDiscoveryGateway(network_policy=NetworkPolicy(mode))
+    _bootstrap_configured_reference_provider(gateway)
+    return gateway
 
 
 def register_reference_discovery_provider(
