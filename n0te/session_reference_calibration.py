@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import math
 from dataclasses import dataclass
 from typing import Iterable, Mapping
@@ -217,6 +218,107 @@ def derive_session_calibration(
         sorted(evidence, key=lambda item: item.feature)
     )
     return SessionCalibrationDerivation(profile=profile, evidence=ordered_evidence)
+
+
+def _engineering_snapshot_payload(snapshot: EngineeringSnapshot) -> dict[str, object]:
+    binding = snapshot.binding
+    return {
+        "binding": {
+            "song_id": binding.song_id,
+            "version_id": binding.version_id,
+            "asset_id": binding.asset_id,
+            "sha256": binding.sha256,
+            "source_size_bytes": binding.source_size_bytes,
+        },
+        "analyzer_version": snapshot.analyzer_version,
+        "sample_rate_hz": snapshot.sample_rate_hz,
+        "channels": snapshot.channels,
+        "bits_per_sample": snapshot.bits_per_sample,
+        "frame_count": snapshot.frame_count,
+        "duration_seconds": snapshot.duration_seconds,
+        "sample_peak_dbfs": snapshot.sample_peak_dbfs,
+        "rms_dbfs": snapshot.rms_dbfs,
+        "crest_factor_db": snapshot.crest_factor_db,
+        "dc_offset_percent": snapshot.dc_offset_percent,
+        "stereo_correlation": snapshot.stereo_correlation,
+        "integrated_lufs": snapshot.integrated_lufs,
+        "loudness_state": snapshot.loudness_state,
+        "loudness_standard": snapshot.loudness_standard,
+        "loudness_backend": snapshot.loudness_backend,
+    }
+
+
+def build_session_reference_evidence_bundle(
+    binding: HostObservationBinding,
+    shadow: HostShadowState,
+    *,
+    engineering_snapshot: EngineeringSnapshot | None = None,
+) -> dict[str, object]:
+    """Serialize current host evidence for the coordinator reference-discovery seam.
+
+    This is an evidence transport contract, not a calibration-authoring surface.
+    Validation deliberately runs the same calibration gate first so stale shadows,
+    cross-Song measurements, conflicting tempo facts, and evidence-free sessions do
+    not leave the host-observation boundary as apparently usable requests.
+    """
+
+    derive_session_calibration(
+        binding,
+        shadow,
+        engineering_snapshot=engineering_snapshot,
+    )
+
+    runtime = binding.runtime
+    payload: dict[str, object] = {
+        "binding": {
+            "workspace_id": binding.workspace_id,
+            "song_id": binding.song_id,
+            "workspace_observation_id": binding.workspace_observation_id,
+            "host_runtime_fingerprint": binding.host_runtime_fingerprint,
+            "runtime": {
+                "host_family": runtime.family,
+                "version": runtime.version,
+                "edition": runtime.edition,
+                "os_name": runtime.platform.raw_os_name,
+                "machine": runtime.platform.raw_machine,
+                "translation_mode": runtime.translation_mode,
+                "display_name": runtime.display_name,
+                "generic_host_label": runtime.generic_host_label,
+                "fingerprint": runtime.fingerprint,
+            },
+        },
+        "shadow": {
+            "status": shadow.status,
+            "workspace_id": shadow.workspace_id,
+            "current_workspace_observation_id": shadow.current_workspace_observation_id,
+            "baseline_batch_id": shadow.baseline_batch_id,
+            "latest_batch_id": shadow.latest_batch_id,
+            "facts": [
+                {
+                    "object_kind": fact.object_kind,
+                    "object_ref": fact.object_ref,
+                    "field": fact.field,
+                    "value": fact.value,
+                    "batch_id": fact.batch_id,
+                    "actor": fact.actor,
+                    "evidence_ref": fact.evidence_ref,
+                }
+                for fact in shadow.facts
+            ],
+        },
+    }
+    if engineering_snapshot is not None:
+        payload["engineering_snapshot"] = _engineering_snapshot_payload(
+            engineering_snapshot
+        )
+
+    try:
+        json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    except (TypeError, ValueError) as exc:
+        raise SessionReferenceCalibrationError(
+            "session reference evidence is not JSON-transportable"
+        ) from exc
+    return payload
 
 
 def discover_session_references(

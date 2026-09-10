@@ -17,6 +17,7 @@ from n0te.reference_calibration import (
 )
 from n0te.session_reference_calibration import (
     SessionReferenceCalibrationError,
+    build_session_reference_evidence_bundle,
     derive_session_calibration,
     discover_session_references,
 )
@@ -176,6 +177,95 @@ def test_no_defensible_features_fails_instead_of_filling_profile_with_proxies():
     )
     with pytest.raises(SessionReferenceCalibrationError, match="no defensible"):
         derive_session_calibration(_binding(), shadow)
+
+
+def test_host_observation_serializes_one_canonical_reference_evidence_bundle():
+    binding = _binding()
+    engineering = _engineering(crest=12.0, correlation=0.2)
+    bundle = build_session_reference_evidence_bundle(
+        binding,
+        _shadow(_tempo(128.0)),
+        engineering_snapshot=engineering,
+    )
+
+    assert set(bundle) == {"binding", "shadow", "engineering_snapshot"}
+    assert "calibration" not in bundle
+    assert bundle["binding"] == {
+        "workspace_id": "workspace:1",
+        "song_id": "song:1",
+        "workspace_observation_id": "observation:1",
+        "host_runtime_fingerprint": binding.runtime.fingerprint,
+        "runtime": {
+            "host_family": "ABLETON_LIVE",
+            "version": "12.1",
+            "edition": "Standard",
+            "os_name": "Darwin",
+            "machine": "arm64",
+            "translation_mode": "NATIVE",
+            "display_name": None,
+            "generic_host_label": None,
+            "fingerprint": binding.runtime.fingerprint,
+        },
+    }
+    assert bundle["shadow"] == {
+        "status": "CURRENT",
+        "workspace_id": "workspace:1",
+        "current_workspace_observation_id": "observation:1",
+        "baseline_batch_id": "batch:1",
+        "latest_batch_id": "batch:1",
+        "facts": [
+            {
+                "object_kind": "TEMPO",
+                "object_ref": "tempo:main",
+                "field": "bpm",
+                "value": 128.0,
+                "batch_id": "batch:1",
+                "actor": "EXTERNAL",
+                "evidence_ref": "host:ableton:tempo",
+            }
+        ],
+    }
+    assert bundle["engineering_snapshot"]["binding"] == {
+        "song_id": "song:1",
+        "version_id": "version:1",
+        "asset_id": "asset:mix",
+        "sha256": "a" * 64,
+        "source_size_bytes": 4096,
+    }
+    assert bundle["engineering_snapshot"]["crest_factor_db"] == 12.0
+    assert bundle["engineering_snapshot"]["stereo_correlation"] == 0.2
+
+
+def test_evidence_bundle_refuses_stale_and_cross_song_state_before_transport():
+    with pytest.raises(SessionReferenceCalibrationError, match="stale"):
+        build_session_reference_evidence_bundle(
+            _binding(),
+            _shadow(_tempo(128.0), observation_id="observation:old"),
+        )
+
+    with pytest.raises(SessionReferenceCalibrationError, match="different Song"):
+        build_session_reference_evidence_bundle(
+            _binding(song_id="song:1"),
+            _shadow(_tempo(128.0)),
+            engineering_snapshot=_engineering(song_id="song:2"),
+        )
+
+
+def test_evidence_bundle_refuses_non_json_shadow_values():
+    shadow = _shadow(
+        _tempo(128.0),
+        ShadowFact(
+            object_kind="TRACK",
+            object_ref="track:1",
+            field="opaque_state",
+            value=object(),
+            batch_id="batch:1",
+            actor="EXTERNAL",
+            evidence_ref="host:track:opaque",
+        ),
+    )
+    with pytest.raises(SessionReferenceCalibrationError, match="JSON-transportable"):
+        build_session_reference_evidence_bundle(_binding(), shadow)
 
 
 class _Provider:
