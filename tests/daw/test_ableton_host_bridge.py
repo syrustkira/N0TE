@@ -6,9 +6,14 @@ import json
 import pytest
 
 from integrations.ableton.N0TEBridge import N0TEBridge, WORKSPACE_DATA_KEY
+from n0te.ableton_continuous_observer import (
+    _observation_fingerprint,
+    _reference_fingerprint,
+)
 from n0te.ableton_host_bridge import (
     ABLETON_LEGACY_SNAPSHOT_SCHEMA,
     ABLETON_SNAPSHOT_SCHEMA,
+    ABLETON_V2_SNAPSHOT_SCHEMA,
     AbletonHostBridgeError,
     AbletonObservationSnapshot,
     AbletonRemoteScriptClient,
@@ -18,9 +23,16 @@ from n0te.hosts import HostRuntimeIdentity
 from n0te.memory import HeadquartersMemory
 
 
-class _Track:
-    def __init__(self, name):
+class _Device:
+    def __init__(self, name, class_name):
         self.name = name
+        self.class_name = class_name
+
+
+class _Track:
+    def __init__(self, name, devices=()):
+        self.name = name
+        self.devices = tuple(devices)
 
 
 class _View:
@@ -30,9 +42,18 @@ class _View:
 
 class _Song:
     def __init__(self, *, workspace_id=None, tempo=128.0, file_path=""):
-        self.tracks = (_Track("Drums"), _Track("Lead"))
-        self.return_tracks = (_Track("Reverb"),)
-        self.master_track = _Track("Master")
+        self.tracks = (
+            _Track("Drums"),
+            _Track(
+                "Lead",
+                (
+                    _Device("EQ Eight", "Eq8"),
+                    _Device("Pro-Q 3", "PluginDevice"),
+                ),
+            ),
+        )
+        self.return_tracks = (_Track("Reverb", (_Device("Hybrid Reverb", "Hybrid"),)),)
+        self.master_track = _Track("Master", (_Device("Limiter", "Limiter"),))
         self.view = _View(self.tracks[1])
         self.tempo = tempo
         self.is_playing = True
@@ -111,7 +132,7 @@ class _ReferenceClient:
 def _payload(**overrides):
     payload = {
         "schema": ABLETON_SNAPSHOT_SCHEMA,
-        "adapter": {"id": "N0TEBridge", "version": "2"},
+        "adapter": {"id": "N0TEBridge", "version": "3"},
         "bridge_session_id": "session-123",
         "workspace_id": None,
         "set_path_fingerprint": None,
@@ -126,6 +147,10 @@ def _payload(**overrides):
         "tempo_bpm": 128.0,
         "transport": {"is_playing": True, "current_song_time": 33.5},
         "selected_track": {"kind": "TRACK", "index": 1, "name": "Lead"},
+        "selected_track_devices": [
+            {"index": 0, "name": "EQ Eight", "class_name": "Eq8"},
+            {"index": 1, "name": "Pro-Q 3", "class_name": "PluginDevice"},
+        ],
     }
     payload.update(overrides)
     return payload
@@ -139,10 +164,17 @@ def test_snapshot_parser_is_strict_and_builds_only_observed_evidence():
     assert snapshot.session_location_ref == "ableton-session:session-123"
     assert snapshot.has_durable_set_location is False
     assert snapshot.selected_track.ref == "track:1"
+    assert snapshot.device_chain_observed is True
+    assert [item.name for item in snapshot.selected_track_devices] == [
+        "EQ Eight",
+        "Pro-Q 3",
+    ]
+    assert snapshot.selected_track_devices[1].ref_for_track("track:1") == "device:track:1:1"
     assert {item.capability for item in snapshot.capabilities()} == {
         "tempo.read",
         "transport.read",
         "focus.track.read",
+        "device.chain.read",
     }
     assert snapshot.focus_dimensions()[0].refs == ("track:1",)
     facts = {
@@ -152,6 +184,11 @@ def test_snapshot_parser_is_strict_and_builds_only_observed_evidence():
     assert facts[("TEMPO", "tempo:main", "bpm")] == 128.0
     assert facts[("TRANSPORT", "transport:main", "is_playing")] is True
     assert facts[("TRACK", "track:1", "name")] == "Lead"
+    assert facts[("TRACK", "track:1", "device_count")] == 2
+    assert facts[("DEVICE_PLUGIN", "device:track:1:0", "name")] == "EQ Eight"
+    assert facts[("DEVICE_PLUGIN", "device:track:1:1", "name")] == "Pro-Q 3"
+    assert facts[("DEVICE_PLUGIN", "device:track:1:1", "class_name")] == "PluginDevice"
+    assert facts[("DEVICE_PLUGIN", "device:track:1:1", "track_ref")] == "track:1"
 
     smuggled = _payload(calibration={"tempo_bpm": 150.0})
     with pytest.raises(AbletonHostBridgeError, match="unsupported fields"):
@@ -161,18 +198,99 @@ def test_snapshot_parser_is_strict_and_builds_only_observed_evidence():
     with pytest.raises(AbletonHostBridgeError, match="SHA-256"):
         AbletonObservationSnapshot.from_payload(malformed)
 
+    noncontiguous = _payload(
+        selected_track_devices=[
+            {"index": 1, "name": "EQ Eight", "class_name": "Eq8"},
+        ]
+    )
+    with pytest.raises(AbletonHostBridgeError, match="contiguous"):
+        AbletonObservationSnapshot.from_payload(noncontiguous)
 
-def test_v1_snapshot_remains_accepted_without_durable_path_field():
-    payload = _payload(schema=ABLETON_LEGACY_SNAPSHOT_SCHEMA)
-    payload["adapter"] = {"id": "N0TEBridge", "version": "1"}
-    payload.pop("set_path_fingerprint")
-    snapshot = AbletonObservationSnapshot.from_payload(payload)
-    assert snapshot.location_ref == "ableton-session:session-123"
-    assert snapshot.set_path_fingerprint is None
+    overlong = _payload(
+        selected_track_devices=[
+            {"index": 0, "name": "x" * 257, "class_name": "PluginDevice"},
+        ]
+    )
+    with pytest.raises(AbletonHostBridgeError, match="256"):
+        AbletonObservationSnapshot.from_payload(overlong)
 
-    payload["set_path_fingerprint"] = "0" * 64
+
+def test_v1_and_v2_snapshots_remain_accepted_without_device_chain_claims():
+    v1 = _payload(schema=ABLETON_LEGACY_SNAPSHOT_SCHEMA)
+    v1["adapter"] = {"id": "N0TEBridge", "version": "1"}
+    v1.pop("set_path_fingerprint")
+    v1.pop("selected_track_devices")
+    snapshot_v1 = AbletonObservationSnapshot.from_payload(v1)
+    assert snapshot_v1.location_ref == "ableton-session:session-123"
+    assert snapshot_v1.set_path_fingerprint is None
+    assert snapshot_v1.device_chain_observed is False
+    assert snapshot_v1.selected_track_devices == ()
+    assert "device.chain.read" not in {
+        item.capability for item in snapshot_v1.capabilities()
+    }
+
+    v1["set_path_fingerprint"] = "0" * 64
     with pytest.raises(AbletonHostBridgeError, match="unsupported fields"):
-        AbletonObservationSnapshot.from_payload(payload)
+        AbletonObservationSnapshot.from_payload(v1)
+
+    v2 = _payload(schema=ABLETON_V2_SNAPSHOT_SCHEMA)
+    v2["adapter"] = {"id": "N0TEBridge", "version": "2"}
+    v2.pop("selected_track_devices")
+    snapshot_v2 = AbletonObservationSnapshot.from_payload(v2)
+    assert snapshot_v2.device_chain_observed is False
+    assert snapshot_v2.selected_track_devices == ()
+    assert snapshot_v2.set_path_fingerprint is None
+
+    v2["selected_track_devices"] = []
+    with pytest.raises(AbletonHostBridgeError, match="unsupported fields"):
+        AbletonObservationSnapshot.from_payload(v2)
+
+
+def test_return_and_master_focus_map_to_track_shadow_kind_with_distinct_refs():
+    returned = AbletonObservationSnapshot.from_payload(
+        _payload(
+            selected_track={"kind": "RETURN", "index": 0, "name": "Reverb"},
+            selected_track_devices=[
+                {"index": 0, "name": "Hybrid Reverb", "class_name": "Hybrid"}
+            ],
+        )
+    )
+    return_facts = {
+        (event.object_kind, event.object_ref, event.field): event.value
+        for event in returned.shadow().events
+    }
+    assert return_facts[("TRACK", "return:0", "name")] == "Reverb"
+    assert return_facts[("DEVICE_PLUGIN", "device:return:0:0", "track_ref")] == "return:0"
+
+    master = AbletonObservationSnapshot.from_payload(
+        _payload(
+            selected_track={"kind": "MASTER", "index": None, "name": "Master"},
+            selected_track_devices=[
+                {"index": 0, "name": "Limiter", "class_name": "Limiter"}
+            ],
+        )
+    )
+    master_facts = {
+        (event.object_kind, event.object_ref, event.field): event.value
+        for event in master.shadow().events
+    }
+    assert master_facts[("TRACK", "master:main", "name")] == "Master"
+    assert master_facts[("DEVICE_PLUGIN", "device:master:main:0", "name")] == "Limiter"
+
+
+def test_device_chain_changes_refresh_host_truth_without_changing_reference_fingerprint():
+    before = AbletonObservationSnapshot.from_payload(_payload())
+    after = AbletonObservationSnapshot.from_payload(
+        _payload(
+            selected_track_devices=[
+                {"index": 0, "name": "EQ Eight", "class_name": "Eq8"},
+                {"index": 1, "name": "Pro-Q 3", "class_name": "PluginDevice"},
+                {"index": 2, "name": "Saturator", "class_name": "Saturator"},
+            ]
+        )
+    )
+    assert _observation_fingerprint(before) != _observation_fingerprint(after)
+    assert _reference_fingerprint(before) == _reference_fingerprint(after)
 
 
 def test_remote_script_capture_hashes_saved_set_path_and_never_exposes_or_writes_it():
@@ -188,7 +306,7 @@ def test_remote_script_capture_hashes_saved_set_path_and_never_exposes_or_writes
         bridge.disconnect()
 
     assert snapshot["schema"] == ABLETON_SNAPSHOT_SCHEMA
-    assert snapshot["adapter"]["version"] == "2"
+    assert snapshot["adapter"]["version"] == "3"
     assert snapshot["workspace_id"] == "wsp_0123456789abcdef"
     assert len(snapshot["set_path_fingerprint"]) == 64
     assert snapshot["tempo_bpm"] == 128.0
@@ -198,9 +316,26 @@ def test_remote_script_capture_hashes_saved_set_path_and_never_exposes_or_writes
         "index": 1,
         "name": "Lead",
     }
+    assert snapshot["selected_track_devices"] == [
+        {"index": 0, "name": "EQ Eight", "class_name": "Eq8"},
+        {"index": 1, "name": "Pro-Q 3", "class_name": "PluginDevice"},
+    ]
     assert raw_path not in json.dumps(snapshot, sort_keys=True)
     assert song.get_data_calls == [(WORKSPACE_DATA_KEY, None)]
     assert song.set_data_calls == []
+
+
+def test_bridge_refuses_to_emit_an_unbounded_selected_track_device_chain():
+    song = _Song()
+    song.tracks[1].devices = tuple(
+        _Device(f"Device {index}", "PluginDevice") for index in range(65)
+    )
+    bridge = N0TEBridge(_CInstance(song), start_server=False)
+    try:
+        with pytest.raises(ValueError, match="exceeds 64 devices"):
+            bridge._capture_snapshot()
+    finally:
+        bridge.disconnect()
 
 
 def test_bridge_session_id_survives_save_but_rotates_when_live_song_object_changes():
@@ -231,6 +366,10 @@ def test_remote_script_http_is_loopback_get_only_and_external_client_reads_it():
         snapshot = client.fetch_snapshot()
         assert snapshot.tempo_bpm == 128.0
         assert snapshot.selected_track.name == "Lead"
+        assert [device.name for device in snapshot.selected_track_devices] == [
+            "EQ Eight",
+            "Pro-Q 3",
+        ]
         assert snapshot.workspace_id is None
         assert snapshot.set_path_fingerprint is None
     finally:
@@ -277,6 +416,13 @@ def test_live_snapshot_roundtrips_into_canonical_reference_workflow(tmp_path):
         assert shadow.status == "CURRENT"
         assert any(
             fact.object_kind == "TEMPO" and fact.field == "bpm" and fact.value == 128.0
+            for fact in shadow.facts
+        )
+        assert any(
+            fact.object_kind == "DEVICE_PLUGIN"
+            and fact.object_ref == "device:track:1:1"
+            and fact.field == "name"
+            and fact.value == "Pro-Q 3"
             for fact in shadow.facts
         )
         assert live_song.set_data_calls == []

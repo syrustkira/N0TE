@@ -44,13 +44,15 @@ except ImportError:
 HOST = "127.0.0.1"
 PORT = 9799
 ADAPTER_ID = "N0TEBridge"
-ADAPTER_VERSION = "2"
-SCHEMA = "n0te.ableton-observation/v2"
+ADAPTER_VERSION = "3"
+SCHEMA = "n0te.ableton-observation/v3"
 WORKSPACE_DATA_KEY = "n0te.workspace_id.v1"
 LIVE_CALL_TIMEOUT_SECONDS = 2.0
 NOTICE_MAX_CHARS = 240
 _NOTICE_MAX_BODY_BYTES = 2048
 _ACTION_MAX_BODY_BYTES = 4096
+_SELECTED_TRACK_DEVICE_MAX_ITEMS = 64
+_DEVICE_TEXT_MAX_CHARS = 256
 TRACK_VOLUME_STATE_SCHEMA = "n0te.ableton-selected-track-volume-state/v1"
 TRACK_VOLUME_ACTION_SCHEMA = "n0te.ableton-selected-track-volume-action/v1"
 _TRACK_VOLUME_TOLERANCE = 0.0001
@@ -117,8 +119,15 @@ def _required_text(value, field):
     return text
 
 
+def _bounded_device_text(value, field):
+    text = _required_text(value, field)
+    if len(text) > _DEVICE_TEXT_MAX_CHARS:
+        raise ValueError("%s exceeds %s characters" % (field, _DEVICE_TEXT_MAX_CHARS))
+    return text
+
+
 class _SnapshotHandler(BaseHTTPRequestHandler):
-    server_version = "N0TEBridge/4"
+    server_version = "N0TEBridge/5"
     sys_version = ""
 
     def log_message(self, format, *args):
@@ -376,6 +385,39 @@ class N0TEBridge(ControlSurface):
         prefix = "track" if selected["kind"] == "TRACK" else "return"
         return "%s:%s" % (prefix, int(selected["index"]))
 
+    def _selected_track_devices(self, song):
+        selected_info = self._selected_track(song)
+        if selected_info is None:
+            return []
+        selected = getattr(getattr(song, "view", None), "selected_track", None)
+        devices = tuple(getattr(selected, "devices", ()) or ())
+        if len(devices) > _SELECTED_TRACK_DEVICE_MAX_ITEMS:
+            raise ValueError(
+                "selected track device chain exceeds %s devices"
+                % _SELECTED_TRACK_DEVICE_MAX_ITEMS
+            )
+        out = []
+        for index, device in enumerate(devices):
+            name = _bounded_device_text(
+                getattr(device, "name", None),
+                "selected_track_devices[%s].name" % index,
+            )
+            class_name = getattr(device, "class_name", None)
+            if class_name is None:
+                class_name = getattr(getattr(device, "__class__", None), "__name__", None)
+            class_name = _bounded_device_text(
+                class_name,
+                "selected_track_devices[%s].class_name" % index,
+            )
+            out.append(
+                {
+                    "index": index,
+                    "name": name,
+                    "class_name": class_name,
+                }
+            )
+        return out
+
     def _selected_track_and_volume_parameter(self, song):
         selected_info = self._selected_track(song)
         if selected_info is None:
@@ -501,6 +543,7 @@ class N0TEBridge(ControlSurface):
                 "current_song_time": song_time,
             },
             "selected_track": self._selected_track(song),
+            "selected_track_devices": self._selected_track_devices(song),
         }
         json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
         return payload

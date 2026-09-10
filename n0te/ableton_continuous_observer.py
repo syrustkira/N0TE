@@ -53,11 +53,22 @@ def _track_fingerprint(snapshot: AbletonObservationSnapshot) -> tuple[object, ..
     return (track.kind, track.index, track.name)
 
 
+def _device_chain_fingerprint(snapshot: AbletonObservationSnapshot) -> tuple[object, ...] | None:
+    if not snapshot.device_chain_observed:
+        return None
+    return tuple(
+        (device.index, device.name, device.class_name)
+        for device in snapshot.selected_track_devices
+    )
+
+
 def _observation_fingerprint(snapshot: AbletonObservationSnapshot) -> tuple[object, ...]:
     """Fields whose change is worth committing to canonical Host truth.
 
     Current song time is intentionally excluded. It remains available through the hot
     snapshot but would otherwise create an append-only Shadow batch on every poll.
+    Device-chain changes are included because they alter the local Technical Twin, but
+    they remain excluded from the separate reference-discovery fingerprint below.
     """
 
     return (
@@ -67,14 +78,16 @@ def _observation_fingerprint(snapshot: AbletonObservationSnapshot) -> tuple[obje
         snapshot.tempo_bpm,
         snapshot.is_playing,
         _track_fingerprint(snapshot),
+        _device_chain_fingerprint(snapshot),
     )
 
 
 def _reference_fingerprint(snapshot: AbletonObservationSnapshot) -> tuple[object, ...]:
     """Fields whose change justifies another external reference search.
 
-    Transport and focus changes do not trigger discovery. Tempo is quantized to the
-    nearest whole BPM so tiny automation/rounding changes do not cause network churn.
+    Transport, focus and device-chain changes do not trigger discovery. Tempo is
+    quantized to the nearest whole BPM so tiny automation/rounding changes do not
+    cause network churn.
     """
 
     tempo_bucket = int(math.floor(snapshot.tempo_bpm + 0.5))

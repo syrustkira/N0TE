@@ -17,10 +17,13 @@ from .host_session_handshake import (
 from .hosts import HostRuntimeIdentity
 from .shadow import ShadowEventInput
 
-ABLETON_SNAPSHOT_SCHEMA = "n0te.ableton-observation/v2"
+ABLETON_SNAPSHOT_SCHEMA = "n0te.ableton-observation/v3"
+ABLETON_V2_SNAPSHOT_SCHEMA = "n0te.ableton-observation/v2"
 ABLETON_LEGACY_SNAPSHOT_SCHEMA = "n0te.ableton-observation/v1"
 DEFAULT_ABLETON_BRIDGE_ENDPOINT = "http://127.0.0.1:9799"
 _MAX_SNAPSHOT_BYTES = 65536
+_MAX_SELECTED_TRACK_DEVICES = 64
+_MAX_DEVICE_TEXT_CHARS = 256
 _LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
 _BASE_ALLOWED_TOP_LEVEL = frozenset(
     {
@@ -36,6 +39,7 @@ _BASE_ALLOWED_TOP_LEVEL = frozenset(
     }
 )
 _V2_ALLOWED_TOP_LEVEL = _BASE_ALLOWED_TOP_LEVEL | frozenset({"set_path_fingerprint"})
+_V3_ALLOWED_TOP_LEVEL = _V2_ALLOWED_TOP_LEVEL | frozenset({"selected_track_devices"})
 _SHA256_HEX = frozenset("0123456789abcdef")
 
 
@@ -47,6 +51,13 @@ def _text(value: object, field: str) -> str:
     text = str(value).strip()
     if not text:
         raise AbletonHostBridgeError(f"{field} must not be empty")
+    return text
+
+
+def _bounded_text(value: object, field: str, *, maximum: int) -> str:
+    text = _text(value, field)
+    if len(text) > maximum:
+        raise AbletonHostBridgeError(f"{field} exceeds {maximum} characters")
     return text
 
 
@@ -155,6 +166,40 @@ class AbletonTrackFocus:
 
 
 @dataclass(frozen=True)
+class AbletonDeviceObservation:
+    index: int
+    name: str
+    class_name: str
+
+    def __post_init__(self) -> None:
+        if type(self.index) is not int or self.index < 0:
+            raise AbletonHostBridgeError(
+                "selected_track_devices.index must be a non-negative integer"
+            )
+        object.__setattr__(
+            self,
+            "name",
+            _bounded_text(
+                self.name,
+                "selected_track_devices.name",
+                maximum=_MAX_DEVICE_TEXT_CHARS,
+            ),
+        )
+        object.__setattr__(
+            self,
+            "class_name",
+            _bounded_text(
+                self.class_name,
+                "selected_track_devices.class_name",
+                maximum=_MAX_DEVICE_TEXT_CHARS,
+            ),
+        )
+
+    def ref_for_track(self, track_ref: str) -> str:
+        return f"device:{_text(track_ref, 'track_ref')}:{self.index}"
+
+
+@dataclass(frozen=True)
 class AbletonObservationSnapshot:
     bridge_session_id: str
     workspace_id: str | None
@@ -165,6 +210,8 @@ class AbletonObservationSnapshot:
     is_playing: bool
     current_song_time: float
     selected_track: AbletonTrackFocus | None
+    selected_track_devices: tuple[AbletonDeviceObservation, ...]
+    device_chain_observed: bool
     adapter_id: str
     adapter_version: str
 
@@ -187,6 +234,8 @@ class AbletonObservationSnapshot:
         root = _object(payload, "snapshot")
         schema = root.get("schema")
         if schema == ABLETON_SNAPSHOT_SCHEMA:
+            _exact_fields(root, _V3_ALLOWED_TOP_LEVEL, "snapshot")
+        elif schema == ABLETON_V2_SNAPSHOT_SCHEMA:
             _exact_fields(root, _V2_ALLOWED_TOP_LEVEL, "snapshot")
         elif schema == ABLETON_LEGACY_SNAPSHOT_SCHEMA:
             _exact_fields(root, _BASE_ALLOWED_TOP_LEVEL, "snapshot")
@@ -238,6 +287,42 @@ class AbletonObservationSnapshot:
                 name=_text(selected_obj.get("name"), "selected_track.name"),
             )
 
+        device_chain_observed = schema == ABLETON_SNAPSHOT_SCHEMA
+        devices: tuple[AbletonDeviceObservation, ...] = ()
+        if device_chain_observed:
+            devices_payload = root.get("selected_track_devices")
+            if not isinstance(devices_payload, list):
+                raise AbletonHostBridgeError("selected_track_devices must be an array")
+            if len(devices_payload) > _MAX_SELECTED_TRACK_DEVICES:
+                raise AbletonHostBridgeError(
+                    f"selected_track_devices exceeds {_MAX_SELECTED_TRACK_DEVICES} devices"
+                )
+            parsed_devices: list[AbletonDeviceObservation] = []
+            for expected_index, item in enumerate(devices_payload):
+                device = _object(item, f"selected_track_devices[{expected_index}]")
+                _exact_fields(
+                    device,
+                    frozenset({"index", "name", "class_name"}),
+                    f"selected_track_devices[{expected_index}]",
+                )
+                raw_index = device.get("index")
+                if type(raw_index) is not int or raw_index != expected_index:
+                    raise AbletonHostBridgeError(
+                        "selected_track_devices indexes must be contiguous chain positions"
+                    )
+                parsed_devices.append(
+                    AbletonDeviceObservation(
+                        index=raw_index,
+                        name=device.get("name"),
+                        class_name=device.get("class_name"),
+                    )
+                )
+            if selected is None and parsed_devices:
+                raise AbletonHostBridgeError(
+                    "selected_track_devices require an identified selected_track"
+                )
+            devices = tuple(parsed_devices)
+
         tempo = _finite(root.get("tempo_bpm"), "tempo_bpm")
         if not 20.0 <= tempo <= 400.0:
             raise AbletonHostBridgeError("tempo_bpm must be between 20 and 400")
@@ -247,7 +332,7 @@ class AbletonObservationSnapshot:
             raise AbletonHostBridgeError("workspace_id is not a canonical N0TE workspace ID")
 
         set_path_fingerprint = None
-        if schema == ABLETON_SNAPSHOT_SCHEMA:
+        if schema in {ABLETON_SNAPSHOT_SCHEMA, ABLETON_V2_SNAPSHOT_SCHEMA}:
             set_path_fingerprint = _sha256_fingerprint(
                 root.get("set_path_fingerprint"), "set_path_fingerprint"
             )
@@ -264,6 +349,8 @@ class AbletonObservationSnapshot:
             is_playing=transport["is_playing"],
             current_song_time=song_time,
             selected_track=selected,
+            selected_track_devices=devices,
+            device_chain_observed=device_chain_observed,
             adapter_id=_text(adapter.get("id"), "adapter.id"),
             adapter_version=_text(adapter.get("version"), "adapter.version"),
         )
@@ -282,7 +369,7 @@ class AbletonObservationSnapshot:
             reversibility=1.0,
             cost_efficiency=1.0,
         )
-        return (
+        facts = [
             CapabilityFactInput(
                 capability="tempo.read",
                 evidence_ref="ableton:snapshot:tempo",
@@ -298,7 +385,16 @@ class AbletonObservationSnapshot:
                 evidence_ref="ableton:snapshot:selected-track",
                 **base,
             ),
-        )
+        ]
+        if self.device_chain_observed:
+            facts.append(
+                CapabilityFactInput(
+                    capability="device.chain.read",
+                    evidence_ref="ableton:snapshot:selected-track-devices",
+                    **base,
+                )
+            )
+        return tuple(facts)
 
     def focus_dimensions(self) -> tuple[FocusDimension, ...]:
         if self.selected_track is None:
@@ -342,7 +438,7 @@ class AbletonObservationSnapshot:
         if self.selected_track is not None:
             events.append(
                 ShadowEventInput(
-                    object_kind=self.selected_track.kind,
+                    object_kind="TRACK",
                     object_ref=self.selected_track.ref,
                     field="name",
                     action="SET",
@@ -350,6 +446,56 @@ class AbletonObservationSnapshot:
                     evidence_ref="ableton:snapshot:selected-track",
                 )
             )
+            if self.device_chain_observed:
+                events.append(
+                    ShadowEventInput(
+                        object_kind="TRACK",
+                        object_ref=self.selected_track.ref,
+                        field="device_count",
+                        action="SET",
+                        value=len(self.selected_track_devices),
+                        evidence_ref="ableton:snapshot:selected-track-devices",
+                    )
+                )
+                for device in self.selected_track_devices:
+                    device_ref = device.ref_for_track(self.selected_track.ref)
+                    evidence_ref = f"ableton:snapshot:selected-track-device:{device.index}"
+                    events.extend(
+                        (
+                            ShadowEventInput(
+                                object_kind="DEVICE_PLUGIN",
+                                object_ref=device_ref,
+                                field="track_ref",
+                                action="SET",
+                                value=self.selected_track.ref,
+                                evidence_ref=evidence_ref,
+                            ),
+                            ShadowEventInput(
+                                object_kind="DEVICE_PLUGIN",
+                                object_ref=device_ref,
+                                field="index",
+                                action="SET",
+                                value=device.index,
+                                evidence_ref=evidence_ref,
+                            ),
+                            ShadowEventInput(
+                                object_kind="DEVICE_PLUGIN",
+                                object_ref=device_ref,
+                                field="name",
+                                action="SET",
+                                value=device.name,
+                                evidence_ref=evidence_ref,
+                            ),
+                            ShadowEventInput(
+                                object_kind="DEVICE_PLUGIN",
+                                object_ref=device_ref,
+                                field="class_name",
+                                action="SET",
+                                value=device.class_name,
+                                evidence_ref=evidence_ref,
+                            ),
+                        )
+                    )
         return ShadowObservationInput(
             coverage="FULL",
             actor="EXTERNAL",
