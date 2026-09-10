@@ -264,6 +264,45 @@ def _request_strings(values: Iterable[str], field: str) -> list[str]:
     return out
 
 
+def _mcp_reference_payload(result: object) -> object:
+    """Extract one unambiguous JSON value from an MCP CallToolResult.
+
+    MCP structured_content is preferred when present. MCP tools without a declared
+    structured output schema may instead return their JSON serialization as a single
+    TextContent block. Only strict JSON is accepted from that compatibility path.
+    """
+    if getattr(result, "is_error", False) is True:
+        raise CoordinatorReferenceClientError(
+            "coordinator reference tool returned an MCP error"
+        )
+
+    structured = getattr(result, "structured_content", None)
+    if structured is not None:
+        return structured
+
+    content = getattr(result, "content", None)
+    if not isinstance(content, (list, tuple)) or len(content) != 1:
+        raise CoordinatorReferenceClientError(
+            "coordinator returned no unambiguous reference-discovery payload"
+        )
+    block = content[0]
+    if getattr(block, "type", None) != "text":
+        raise CoordinatorReferenceClientError(
+            "coordinator reference fallback must be exactly one text content block"
+        )
+    text = getattr(block, "text", None)
+    if not isinstance(text, str):
+        raise CoordinatorReferenceClientError(
+            "coordinator reference text payload is invalid"
+        )
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise CoordinatorReferenceClientError(
+            "coordinator reference text payload is not strict JSON"
+        ) from exc
+
+
 def _validated_reference_response(
     payload: object,
     *,
@@ -411,7 +450,7 @@ class CoordinatorReferenceClient:
             ) from exc
 
         return _validated_reference_response(
-            getattr(result, "structured_content", None),
+            _mcp_reference_payload(result),
             provider_id=provider,
             session=session,
         )
