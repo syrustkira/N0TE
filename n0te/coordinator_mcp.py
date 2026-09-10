@@ -16,6 +16,10 @@ from governance.trusted_context import FileTrustedContextProvider
 from .authority import ActionIntent, ApprovalBinding
 from .coordinator_gateway import ReferenceDiscoveryGateway
 from .network import NetworkPolicy, NetworkRoute
+from .openai_web_reference_provider import (
+    DEFAULT_OPENAI_WEB_REFERENCE_MODEL,
+    OpenAIWebReferenceProvider,
+)
 from .reference_calibration import ReferenceCalibrationProfile, ReferenceDiscoveryProvider
 from .reference_providers import HttpJsonReferenceProvider
 
@@ -147,44 +151,93 @@ def _runtime():
 def _bootstrap_configured_reference_provider(
     gateway: ReferenceDiscoveryGateway,
 ) -> None:
+    raw_backend = os.environ.get("N0TE_REFERENCE_SEARCH_BACKEND")
     endpoint = os.environ.get("N0TE_REFERENCE_SEARCH_ENDPOINT")
-    if not endpoint:
-        return
+    if raw_backend is None:
+        if not endpoint:
+            return
+        backend = "http_json"
+    else:
+        backend = raw_backend.strip().casefold().replace("-", "_")
+        if not backend:
+            raise RuntimeError("N0TE_REFERENCE_SEARCH_BACKEND must not be empty")
 
+    default_provider_id = (
+        "openai-web-reference-search"
+        if backend == "openai_web"
+        else "configured-reference-search"
+    )
     provider_id = os.environ.get(
         "N0TE_REFERENCE_SEARCH_PROVIDER_ID",
-        "configured-reference-search",
+        default_provider_id,
     )
     provider_source_ref = os.environ.get(
         "N0TE_REFERENCE_SEARCH_PROVIDER_SOURCE_REF",
         f"provider:{provider_id}",
     )
-    token = os.environ.get("N0TE_REFERENCE_SEARCH_BEARER_TOKEN")
-    headers = {"Authorization": f"Bearer {token}"} if token else None
-    timeout_seconds = os.environ.get("N0TE_REFERENCE_SEARCH_TIMEOUT_SECONDS", "8")
 
-    provider = HttpJsonReferenceProvider(
-        endpoint=endpoint,
-        provider_source_ref=provider_source_ref,
-        headers=headers,
-        timeout_seconds=float(timeout_seconds),
-    )
-    parsed = urlparse(provider.endpoint)
-    host = (parsed.hostname or "").casefold()
-    route_kind = (
-        "LOCALHOST"
-        if host in {"localhost", "127.0.0.1", "::1"}
-        else "INTERNET"
-    )
+    if backend == "http_json":
+        if not endpoint:
+            raise RuntimeError(
+                "http_json reference backend requires N0TE_REFERENCE_SEARCH_ENDPOINT"
+            )
+        token = os.environ.get("N0TE_REFERENCE_SEARCH_BEARER_TOKEN")
+        headers = {"Authorization": f"Bearer {token}"} if token else None
+        timeout_seconds = float(
+            os.environ.get("N0TE_REFERENCE_SEARCH_TIMEOUT_SECONDS", "8")
+        )
+        provider = HttpJsonReferenceProvider(
+            endpoint=endpoint,
+            provider_source_ref=provider_source_ref,
+            headers=headers,
+            timeout_seconds=timeout_seconds,
+        )
+        parsed = urlparse(provider.endpoint)
+        host = (parsed.hostname or "").casefold()
+        route_kind = (
+            "LOCALHOST"
+            if host in {"localhost", "127.0.0.1", "::1"}
+            else "INTERNET"
+        )
+        registration_source_ref = "environment:N0TE_REFERENCE_SEARCH_ENDPOINT"
+        route_description = "Configured read-only reference discovery endpoint"
+    elif backend == "openai_web":
+        api_key = os.environ.get("N0TE_OPENAI_API_KEY") or os.environ.get(
+            "OPENAI_API_KEY"
+        )
+        if not api_key:
+            raise RuntimeError(
+                "openai_web reference backend requires N0TE_OPENAI_API_KEY or OPENAI_API_KEY"
+            )
+        model = os.environ.get(
+            "N0TE_REFERENCE_OPENAI_MODEL",
+            DEFAULT_OPENAI_WEB_REFERENCE_MODEL,
+        )
+        timeout_seconds = float(
+            os.environ.get("N0TE_REFERENCE_SEARCH_TIMEOUT_SECONDS", "20")
+        )
+        provider = OpenAIWebReferenceProvider(
+            api_key=api_key,
+            model=model,
+            timeout_seconds=timeout_seconds,
+        )
+        route_kind = "INTERNET"
+        registration_source_ref = (
+            "environment:N0TE_REFERENCE_SEARCH_BACKEND:openai_web"
+        )
+        route_description = "OpenAI web-search reference discovery"
+    else:
+        raise RuntimeError(f"unsupported reference search backend: {backend}")
+
     gateway.register(
         provider_id,
         provider=provider,
         route=NetworkRoute(
             route_id=f"reference-search:{provider_id}",
             kind=route_kind,
-            description="Configured read-only reference discovery endpoint",
+            description=route_description,
         ),
-        registration_source_ref="environment:N0TE_REFERENCE_SEARCH_ENDPOINT",
+        registration_source_ref=registration_source_ref,
     )
 
 

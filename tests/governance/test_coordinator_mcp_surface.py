@@ -188,6 +188,7 @@ def test_reference_runtime_bootstraps_configured_http_provider(monkeypatch):
         _ConfiguredProvider,
     )
     monkeypatch.setenv("N0TE_NETWORK_MODE", "CONNECTED")
+    monkeypatch.setenv("N0TE_REFERENCE_SEARCH_BACKEND", "http_json")
     monkeypatch.setenv(
         "N0TE_REFERENCE_SEARCH_ENDPOINT",
         "https://references.example.test/search",
@@ -247,6 +248,7 @@ def test_bootstrapped_internet_provider_still_obeys_offline_mode(monkeypatch):
         _ConfiguredProvider,
     )
     monkeypatch.setenv("N0TE_NETWORK_MODE", "OFFLINE")
+    monkeypatch.setenv("N0TE_REFERENCE_SEARCH_BACKEND", "http_json")
     monkeypatch.setenv(
         "N0TE_REFERENCE_SEARCH_ENDPOINT",
         "https://references.example.test/search",
@@ -265,5 +267,82 @@ def test_bootstrapped_internet_provider_still_obeys_offline_mode(monkeypatch):
                 comparison_dimensions=("tempo",),
             )
         assert instance.calls == []
+    finally:
+        coordinator_mcp_module._reference_runtime.cache_clear()
+
+
+def test_reference_runtime_bootstraps_openai_web_without_endpoint(monkeypatch):
+    constructed = {}
+
+    class _OpenAIProvider(_Provider):
+        def __init__(self, *, api_key, model, timeout_seconds):
+            super().__init__()
+            constructed.update(
+                api_key=api_key,
+                model=model,
+                timeout_seconds=timeout_seconds,
+                instance=self,
+            )
+
+    monkeypatch.setattr(
+        coordinator_mcp_module,
+        "OpenAIWebReferenceProvider",
+        _OpenAIProvider,
+    )
+    monkeypatch.setenv("N0TE_NETWORK_MODE", "CONNECTED")
+    monkeypatch.setenv("N0TE_REFERENCE_SEARCH_BACKEND", "openai_web")
+    monkeypatch.setenv("N0TE_OPENAI_API_KEY", "top-secret-test-key")
+    monkeypatch.setenv("N0TE_REFERENCE_OPENAI_MODEL", "reference-model-test")
+    monkeypatch.setenv("N0TE_REFERENCE_SEARCH_TIMEOUT_SECONDS", "6.5")
+    monkeypatch.setenv("N0TE_REFERENCE_SEARCH_PROVIDER_ID", "public-web")
+    monkeypatch.delenv("N0TE_REFERENCE_SEARCH_ENDPOINT", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    coordinator_mcp_module._reference_runtime.cache_clear()
+    try:
+        gateway = coordinator_mcp_module._reference_runtime()
+        assert gateway.network_mode == "CONNECTED"
+        assert gateway.registered_providers == ("public-web",)
+        assert constructed["api_key"] == "top-secret-test-key"
+        assert constructed["model"] == "reference-model-test"
+        assert constructed["timeout_seconds"] == 6.5
+
+        execution = gateway.discover_ranked(
+            "public-web",
+            target=ReferenceCalibrationProfile.create(tempo_bpm=128.0),
+            comparison_dimensions=("tempo",),
+            result_limit=1,
+        )
+        assert execution.route_kind == "INTERNET"
+        assert execution.registration_source_ref == (
+            "environment:N0TE_REFERENCE_SEARCH_BACKEND:openai_web"
+        )
+        assert constructed["instance"].calls
+        assert "top-secret-test-key" not in repr(execution)
+    finally:
+        coordinator_mcp_module._reference_runtime.cache_clear()
+
+
+def test_openai_web_backend_fails_closed_without_runtime_api_key(monkeypatch):
+    monkeypatch.setenv("N0TE_NETWORK_MODE", "CONNECTED")
+    monkeypatch.setenv("N0TE_REFERENCE_SEARCH_BACKEND", "openai_web")
+    monkeypatch.delenv("N0TE_REFERENCE_SEARCH_ENDPOINT", raising=False)
+    monkeypatch.delenv("N0TE_OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    coordinator_mcp_module._reference_runtime.cache_clear()
+    try:
+        with pytest.raises(RuntimeError, match="requires N0TE_OPENAI_API_KEY or OPENAI_API_KEY"):
+            coordinator_mcp_module._reference_runtime()
+    finally:
+        coordinator_mcp_module._reference_runtime.cache_clear()
+
+
+def test_unknown_reference_backend_fails_closed(monkeypatch):
+    monkeypatch.setenv("N0TE_NETWORK_MODE", "CONNECTED")
+    monkeypatch.setenv("N0TE_REFERENCE_SEARCH_BACKEND", "mystery-provider")
+    monkeypatch.delenv("N0TE_REFERENCE_SEARCH_ENDPOINT", raising=False)
+    coordinator_mcp_module._reference_runtime.cache_clear()
+    try:
+        with pytest.raises(RuntimeError, match="unsupported reference search backend"):
+            coordinator_mcp_module._reference_runtime()
     finally:
         coordinator_mcp_module._reference_runtime.cache_clear()
