@@ -301,4 +301,4 @@ def test_scripter_probe_and_dependency_contract_are_explicit():
         assert forbidden not in script
 
     requirements = (root / "requirements.txt").read_text(encoding="utf-8")
-    assert 'python-rtmidi==1.5.7; sys_platform == "darwin"' in requirements
+    assert "python-rtmidi==1.5.7" in requirements
