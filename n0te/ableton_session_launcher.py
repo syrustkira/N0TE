@@ -17,12 +17,12 @@ from pathlib import Path
 from typing import Callable, Mapping, Sequence
 from urllib.parse import urlparse
 
-from .ableton_host_bridge import DEFAULT_ABLETON_BRIDGE_ENDPOINT
-from .ableton_observer_service import AbletonObserverService
-from .app_runtime import ApplicationRuntime
-from .coordinator_gateway import DEFAULT_COORDINATOR_MCP_ENDPOINT
+from .ableton_host_bridge import DEFAULT_ABLETON_BRIDGE_ENDPOINT, AbletonHostBridgeError
+from .ableton_observer_service import AbletonObserverService, AbletonObserverServiceError
+from .app_runtime import ApplicationRuntime, ApplicationRuntimeError
+from .coordinator_gateway import DEFAULT_COORDINATOR_MCP_ENDPOINT, CoordinatorGatewayError
 from .instance import ProcessIdentity
-from .lineage import LineageStore
+from .lineage import LineageError, LineageStore
 from .platforms import PlatformEnvironment, resolve_application_roots
 
 _PROFILE = re.compile(r"^prf_[0-9a-f]{32}$")
@@ -254,9 +254,13 @@ class CoordinatorProcessSupervisor:
 async def _run_observer(service: AbletonObserverService, *, once: bool, output: Callable[[str], None]) -> None:
     if once:
         cycle = await service.refresh_references()
+        error_class = getattr(cycle, "discovery_error_class", None)
+        if error_class:
+            raise AbletonSessionLauncherError(f"reference discovery failed: {error_class}")
         primary = None if cycle.references is None else cycle.references.get("primary")
         title = primary.get("title") if isinstance(primary, dict) else None
-        output("N0TE Ableton smoke test complete" + (f" • reference: {title}" if title else ""))
+        suffix = f" • reference: {title}" if title else " • no reference candidate returned"
+        output("N0TE Ableton smoke test complete" + suffix)
         return
     stop = asyncio.Event(); loop = asyncio.get_running_loop(); previous = {}
     def request_stop(signum, frame):  # noqa: ARG001
@@ -292,13 +296,14 @@ def run_session(config: AbletonSessionConfig, *, process_probe=None, runtime_fac
     runtime = runtime_factory(data_root=config.data_root, state_root=config.state_root)
     launch = runtime.launch(profile_id=config.profile_id, process=probe.current_process(), probe=probe)
     if launch.status != "STARTED":
-        raise AbletonSessionLauncherError(f"cannot own N0TE profile runtime: {launch.status}")
+        reason = f" ({launch.reason})" if getattr(launch, "reason", None) else ""
+        raise AbletonSessionLauncherError(f"cannot own N0TE profile runtime: {launch.status}{reason}")
     coordinator = None; primary_error = None
     try:
         song = runtime.headquarters.store.active_song()
         if song is None:
             raise AbletonSessionLauncherError("selected profile has no active Song")
-        coordinator = coordinator_factory(config.coordinator_endpoint, environment=dict(coordinator_environment or os.environ))
+        coordinator = coordinator_factory(config.coordinator_endpoint, environment=dict(os.environ if coordinator_environment is None else coordinator_environment))
         status = coordinator.start()
         service = service_factory(runtime, provider_id=config.provider_id, bridge_endpoint=config.bridge_endpoint,
                                   coordinator_endpoint=config.coordinator_endpoint,
@@ -306,6 +311,8 @@ def run_session(config: AbletonSessionConfig, *, process_probe=None, runtime_fac
                                   reconnect_interval_seconds=config.reconnect_interval_seconds,
                                   discovery_retry_seconds=config.discovery_retry_seconds)
         output(f"N0TE Ableton session • {song.title} • coordinator {status.lower()}")
+        if not config.once:
+            output("N0TE Live bridge • reconnect is automatic while Ableton/N0TEBridge is unavailable")
         asyncio.run(_run_observer(service, once=config.once, output=output)); return 0
     except BaseException as exc:
         primary_error = exc; raise
@@ -350,7 +357,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         config, coordinator_env = build_config(_parser().parse_args(argv))
         return run_session(config, coordinator_environment=coordinator_env)
-    except AbletonSessionLauncherError as exc:
+    except (
+        AbletonSessionLauncherError,
+        AbletonHostBridgeError,
+        AbletonObserverServiceError,
+        ApplicationRuntimeError,
+        CoordinatorGatewayError,
+        LineageError,
+    ) as exc:
         print(f"N0TE Ableton session error: {exc}", file=sys.stderr); return 2
     except KeyboardInterrupt:
         return 130

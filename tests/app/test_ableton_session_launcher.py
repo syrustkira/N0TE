@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -10,6 +11,7 @@ from n0te.ableton_session_launcher import (
     AbletonSessionLauncherError,
     CoordinatorProcessSupervisor,
     SystemProcessProbe,
+    _run_observer,
     resolve_profile_id,
     resolve_provider_id,
     run_session,
@@ -248,3 +250,44 @@ def test_run_session_releases_runtime_when_active_song_is_missing(tmp_path: Path
             coordinator_environment={"N0TE_REFERENCE_SEARCH_BACKEND": "openai_web"},
         )
     assert NoSongRuntime.instances[-1].quit_calls == 1
+
+
+def test_once_smoke_test_reports_reference_discovery_failure() -> None:
+    class BrokenService:
+        async def refresh_references(self):
+            return SimpleNamespace(
+                references=None,
+                discovery_error_class="CoordinatorReferenceClientError",
+            )
+
+    with pytest.raises(AbletonSessionLauncherError, match="reference discovery failed"):
+        asyncio.run(_run_observer(BrokenService(), once=True, output=lambda message: None))
+
+
+def test_run_session_preserves_foreign_lease_reason_without_quitting_unowned_runtime(tmp_path: Path) -> None:
+    class HeldRuntime(_FakeRuntime):
+        instances = []
+
+        def launch(self, *, profile_id, process, probe):
+            self.launched = (profile_id, process, probe)
+            return SimpleNamespace(
+                status="HELD_BY_OTHER",
+                reason="another verified-live exact launch owns this profile",
+            )
+
+    config = AbletonSessionConfig(
+        data_root=tmp_path / "data",
+        state_root=tmp_path / "state",
+        profile_id="prf_" + "f" * 32,
+        provider_id="provider",
+        once=True,
+    )
+    with pytest.raises(AbletonSessionLauncherError, match="another verified-live"):
+        run_session(
+            config,
+            process_probe=_FakeProbe(),
+            runtime_factory=HeldRuntime,
+            coordinator_factory=_FakeCoordinator,
+            coordinator_environment={},
+        )
+    assert HeldRuntime.instances[-1].quit_calls == 0
