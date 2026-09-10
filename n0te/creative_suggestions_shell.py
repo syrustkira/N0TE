@@ -96,6 +96,9 @@ def _deferral_forms(shell: ConsumerShell, result: CreativeSuggestion) -> str:
 
 
 _MAX_ACTIVE_TOOL_CONTEXT = 12
+_MAX_SEMANTIC_TOOL_CONTEXT = 8
+_MAX_SEMANTIC_CAPABILITY_CONTEXT = 6
+_MAX_TOOL_CONTEXT_TEXT = 160
 _HOST_LABELS = {
     "ABLETON_LIVE": "Ableton Live",
     "FL_STUDIO": "FL Studio",
@@ -104,6 +107,13 @@ _HOST_LABELS = {
     "STUDIO_ONE": "Studio One",
     "PRO_TOOLS": "Pro Tools",
 }
+
+
+def _bounded_context_text(value: str, *, maximum: int = _MAX_TOOL_CONTEXT_TEXT) -> str:
+    text = " ".join(str(value).split())
+    if len(text) <= maximum:
+        return text
+    return text[: maximum - 1].rstrip() + "…"
 
 
 def _latest_active_tool_projection(shell: ConsumerShell) -> ActiveToolProjection | None:
@@ -212,6 +222,57 @@ def _active_tool_context_markup(shell: ConsumerShell, dimension: str) -> str:
     )
 
 
+def _semantic_tool_context_markup(shell: ConsumerShell) -> str:
+    profiles = shell.runtime.headquarters.tool_inventory.active_profiles()
+    if not profiles:
+        return ""
+
+    rows: list[str] = []
+    for profile in profiles[:_MAX_SEMANTIC_TOOL_CONTEXT]:
+        formats = sorted({endpoint.format_kind for endpoint in profile.endpoints})
+        capabilities = sorted(
+            {binding.candidate.capability for binding in profile.capabilities}
+        )
+        visible_capabilities = capabilities[:_MAX_SEMANTIC_CAPABILITY_CONTEXT]
+        details = [" / ".join(formats)]
+        if visible_capabilities:
+            details.append(
+                ", ".join(
+                    _bounded_context_text(capability)
+                    for capability in visible_capabilities
+                )
+            )
+        else:
+            details.append("no declared capability bindings")
+        omitted_capabilities = len(capabilities) - len(visible_capabilities)
+        if omitted_capabilities:
+            details.append(f"+{omitted_capabilities} capability binding(s)")
+        rows.append(
+            "<li><strong>"
+            + html.escape(_bounded_context_text(profile.display_name))
+            + "</strong> · "
+            + html.escape(" · ".join(details))
+            + "</li>"
+        )
+
+    omitted_tools = len(profiles) - len(rows)
+    omitted_note = (
+        ""
+        if omitted_tools == 0
+        else f'<p class="muted">+{omitted_tools} more declared Tool(s) omitted from this bounded view.</p>'
+    )
+    return (
+        '<div class="stack"><h4>Explicit Tool inventory</h4>'
+        '<p class="muted">Persistent semantic Tool identities recorded through explicit Artist declaration, import, or correction.</p>'
+        "<ul>"
+        + "".join(rows)
+        + "</ul>"
+        + omitted_note
+        + '<p class="muted">Inventory presence does not prove that a Tool is loaded in the current DAW, currently licensed, or safe to control. N0TE has not matched these entries to the observed device chain.</p>'
+        + "</div>"
+    )
+
+
 def _result_markup(shell: ConsumerShell, result: CreativeSuggestion | None) -> str:
     if result is None:
         return ""
@@ -223,6 +284,7 @@ def _result_markup(shell: ConsumerShell, result: CreativeSuggestion | None) -> s
         + "</p>"
     )
     daw_context = _active_tool_context_markup(shell, result.dimension)
+    inventory_context = _semantic_tool_context_markup(shell)
     return (
         '<div class="stack" aria-live="polite">'
         '<h3>One prompt to try</h3>'
@@ -232,6 +294,7 @@ def _result_markup(shell: ConsumerShell, result: CreativeSuggestion | None) -> s
         f'<p class="muted">{html.escape(result.distance_explanation)}</p>'
         f'{objective}'
         f'{daw_context}'
+        f'{inventory_context}'
         '<p class="muted">Generated locally and deterministically. No AI provider was called, no project was changed, and this is not a claim about what your Song needs.</p>'
         f'{_deferral_forms(shell, result)}'
         '</div>'
