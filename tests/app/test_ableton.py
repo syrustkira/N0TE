@@ -501,13 +501,16 @@ def test_try_volume_restore_is_a_second_exact_approved_transaction(tmp_path):
         assert live_song.tracks[1].mixer_device.volume.value == pytest.approx(0.43)
         assert headquarters.store._conn.execute("SELECT COUNT(*) FROM operations").fetchone()[0] == 2
         assert any("RESTORED" in line for line in output)
-        states = [
+        operation_ids = [
             row[0]
             for row in headquarters.store._conn.execute(
-                "SELECT recorded_state FROM operations ORDER BY rowid"
+                "SELECT id FROM operations ORDER BY rowid"
             )
         ]
-        assert states == ["SUCCEEDED", "SUCCEEDED"]
+        assert [
+            headquarters.operations.get(operation_id).recorded_state
+            for operation_id in operation_ids
+        ] == ["SUCCEEDED", "SUCCEEDED"]
     finally:
         bridge.disconnect()
         headquarters.close()
