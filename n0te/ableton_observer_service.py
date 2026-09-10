@@ -19,7 +19,9 @@ from .coordinator_gateway import (
     DEFAULT_COORDINATOR_MCP_ENDPOINT,
     CoordinatorReferenceClient,
 )
+from .host_runtime import ActiveToolProjectionError, project_active_tools
 from .host_session_handshake import HostSessionReferenceWorkflow
+from .lineage import NotFoundError
 from .memory import HeadquartersMemory
 
 SERVICE_STATES = {"READY", "WAITING_FOR_BRIDGE", "OBSERVING", "STOPPED"}
@@ -80,7 +82,6 @@ class AbletonAdviceClient:
         *,
         timeout_seconds: float = 2.0,
     ) -> None:
-        # Reuse the observation client's exact loopback endpoint validation contract.
         validated = AbletonRemoteScriptClient(
             endpoint,
             timeout_seconds=timeout_seconds,
@@ -136,13 +137,7 @@ class AbletonAdviceClient:
 
 
 class AbletonObserverService:
-    """Supervise continuous Ableton observation inside one owned N0TE runtime.
-
-    The service never opens Headquarters itself. Production construction goes through
-    from_runtime(), which reuses the exact Headquarters already protected by the
-    ApplicationRuntime lease. The service does not create a background task by itself;
-    a desktop/consumer event loop explicitly awaits run().
-    """
+    """Supervise continuous Ableton observation inside one owned N0TE runtime."""
 
     def __init__(
         self,
@@ -201,8 +196,6 @@ class AbletonObserverService:
         discovery_limit: int = 12,
         result_limit: int = 3,
     ) -> "AbletonObserverService":
-        # Local import keeps ApplicationRuntime independent of this service and
-        # preserves its documented no-daemon/no-server lifecycle contract.
         from .app_runtime import ApplicationRuntime
 
         if not isinstance(runtime, ApplicationRuntime):
@@ -276,13 +269,52 @@ class AbletonObserverService:
         except Exception:
             return False
 
-    def status_projection(self) -> dict[str, object]:
-        """Return the consumer-safe current Ableton/N0TE state.
+    def _active_tools_status(self, workspace_id: str) -> dict[str, object]:
+        try:
+            projection = project_active_tools(
+                self.headquarters.workspaces,
+                self.headquarters.shadow,
+                workspace_id,
+            )
+        except (ActiveToolProjectionError, NotFoundError) as exc:
+            return {
+                "state": "UNAVAILABLE",
+                "error_class": type(exc).__name__,
+                "scopes": [],
+            }
 
-        Filesystem paths, bridge endpoints, API credentials, internal Shadow batch
-        identifiers, and mutation permits are intentionally absent. This projection is
-        suitable for a desktop/UI surface without teaching the UI canonical internals.
-        """
+        scopes = []
+        for scope in projection.scopes:
+            scopes.append(
+                {
+                    "parent_kind": scope.parent_kind,
+                    "parent_ref": scope.parent_ref,
+                    "parent_name": scope.parent_name,
+                    "coverage": scope.coverage,
+                    "expected_count": scope.expected_count,
+                    "tools": [
+                        {
+                            "device_ref": tool.device_ref,
+                            "name": tool.name,
+                            "position_kind": tool.position_kind,
+                            "position": tool.position,
+                            "role": tool.role,
+                            "class_name": tool.class_name,
+                            "enabled": tool.enabled,
+                            "offline": tool.offline,
+                        }
+                        for tool in scope.tools
+                    ],
+                }
+            )
+        return {
+            "state": "OBSERVED",
+            "host_family": projection.host_family,
+            "scopes": scopes,
+        }
+
+    def status_projection(self) -> dict[str, object]:
+        """Return the consumer-safe current Ableton/N0TE state."""
 
         cycle = self._latest_cycle
         payload: dict[str, object] = {
@@ -327,6 +359,7 @@ class AbletonObserverService:
             ),
             "observation_committed": cycle.observation_committed,
         }
+        payload["active_tools"] = self._active_tools_status(binding.workspace_id)
 
         references = cycle.references
         payload["reference_discovery"] = {
@@ -365,8 +398,6 @@ class AbletonObserverService:
             self._last_notice_error_class = type(exc).__name__
 
     async def refresh_references(self) -> AbletonContinuousObservationCycle:
-        """Explicitly refresh references through the existing read-only observation path."""
-
         if not self._runtime_is_owned():
             raise AbletonObserverServiceError(
                 "cannot refresh references after the owning ApplicationRuntime stopped"
