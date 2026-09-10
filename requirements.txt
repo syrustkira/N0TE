@@ -5,5 +5,5 @@ mcp>=2,<3
 # pyloudnorm 0.2.0 is MIT-licensed and implements ITU-R BS.1770-4 integrated loudness.
 pyloudnorm==0.2.0
 pywin32>=312; sys_platform == "win32"
-# Logic Pro timing observation uses CoreMIDI through RtMidi only on macOS. 1.5.7 has CPython 3.12 wheels for Apple Silicon and Intel macOS.
-python-rtmidi==1.5.7; sys_platform == "darwin"
+# Logic Pro and Studio One timing observation use RtMidi. 1.5.7 supplies CPython 3.12 wheels across the verified macOS, Windows x64, and Linux x64/ARM64 routes used by this chassis.
+python-rtmidi==1.5.7
