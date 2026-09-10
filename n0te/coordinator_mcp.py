@@ -13,6 +13,9 @@ from governance.execution_permit import ExecutionPermitAuthority, SQLitePermitLe
 from governance.trusted_context import FileTrustedContextProvider
 
 from .authority import ActionIntent, ApprovalBinding
+from .coordinator_gateway import ReferenceDiscoveryGateway
+from .network import NetworkPolicy, NetworkRoute
+from .reference_calibration import ReferenceCalibrationProfile, ReferenceDiscoveryProvider
 
 mcp = MCPServer(
     "N0TE Coordinator Gate",
@@ -21,6 +24,7 @@ mcp = MCPServer(
         "invoke the machine-required functions, and use the same compiled context for any stateful permit. "
         "Do not reconstruct the project from model salience and do not create new doctrine for an already-owned rule. "
         "A permit is bound to canonical context and one exact ActionIntent. "
+        "Reference discovery is read-only and may use only providers registered by the trusted runtime. "
         "This server intentionally exposes no ungated mutation tool."
     ),
 )
@@ -53,6 +57,42 @@ def _approval(raw: dict | None) -> ApprovalBinding | None:
         intent_fingerprint=raw.get("intent_fingerprint"),
         source_ref=raw.get("source_ref"),
     )
+
+
+def _reference_profile(raw: dict) -> ReferenceCalibrationProfile:
+    if not isinstance(raw, dict):
+        raise ValueError("target must be an object")
+    features = raw.get("features")
+    if not isinstance(features, dict):
+        raise ValueError("target.features must be an object")
+    tags = raw.get("semantic_tags") or ()
+    if isinstance(tags, (str, bytes)):
+        raise ValueError("target.semantic_tags must be a sequence")
+    return ReferenceCalibrationProfile(
+        features=tuple(features.items()),
+        semantic_tags=tuple(tags),
+    )
+
+
+def _ranked_reference_payload(item) -> dict:
+    candidate = item.candidate
+    return {
+        "title": candidate.title,
+        "source_type": candidate.source_type,
+        "source_locator": candidate.source_locator,
+        "source_kind": candidate.source_kind,
+        "source_ref": candidate.source_ref,
+        "confidence": candidate.confidence,
+        "comparison_dimensions": list(candidate.comparison_dimensions),
+        "profile": {
+            "features": candidate.profile.feature_map(),
+            "semantic_tags": list(candidate.profile.semantic_tags),
+        },
+        "similarity": item.similarity,
+        "matched_features": list(item.matched_features),
+        "feature_distances": dict(item.feature_distances),
+        "matched_tags": list(item.matched_tags),
+    }
 
 
 def _repo_root() -> Path:
@@ -102,6 +142,36 @@ def _runtime():
     return contexts, permits
 
 
+@lru_cache(maxsize=1)
+def _reference_runtime() -> ReferenceDiscoveryGateway:
+    mode = os.environ.get("N0TE_NETWORK_MODE", "OFFLINE")
+    return ReferenceDiscoveryGateway(network_policy=NetworkPolicy(mode))
+
+
+def register_reference_discovery_provider(
+    provider_id: str,
+    *,
+    provider: ReferenceDiscoveryProvider,
+    route_id: str,
+    route_kind: str,
+    route_description: str,
+    registration_source_ref: str,
+    lan_approval_ref: str | None = None,
+) -> None:
+    """Trusted bootstrap hook. This is intentionally not an MCP tool."""
+    _reference_runtime().register(
+        provider_id,
+        provider=provider,
+        route=NetworkRoute(
+            route_id=route_id,
+            kind=route_kind,
+            description=route_description,
+            lan_approval_ref=lan_approval_ref,
+        ),
+        registration_source_ref=registration_source_ref,
+    )
+
+
 def _current_snapshot(contexts):
     current = getattr(contexts, "current_snapshot", None)
     if not callable(current):
@@ -128,6 +198,50 @@ def continue_execution() -> dict:
         "snapshot_fingerprint": snapshot.fingerprint,
         "source_fingerprint": snapshot.source_fingerprint,
         "projection": projection,
+    }
+
+
+@mcp.tool()
+def discover_reference_candidates(
+    provider_id: str,
+    target: dict,
+    comparison_dimensions: list[str],
+    required_features: list[str] | None = None,
+    desired_tags: list[str] | None = None,
+    feature_weights: dict[str, float] | None = None,
+    discovery_limit: int = 12,
+    result_limit: int = 3,
+) -> dict:
+    """Read from one trusted registered reference provider and rank locally.
+
+    This tool performs no Song write, DAW mutation, provider mutation, publication,
+    purchase, or model invocation. Provider registration must already exist in the
+    trusted runtime. Network policy may deny the route before any provider call.
+    """
+    execution = _reference_runtime().discover_ranked(
+        provider_id,
+        target=_reference_profile(target),
+        comparison_dimensions=tuple(comparison_dimensions),
+        required_features=tuple(required_features or ()),
+        desired_tags=tuple(desired_tags or ()),
+        feature_weights=feature_weights,
+        discovery_limit=discovery_limit,
+        result_limit=result_limit,
+    )
+    return {
+        "provider_id": execution.provider_id,
+        "route_id": execution.route_id,
+        "route_kind": execution.route_kind,
+        "registration_source_ref": execution.registration_source_ref,
+        "transport_reason_codes": list(execution.transport_reason_codes),
+        "read_only": execution.read_only,
+        "action_authority_granted": execution.action_authority_granted,
+        "primary": (
+            _ranked_reference_payload(execution.ranked[0])
+            if execution.ranked
+            else None
+        ),
+        "ranked": [_ranked_reference_payload(item) for item in execution.ranked],
     }
 
 
@@ -190,12 +304,15 @@ def execution_gate_status() -> dict:
     """Report gate configuration and whether compiled CONTINUE is active."""
     contexts, _ = _runtime()
     compiled = callable(getattr(contexts, "current_projection", None))
+    reference_gateway = _reference_runtime()
     return {
         "secret_configured": bool(os.environ.get("N0TE_EXECUTION_GATE_SECRET")),
         "permit_ledger_configured": bool(os.environ.get("N0TE_EXECUTION_PERMIT_DB")),
         "compiled_continue_active": compiled,
         "context_provider": type(contexts).__name__,
         "ungated_mutation_tools_exposed_by_this_server": 0,
+        "reference_discovery_network_mode": reference_gateway.network_mode,
+        "registered_reference_providers": list(reference_gateway.registered_providers),
         "stateful_execution_rule": "COMPILE_CURRENT_STATE_THEN_CONSUME_ONE_TIME_PERMIT",
     }
 
