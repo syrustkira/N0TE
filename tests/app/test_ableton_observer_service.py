@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import asyncio
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
 from n0te.ableton_host_bridge import AbletonHostBridgeError
 from n0te.ableton_observer_service import (
+    STATUS_SCHEMA,
     AbletonObserverService,
     AbletonObserverServiceError,
 )
@@ -135,5 +137,137 @@ def test_service_recovers_from_missing_live_bridge_without_busy_loop(tmp_path):
         assert service.last_bridge_error_class == "AbletonHostBridgeError"
         assert service.latest_cycle is observer.sentinel
         assert service.state == "STOPPED"
+    finally:
+        headquarters.close()
+
+
+def _projection_cycle():
+    track = SimpleNamespace(kind="TRACK", index=2, name="Hook", ref="track:2")
+    runtime = SimpleNamespace(
+        family="ABLETON_LIVE",
+        version="12.4.5",
+        display_name="Ableton Live 12.4.5",
+    )
+    snapshot = SimpleNamespace(
+        runtime=runtime,
+        tempo_bpm=129.0,
+        is_playing=True,
+        current_song_time=48.25,
+        selected_track=track,
+    )
+    binding = SimpleNamespace(song_id="song_alpha", workspace_id="wsp_alpha")
+    observation = SimpleNamespace(binding=binding)
+    references = {
+        "provider_id": "openai-web",
+        "primary": {
+            "title": "Reference One",
+            "source_locator": "https://example.test/reference-one",
+        },
+        "ranked": [
+            {
+                "title": "Reference One",
+                "source_locator": "https://example.test/reference-one",
+            },
+            {
+                "title": "Reference Two",
+                "source_locator": "https://example.test/reference-two",
+            },
+        ],
+    }
+    return SimpleNamespace(
+        snapshot=snapshot,
+        observation=observation,
+        observation_committed=True,
+        discovery_performed=True,
+        discovery_deferred=False,
+        discovery_reason="EXPLICIT",
+        discovery_error_class=None,
+        references=references,
+    )
+
+
+class _ProjectionObserver:
+    interval_seconds = 0.05
+
+    def __init__(self, cycle):
+        self.cycle = cycle
+        self.force_values = []
+
+    async def poll_once(self, *, force_discovery=False):
+        self.force_values.append(force_discovery)
+        return self.cycle
+
+
+def test_status_projection_exposes_music_state_without_internal_or_mutation_authority(tmp_path):
+    headquarters = HeadquartersMemory.create(tmp_path, "Status Projection Artist")
+    cycle = _projection_cycle()
+    observer = _ProjectionObserver(cycle)
+    service = AbletonObserverService(headquarters, observer)
+    try:
+        empty = service.status_projection()
+        assert empty == {
+            "schema": STATUS_SCHEMA,
+            "service_state": "READY",
+            "connected": False,
+            "bridge_failure_count": 0,
+            "last_bridge_error_class": None,
+            "read_only": True,
+            "action_authority_granted": False,
+            "session": None,
+            "reference_discovery": None,
+        }
+
+        refreshed = asyncio.run(service.refresh_references())
+        assert refreshed is cycle
+        assert observer.force_values == [True]
+        status = service.status_projection()
+        assert status["schema"] == STATUS_SCHEMA
+        assert status["service_state"] == "OBSERVING"
+        assert status["connected"] is True
+        assert status["read_only"] is True
+        assert status["action_authority_granted"] is False
+        assert status["session"] == {
+            "song_id": "song_alpha",
+            "workspace_id": "wsp_alpha",
+            "host_family": "ABLETON_LIVE",
+            "host_version": "12.4.5",
+            "host_display_name": "Ableton Live 12.4.5",
+            "tempo_bpm": 129.0,
+            "is_playing": True,
+            "current_song_time": 48.25,
+            "selected_track": {
+                "kind": "TRACK",
+                "index": 2,
+                "name": "Hook",
+                "ref": "track:2",
+            },
+            "observation_committed": True,
+        }
+        assert status["reference_discovery"]["provider_id"] == "openai-web"
+        assert status["reference_discovery"]["reason"] == "EXPLICIT"
+        assert status["reference_discovery"]["primary"]["title"] == "Reference One"
+        assert len(status["reference_discovery"]["ranked"]) == 2
+        encoded = repr(status)
+        assert "set_path_fingerprint" not in encoded
+        assert "workspace_observation_id" not in encoded
+        assert "bridge_session" not in encoded
+        assert "permit" not in encoded.lower()
+    finally:
+        headquarters.close()
+
+
+def test_explicit_refresh_refuses_after_runtime_ownership_is_lost(tmp_path):
+    headquarters = HeadquartersMemory.create(tmp_path, "Refresh Ownership Artist")
+    observer = _ProjectionObserver(_projection_cycle())
+    owned = {"value": False}
+    service = AbletonObserverService(
+        headquarters,
+        observer,
+        runtime_guard=lambda: owned["value"],
+    )
+    try:
+        with pytest.raises(AbletonObserverServiceError, match="ApplicationRuntime stopped"):
+            asyncio.run(service.refresh_references())
+        assert observer.force_values == []
     finally:
         headquarters.close()

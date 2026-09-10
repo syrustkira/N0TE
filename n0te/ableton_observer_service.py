@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import inspect
+import json
 from typing import Awaitable, Callable, Protocol
 
 from .ableton_continuous_observer import (
@@ -21,6 +22,7 @@ from .host_session_handshake import HostSessionReferenceWorkflow
 from .memory import HeadquartersMemory
 
 SERVICE_STATES = {"READY", "WAITING_FOR_BRIDGE", "OBSERVING", "STOPPED"}
+STATUS_SCHEMA = "n0te.ableton-observer-status/v1"
 
 
 class AbletonObserverServiceError(RuntimeError):
@@ -34,6 +36,23 @@ class _ObserverLike(Protocol):
 
 
 CycleCallback = Callable[[AbletonContinuousObservationCycle], object | Awaitable[object]]
+
+
+def _json_clone(value: object) -> object:
+    """Return an isolated JSON-safe value or fail closed on hidden runtime objects."""
+
+    try:
+        encoded = json.dumps(
+            value,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
+    except (TypeError, ValueError) as exc:
+        raise AbletonObserverServiceError(
+            "observer status contains non-JSON runtime state"
+        ) from exc
+    return json.loads(encoded)
 
 
 class AbletonObserverService:
@@ -160,6 +179,84 @@ class AbletonObserverService:
             return self._runtime_guard() is True
         except Exception:
             return False
+
+    def status_projection(self) -> dict[str, object]:
+        """Return the consumer-safe current Ableton/N0TE state.
+
+        Filesystem paths, bridge endpoints, API credentials, internal Shadow batch
+        identifiers, and mutation permits are intentionally absent. This projection is
+        suitable for a desktop/UI surface without teaching the UI canonical internals.
+        """
+
+        cycle = self._latest_cycle
+        payload: dict[str, object] = {
+            "schema": STATUS_SCHEMA,
+            "service_state": self._state,
+            "connected": cycle is not None and self._state == "OBSERVING",
+            "bridge_failure_count": self._bridge_failure_count,
+            "last_bridge_error_class": self._last_bridge_error_class,
+            "read_only": True,
+            "action_authority_granted": False,
+            "session": None,
+            "reference_discovery": None,
+        }
+        if cycle is None:
+            return _json_clone(payload)  # type: ignore[return-value]
+
+        snapshot = cycle.snapshot
+        binding = cycle.observation.binding
+        track = snapshot.selected_track
+        payload["session"] = {
+            "song_id": binding.song_id,
+            "workspace_id": binding.workspace_id,
+            "host_family": snapshot.runtime.family,
+            "host_version": snapshot.runtime.version,
+            "host_display_name": snapshot.runtime.display_name,
+            "tempo_bpm": snapshot.tempo_bpm,
+            "is_playing": snapshot.is_playing,
+            "current_song_time": snapshot.current_song_time,
+            "selected_track": (
+                None
+                if track is None
+                else {
+                    "kind": track.kind,
+                    "index": track.index,
+                    "name": track.name,
+                    "ref": track.ref,
+                }
+            ),
+            "observation_committed": cycle.observation_committed,
+        }
+
+        references = cycle.references
+        payload["reference_discovery"] = {
+            "provider_id": None if references is None else references.get("provider_id"),
+            "performed": cycle.discovery_performed,
+            "deferred": cycle.discovery_deferred,
+            "reason": cycle.discovery_reason,
+            "error_class": cycle.discovery_error_class,
+            "primary": None if references is None else references.get("primary"),
+            "ranked": [] if references is None else references.get("ranked", []),
+        }
+        return _json_clone(payload)  # type: ignore[return-value]
+
+    async def refresh_references(self) -> AbletonContinuousObservationCycle:
+        """Explicitly refresh references through the existing read-only observation path."""
+
+        if not self._runtime_is_owned():
+            raise AbletonObserverServiceError(
+                "cannot refresh references after the owning ApplicationRuntime stopped"
+            )
+        try:
+            cycle = await self.observer.poll_once(force_discovery=True)
+        except AbletonHostBridgeError as exc:
+            self._state = "WAITING_FOR_BRIDGE"
+            self._bridge_failure_count += 1
+            self._last_bridge_error_class = type(exc).__name__
+            raise
+        self._latest_cycle = cycle
+        self._state = "OBSERVING"
+        return cycle
 
     @staticmethod
     async def _sleep_or_stop(stop_event: asyncio.Event, seconds: float) -> None:
