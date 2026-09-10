@@ -11,6 +11,7 @@ from n0te.coordinator_gateway import (
     ReferenceDiscoveryGatewayError,
 )
 from n0te.coordinator_mcp import mcp
+from n0te.hosts import HostRuntimeIdentity
 from n0te.network import NetworkPolicy, NetworkRoute
 from n0te.reference_calibration import (
     ReferenceCalibrationProfile,
@@ -21,6 +22,7 @@ from n0te.reference_calibration import (
 EXPECTED_GATE_TOOLS = {
     "continue_execution",
     "discover_reference_candidates",
+    "discover_session_reference_candidates",
     "evaluate_execution_gate",
     "inspect_trusted_context",
     "request_execution_permit",
@@ -346,3 +348,122 @@ def test_unknown_reference_backend_fails_closed(monkeypatch):
             coordinator_mcp_module._reference_runtime()
     finally:
         coordinator_mcp_module._reference_runtime.cache_clear()
+
+
+def _session_bundle(*, observation_id: str = "observation:1") -> dict:
+    runtime = HostRuntimeIdentity.from_runtime_labels(
+        host_family="ABLETON_LIVE",
+        version="12.1",
+        edition="Standard",
+        os_name="Darwin",
+        machine="arm64",
+    )
+    return {
+        "binding": {
+            "workspace_id": "workspace:1",
+            "song_id": "song:1",
+            "workspace_observation_id": "observation:1",
+            "host_runtime_fingerprint": runtime.fingerprint,
+            "runtime": {
+                "host_family": "ABLETON_LIVE",
+                "version": "12.1",
+                "edition": "Standard",
+                "os_name": "Darwin",
+                "machine": "arm64",
+                "fingerprint": runtime.fingerprint,
+            },
+        },
+        "shadow": {
+            "status": "CURRENT",
+            "workspace_id": "workspace:1",
+            "current_workspace_observation_id": observation_id,
+            "baseline_batch_id": "batch:1",
+            "latest_batch_id": "batch:1",
+            "facts": [
+                {
+                    "object_kind": "TEMPO",
+                    "object_ref": "tempo:main",
+                    "field": "bpm",
+                    "value": 128.0,
+                    "batch_id": "batch:1",
+                    "actor": "EXTERNAL",
+                    "evidence_ref": "host:ableton:tempo",
+                }
+            ],
+        },
+    }
+
+
+def test_session_reference_tool_derives_calibration_from_host_observation(monkeypatch):
+    provider = _Provider()
+    monkeypatch.setenv("N0TE_NETWORK_MODE", "OFFLINE")
+    monkeypatch.delenv("N0TE_REFERENCE_SEARCH_BACKEND", raising=False)
+    monkeypatch.delenv("N0TE_REFERENCE_SEARCH_ENDPOINT", raising=False)
+    monkeypatch.delenv("N0TE_REFERENCE_SEARCH_PROVIDER_ID", raising=False)
+    coordinator_mcp_module._reference_runtime.cache_clear()
+    try:
+        coordinator_mcp_module.register_reference_discovery_provider(
+            "session-local",
+            provider=provider,
+            route_id="session-local-library",
+            route_kind="LOCALHOST",
+            route_description="test local session references",
+            registration_source_ref="test:session-local",
+        )
+        result = coordinator_mcp_module.discover_session_reference_candidates(
+            "session-local",
+            _session_bundle(),
+            ["tempo"],
+            semantic_tags=["electronic"],
+            required_features=["tempo_bpm"],
+            desired_tags=["electronic"],
+            result_limit=2,
+        )
+        assert provider.calls
+        assert provider.calls[0][0].feature_map() == {"TEMPO_BPM": 128.0}
+        assert result["session_calibration"]["features"] == {"TEMPO_BPM": 128.0}
+        assert result["session_calibration"]["evidence"] == [
+            {
+                "feature": "TEMPO_BPM",
+                "value": 128.0,
+                "source_refs": ["host:ableton:tempo"],
+            }
+        ]
+        assert result["primary"]["title"] == "Near"
+        assert result["read_only"] is True
+        assert result["action_authority_granted"] is False
+    finally:
+        coordinator_mcp_module._reference_runtime.cache_clear()
+
+
+def test_session_reference_tool_rejects_stale_host_shadow_before_provider_read(monkeypatch):
+    provider = _Provider()
+    monkeypatch.setenv("N0TE_NETWORK_MODE", "OFFLINE")
+    monkeypatch.delenv("N0TE_REFERENCE_SEARCH_BACKEND", raising=False)
+    monkeypatch.delenv("N0TE_REFERENCE_SEARCH_ENDPOINT", raising=False)
+    coordinator_mcp_module._reference_runtime.cache_clear()
+    try:
+        coordinator_mcp_module.register_reference_discovery_provider(
+            "session-local",
+            provider=provider,
+            route_id="session-local-library",
+            route_kind="LOCALHOST",
+            route_description="test local session references",
+            registration_source_ref="test:session-local",
+        )
+        with pytest.raises(ValueError, match="stale"):
+            coordinator_mcp_module.discover_session_reference_candidates(
+                "session-local",
+                _session_bundle(observation_id="observation:old"),
+                ["tempo"],
+            )
+        assert provider.calls == []
+    finally:
+        coordinator_mcp_module._reference_runtime.cache_clear()
+
+
+def test_session_bundle_rejects_hand_authored_calibration_fields():
+    session = _session_bundle()
+    session["calibration"] = {"TEMPO_BPM": 160.0}
+    with pytest.raises(ValueError, match="unsupported fields"):
+        coordinator_mcp_module._session_evidence(session)

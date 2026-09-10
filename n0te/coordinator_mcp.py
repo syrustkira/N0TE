@@ -13,8 +13,11 @@ from governance.execution_envelope import evaluate_execution_envelope
 from governance.execution_permit import ExecutionPermitAuthority, SQLitePermitLedger
 from governance.trusted_context import FileTrustedContextProvider
 
+from .audio_engineering import EngineeringEvidenceBinding, EngineeringSnapshot
 from .authority import ActionIntent, ApprovalBinding
 from .coordinator_gateway import ReferenceDiscoveryGateway
+from .host_observation import HostObservationBinding
+from .hosts import HostRuntimeIdentity
 from .network import NetworkPolicy, NetworkRoute
 from .openai_web_reference_provider import (
     DEFAULT_OPENAI_WEB_REFERENCE_MODEL,
@@ -22,6 +25,8 @@ from .openai_web_reference_provider import (
 )
 from .reference_calibration import ReferenceCalibrationProfile, ReferenceDiscoveryProvider
 from .reference_providers import HttpJsonReferenceProvider
+from .session_reference_calibration import derive_session_calibration
+from .shadow import SHADOW_ACTORS, SHADOW_OBJECT_KINDS, HostShadowState, ShadowFact
 
 mcp = MCPServer(
     "N0TE Coordinator Gate",
@@ -31,6 +36,7 @@ mcp = MCPServer(
         "Do not reconstruct the project from model salience and do not create new doctrine for an already-owned rule. "
         "A permit is bound to canonical context and one exact ActionIntent. "
         "Reference discovery is read-only and may use only providers registered by the trusted runtime. "
+        "Provider discovery may be model-backed, but calibration/ranking and action authority remain local to N0TE. "
         "This server intentionally exposes no ungated mutation tool."
     ),
 )
@@ -65,6 +71,36 @@ def _approval(raw: dict | None) -> ApprovalBinding | None:
     )
 
 
+def _strict_object(
+    raw: object,
+    field: str,
+    *,
+    allowed: set[str],
+    required: set[str],
+) -> dict:
+    if not isinstance(raw, dict):
+        raise ValueError(f"{field} must be an object")
+    unknown = sorted(set(raw) - allowed)
+    if unknown:
+        raise ValueError(f"{field} contains unsupported fields: {unknown}")
+    missing = sorted(required - set(raw))
+    if missing:
+        raise ValueError(f"{field} is missing required fields: {missing}")
+    return raw
+
+
+def _required_text(value: object, field: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{field} must be non-empty text")
+    return value.strip()
+
+
+def _optional_text(value: object, field: str) -> str | None:
+    if value is None:
+        return None
+    return _required_text(value, field)
+
+
 def _reference_profile(raw: dict) -> ReferenceCalibrationProfile:
     if not isinstance(raw, dict):
         raise ValueError("target must be an object")
@@ -77,6 +113,257 @@ def _reference_profile(raw: dict) -> ReferenceCalibrationProfile:
     return ReferenceCalibrationProfile(
         features=tuple(features.items()),
         semantic_tags=tuple(tags),
+    )
+
+
+def _runtime_identity(raw: object) -> HostRuntimeIdentity:
+    payload = _strict_object(
+        raw,
+        "session.binding.runtime",
+        allowed={
+            "host_family",
+            "version",
+            "edition",
+            "os_name",
+            "machine",
+            "translation_mode",
+            "display_name",
+            "generic_host_label",
+            "fingerprint",
+        },
+        required={"host_family", "version", "edition", "os_name", "machine"},
+    )
+    runtime = HostRuntimeIdentity.from_runtime_labels(
+        host_family=_required_text(payload["host_family"], "runtime.host_family"),
+        version=_required_text(payload["version"], "runtime.version"),
+        edition=_required_text(payload["edition"], "runtime.edition"),
+        os_name=_required_text(payload["os_name"], "runtime.os_name"),
+        machine=_required_text(payload["machine"], "runtime.machine"),
+        translation_mode=_required_text(
+            payload.get("translation_mode", "NATIVE"), "runtime.translation_mode"
+        ),
+        display_name=_optional_text(payload.get("display_name"), "runtime.display_name"),
+        generic_host_label=_optional_text(
+            payload.get("generic_host_label"), "runtime.generic_host_label"
+        ),
+    )
+    supplied_fingerprint = payload.get("fingerprint")
+    if supplied_fingerprint is not None and _required_text(
+        supplied_fingerprint, "runtime.fingerprint"
+    ) != runtime.fingerprint:
+        raise ValueError("session runtime fingerprint does not match runtime identity")
+    return runtime
+
+
+def _session_binding(raw: object) -> HostObservationBinding:
+    payload = _strict_object(
+        raw,
+        "session.binding",
+        allowed={
+            "workspace_id",
+            "song_id",
+            "workspace_observation_id",
+            "host_runtime_fingerprint",
+            "runtime",
+        },
+        required={
+            "workspace_id",
+            "song_id",
+            "workspace_observation_id",
+            "host_runtime_fingerprint",
+            "runtime",
+        },
+    )
+    runtime = _runtime_identity(payload["runtime"])
+    return HostObservationBinding(
+        workspace_id=_required_text(payload["workspace_id"], "binding.workspace_id"),
+        song_id=_required_text(payload["song_id"], "binding.song_id"),
+        workspace_observation_id=_required_text(
+            payload["workspace_observation_id"], "binding.workspace_observation_id"
+        ),
+        host_runtime_fingerprint=_required_text(
+            payload["host_runtime_fingerprint"], "binding.host_runtime_fingerprint"
+        ),
+        runtime=runtime,
+    )
+
+
+def _shadow_fact(raw: object, index: int) -> ShadowFact:
+    payload = _strict_object(
+        raw,
+        f"session.shadow.facts[{index}]",
+        allowed={
+            "object_kind",
+            "object_ref",
+            "field",
+            "value",
+            "batch_id",
+            "actor",
+            "evidence_ref",
+        },
+        required={
+            "object_kind",
+            "object_ref",
+            "field",
+            "value",
+            "batch_id",
+            "actor",
+            "evidence_ref",
+        },
+    )
+    object_kind = _required_text(payload["object_kind"], "shadow.fact.object_kind").upper()
+    actor = _required_text(payload["actor"], "shadow.fact.actor").upper()
+    if object_kind not in SHADOW_OBJECT_KINDS:
+        raise ValueError(f"unsupported shadow fact object_kind: {object_kind}")
+    if actor not in SHADOW_ACTORS:
+        raise ValueError(f"unsupported shadow fact actor: {actor}")
+    return ShadowFact(
+        object_kind=object_kind,
+        object_ref=_required_text(payload["object_ref"], "shadow.fact.object_ref"),
+        field=_required_text(payload["field"], "shadow.fact.field"),
+        value=payload["value"],
+        batch_id=_required_text(payload["batch_id"], "shadow.fact.batch_id"),
+        actor=actor,
+        evidence_ref=_required_text(payload["evidence_ref"], "shadow.fact.evidence_ref"),
+    )
+
+
+def _session_shadow(raw: object) -> HostShadowState:
+    payload = _strict_object(
+        raw,
+        "session.shadow",
+        allowed={
+            "status",
+            "workspace_id",
+            "current_workspace_observation_id",
+            "baseline_batch_id",
+            "latest_batch_id",
+            "facts",
+        },
+        required={
+            "status",
+            "workspace_id",
+            "current_workspace_observation_id",
+            "baseline_batch_id",
+            "latest_batch_id",
+            "facts",
+        },
+    )
+    facts = payload["facts"]
+    if not isinstance(facts, list):
+        raise ValueError("session.shadow.facts must be a list")
+    return HostShadowState(
+        status=_required_text(payload["status"], "shadow.status").upper(),
+        workspace_id=_required_text(payload["workspace_id"], "shadow.workspace_id"),
+        current_workspace_observation_id=_required_text(
+            payload["current_workspace_observation_id"],
+            "shadow.current_workspace_observation_id",
+        ),
+        baseline_batch_id=_optional_text(
+            payload["baseline_batch_id"], "shadow.baseline_batch_id"
+        ),
+        latest_batch_id=_optional_text(
+            payload["latest_batch_id"], "shadow.latest_batch_id"
+        ),
+        facts=tuple(_shadow_fact(item, index) for index, item in enumerate(facts)),
+    )
+
+
+def _engineering_snapshot(raw: object | None) -> EngineeringSnapshot | None:
+    if raw is None:
+        return None
+    payload = _strict_object(
+        raw,
+        "session.engineering_snapshot",
+        allowed={
+            "binding",
+            "analyzer_version",
+            "sample_rate_hz",
+            "channels",
+            "bits_per_sample",
+            "frame_count",
+            "duration_seconds",
+            "sample_peak_dbfs",
+            "rms_dbfs",
+            "crest_factor_db",
+            "dc_offset_percent",
+            "stereo_correlation",
+            "integrated_lufs",
+            "loudness_state",
+            "loudness_standard",
+            "loudness_backend",
+        },
+        required={
+            "binding",
+            "analyzer_version",
+            "sample_rate_hz",
+            "channels",
+            "bits_per_sample",
+            "frame_count",
+            "duration_seconds",
+            "sample_peak_dbfs",
+            "rms_dbfs",
+            "crest_factor_db",
+            "dc_offset_percent",
+            "stereo_correlation",
+            "integrated_lufs",
+            "loudness_state",
+            "loudness_standard",
+            "loudness_backend",
+        },
+    )
+    binding_raw = _strict_object(
+        payload["binding"],
+        "session.engineering_snapshot.binding",
+        allowed={"song_id", "version_id", "asset_id", "sha256", "source_size_bytes"},
+        required={"song_id", "version_id", "asset_id", "sha256", "source_size_bytes"},
+    )
+    evidence = EngineeringEvidenceBinding(
+        song_id=_required_text(binding_raw["song_id"], "engineering.binding.song_id"),
+        version_id=_required_text(
+            binding_raw["version_id"], "engineering.binding.version_id"
+        ),
+        asset_id=_required_text(binding_raw["asset_id"], "engineering.binding.asset_id"),
+        sha256=_required_text(binding_raw["sha256"], "engineering.binding.sha256"),
+        source_size_bytes=binding_raw["source_size_bytes"],
+    )
+    return EngineeringSnapshot(
+        binding=evidence,
+        analyzer_version=_required_text(
+            payload["analyzer_version"], "engineering.analyzer_version"
+        ),
+        sample_rate_hz=payload["sample_rate_hz"],
+        channels=payload["channels"],
+        bits_per_sample=payload["bits_per_sample"],
+        frame_count=payload["frame_count"],
+        duration_seconds=payload["duration_seconds"],
+        sample_peak_dbfs=payload["sample_peak_dbfs"],
+        rms_dbfs=payload["rms_dbfs"],
+        crest_factor_db=payload["crest_factor_db"],
+        dc_offset_percent=payload["dc_offset_percent"],
+        stereo_correlation=payload["stereo_correlation"],
+        integrated_lufs=payload["integrated_lufs"],
+        loudness_state=_required_text(payload["loudness_state"], "engineering.loudness_state"),
+        loudness_standard=_required_text(
+            payload["loudness_standard"], "engineering.loudness_standard"
+        ),
+        loudness_backend=_required_text(
+            payload["loudness_backend"], "engineering.loudness_backend"
+        ),
+    )
+
+
+def _session_evidence(raw: object):
+    payload = _strict_object(
+        raw,
+        "session",
+        allowed={"binding", "shadow", "engineering_snapshot"},
+        required={"binding", "shadow"},
+    )
+    return (
+        _session_binding(payload["binding"]),
+        _session_shadow(payload["shadow"]),
+        _engineering_snapshot(payload.get("engineering_snapshot")),
     )
 
 
@@ -98,6 +385,24 @@ def _ranked_reference_payload(item) -> dict:
         "matched_features": list(item.matched_features),
         "feature_distances": dict(item.feature_distances),
         "matched_tags": list(item.matched_tags),
+    }
+
+
+def _reference_execution_payload(execution) -> dict:
+    return {
+        "provider_id": execution.provider_id,
+        "route_id": execution.route_id,
+        "route_kind": execution.route_kind,
+        "registration_source_ref": execution.registration_source_ref,
+        "transport_reason_codes": list(execution.transport_reason_codes),
+        "read_only": execution.read_only,
+        "action_authority_granted": execution.action_authority_granted,
+        "primary": (
+            _ranked_reference_payload(execution.ranked[0])
+            if execution.ranked
+            else None
+        ),
+        "ranked": [_ranked_reference_payload(item) for item in execution.ranked],
     }
 
 
@@ -316,8 +621,9 @@ def discover_reference_candidates(
     """Read from one trusted registered reference provider and rank locally.
 
     This tool performs no Song write, DAW mutation, provider mutation, publication,
-    purchase, or model invocation. Provider registration must already exist in the
-    trusted runtime. Network policy may deny the route before any provider call.
+    or purchase. The chosen provider may itself use model-backed read-only discovery,
+    but provider output never receives action authority and final calibration/ranking
+    remains deterministic inside N0TE. Network policy may deny the route first.
     """
     execution = _reference_runtime().discover_ranked(
         provider_id,
@@ -329,21 +635,62 @@ def discover_reference_candidates(
         discovery_limit=discovery_limit,
         result_limit=result_limit,
     )
-    return {
-        "provider_id": execution.provider_id,
-        "route_id": execution.route_id,
-        "route_kind": execution.route_kind,
-        "registration_source_ref": execution.registration_source_ref,
-        "transport_reason_codes": list(execution.transport_reason_codes),
-        "read_only": execution.read_only,
-        "action_authority_granted": execution.action_authority_granted,
-        "primary": (
-            _ranked_reference_payload(execution.ranked[0])
-            if execution.ranked
-            else None
-        ),
-        "ranked": [_ranked_reference_payload(item) for item in execution.ranked],
+    return _reference_execution_payload(execution)
+
+
+@mcp.tool()
+def discover_session_reference_candidates(
+    provider_id: str,
+    session: dict,
+    comparison_dimensions: list[str],
+    semantic_tags: list[str] | None = None,
+    required_features: list[str] | None = None,
+    desired_tags: list[str] | None = None,
+    feature_weights: dict[str, float] | None = None,
+    discovery_limit: int = 12,
+    result_limit: int = 3,
+) -> dict:
+    """Current host observation evidence -> calibration -> provider discovery -> local rank.
+
+    The caller supplies canonical observation evidence rather than hand-authored
+    calibration coordinates. Stale workspace bindings, cross-Song engineering data,
+    conflicting tempo facts, unsupported evidence and missing provenance fail closed.
+    """
+    binding, shadow, engineering_snapshot = _session_evidence(session)
+    derivation = derive_session_calibration(
+        binding,
+        shadow,
+        engineering_snapshot=engineering_snapshot,
+        semantic_tags=tuple(semantic_tags or ()),
+    )
+    execution = _reference_runtime().discover_ranked(
+        provider_id,
+        target=derivation.profile,
+        comparison_dimensions=tuple(comparison_dimensions),
+        required_features=tuple(required_features or ()),
+        desired_tags=tuple(desired_tags or ()),
+        feature_weights=feature_weights,
+        discovery_limit=discovery_limit,
+        result_limit=result_limit,
+    )
+    payload = _reference_execution_payload(execution)
+    payload["session_calibration"] = {
+        "workspace_id": binding.workspace_id,
+        "song_id": binding.song_id,
+        "workspace_observation_id": binding.workspace_observation_id,
+        "host_family": binding.runtime.family,
+        "features": derivation.profile.feature_map(),
+        "semantic_tags": list(derivation.profile.semantic_tags),
+        "evidence": [
+            {
+                "feature": item.feature,
+                "value": item.value,
+                "source_refs": list(item.source_refs),
+            }
+            for item in derivation.evidence
+        ],
     }
+    return payload
 
 
 @mcp.tool()
