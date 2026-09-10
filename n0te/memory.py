@@ -27,6 +27,7 @@ from .skills import SkillMemory
 from .success import SuccessMemory
 from .suggestion_deferral import SuggestionDeferralMemory
 from .suggestion_feedback import SuggestionFeedbackMemory
+from .tool_inventory import ToolInventoryMemory
 from .transactions import TransactionCoordinator
 from .twins import TwinAwareSongKnowledgeMapService, TwinEvidenceService
 from .workspace import WorkspaceMemory
@@ -40,6 +41,7 @@ class HeadquartersMemory:
         self.evidence = EvidenceMemory(store)
         self.twins = TwinEvidenceService(self.evidence)
         self.activity = ActivityLog(store)
+        self.tool_inventory = ToolInventoryMemory(store)
         self.attention = AttentionMemory(store)
         self.people = PeopleMemory(store)
         self.workspaces = WorkspaceMemory(store)
