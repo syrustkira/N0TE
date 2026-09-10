@@ -12,6 +12,7 @@ from .creative_suggestions import (
     CreativeSuggestionError,
     CreativeSuggestionService,
 )
+from .host_runtime import ActiveToolProjection, ActiveToolProjectionError, project_active_tools
 from .lineage import ValidationError
 from .suggestion_deferral import (
     LATER_THIS_SONG,
@@ -94,6 +95,123 @@ def _deferral_forms(shell: ConsumerShell, result: CreativeSuggestion) -> str:
     )
 
 
+_MAX_ACTIVE_TOOL_CONTEXT = 12
+_HOST_LABELS = {
+    "ABLETON_LIVE": "Ableton Live",
+    "FL_STUDIO": "FL Studio",
+    "LOGIC_PRO": "Logic Pro",
+    "REAPER": "REAPER",
+    "STUDIO_ONE": "Studio One",
+    "PRO_TOOLS": "Pro Tools",
+}
+
+
+def _latest_active_tool_projection(shell: ConsumerShell) -> ActiveToolProjection | None:
+    hq = shell.runtime.headquarters
+    song = hq.store.active_song()
+    if song is None:
+        return None
+    latest_workspace_id = None
+    for event in reversed(hq.activity.for_song(song.id)):
+        if event.object_type == "WORKSPACE":
+            latest_workspace_id = event.object_id
+            break
+    if latest_workspace_id is None:
+        return None
+    try:
+        projection = project_active_tools(
+            hq.workspaces,
+            hq.shadow,
+            latest_workspace_id,
+        )
+    except ActiveToolProjectionError:
+        return None
+    if projection.song_id != song.id:
+        raise ConsumerShellError(
+            "active DAW tool context crossed the current Song boundary"
+        )
+    return projection
+
+
+def _active_tool_context_markup(shell: ConsumerShell, dimension: str) -> str:
+    projection = _latest_active_tool_projection(shell)
+    if projection is None:
+        return ""
+
+    host = _HOST_LABELS.get(
+        projection.host_family,
+        projection.host_family.replace("_", " ").title(),
+    )
+    rows: list[str] = []
+    observed_names: list[str] = []
+    total_tools = sum(len(scope.tools) for scope in projection.scopes)
+    remaining = _MAX_ACTIVE_TOOL_CONTEXT
+
+    for scope in projection.scopes:
+        if remaining <= 0:
+            break
+        scope_name = scope.parent_name or scope.parent_ref
+        coverage = "complete chain" if scope.coverage == "COMPLETE" else "observed tools"
+        tools = scope.tools[:remaining]
+        remaining -= len(tools)
+        if not tools:
+            rows.append(
+                "<li><strong>"
+                + html.escape(scope_name)
+                + "</strong> · "
+                + html.escape(coverage)
+                + " · no active device/plugin observed</li>"
+            )
+            continue
+
+        labels: list[str] = []
+        for tool in tools:
+            observed_names.append(tool.name)
+            position = ""
+            if tool.position is not None:
+                position_label = (
+                    "slot" if tool.position_kind == "SLOT" else "position"
+                )
+                position = f" ({position_label} {tool.position + 1})"
+            labels.append(html.escape(tool.name + position))
+        rows.append(
+            "<li><strong>"
+            + html.escape(scope_name)
+            + "</strong> · "
+            + html.escape(coverage)
+            + ": "
+            + ", ".join(labels)
+            + "</li>"
+        )
+
+    omitted = max(0, total_tools - _MAX_ACTIVE_TOOL_CONTEXT)
+    omitted_note = (
+        ""
+        if omitted == 0
+        else f'<p class="muted">+{omitted} more active device(s) omitted from this bounded view.</p>'
+    )
+    context_nudge = ""
+    if dimension in {"SOUND", "DYNAMICS"} and observed_names:
+        context_nudge = (
+            '<p class="status good">DAW-aware option: before adding another device, '
+            "check whether one of the already-active tools can perform this experiment.</p>"
+        )
+
+    scope_markup = (
+        '<p class="muted">No device/plugin chain was observed in the latest DAW workspace.</p>'
+        if not projection.scopes
+        else "<ul>" + "".join(rows) + "</ul>"
+    )
+    return (
+        '<div class="stack"><h4>Latest observed DAW tools</h4>'
+        f'<p class="muted">{html.escape(host)} · verified current Host Shadow</p>'
+        f"{context_nudge}{scope_markup}{omitted_note}"
+        '<p class="muted">DAW observation only. Active presence does not prove installed '
+        "inventory, ownership, exact product identity, or controllable parameters.</p>"
+        "</div>"
+    )
+
+
 def _result_markup(shell: ConsumerShell, result: CreativeSuggestion | None) -> str:
     if result is None:
         return ""
@@ -104,6 +222,7 @@ def _result_markup(shell: ConsumerShell, result: CreativeSuggestion | None) -> s
         + html.escape(result.session_objective)
         + "</p>"
     )
+    daw_context = _active_tool_context_markup(shell, result.dimension)
     return (
         '<div class="stack" aria-live="polite">'
         '<h3>One prompt to try</h3>'
@@ -112,6 +231,7 @@ def _result_markup(shell: ConsumerShell, result: CreativeSuggestion | None) -> s
         f'<p>{html.escape(result.prompt)}</p>'
         f'<p class="muted">{html.escape(result.distance_explanation)}</p>'
         f'{objective}'
+        f'{daw_context}'
         '<p class="muted">Generated locally and deterministically. No AI provider was called, no project was changed, and this is not a claim about what your Song needs.</p>'
         f'{_deferral_forms(shell, result)}'
         '</div>'
