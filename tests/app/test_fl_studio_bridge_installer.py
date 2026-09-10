@@ -18,11 +18,11 @@ def _platform(os_name: str, machine: str = "x86_64") -> PlatformEnvironment:
     return PlatformEnvironment.from_runtime_labels(os_name, machine)
 
 
-def _source(path: Path, marker: str = "v1") -> Path:
+def _source(path: Path, marker: str = "v1", *, schema: str = "v1") -> Path:
     path.write_text(
         "# name=N0TEBridge\n"
         'ADAPTER_ID = "N0TEBridge"\n'
-        'SCHEMA = "n0te.fl-studio-observation/v1"\n'
+        f'SCHEMA = "n0te.fl-studio-observation/{schema}"\n'
         f'MARKER = "{marker}"\n',
         encoding="utf-8",
     )
@@ -87,6 +87,24 @@ def test_installer_is_atomic_idempotent_and_updates_only_its_own_bridge(tmp_path
     assert not list(updated.target_dir.glob("*.tmp"))
 
 
+def test_installer_recognizes_current_v2_bridge_but_not_unknown_future_schema(tmp_path: Path):
+    user_data = tmp_path / "FL Studio"
+    user_data.mkdir()
+    source_v2_a = _source(tmp_path / "v2_a.py", "a", schema="v2")
+    source_v2_b = _source(tmp_path / "v2_b.py", "b", schema="v2")
+
+    first = install_bridge(user_data, source=source_v2_a)
+    assert first.status == "INSTALLED"
+    updated = install_bridge(user_data, source=source_v2_b)
+    assert updated.status == "UPDATED"
+    assert updated.target_file.read_bytes() == source_v2_b.read_bytes()
+
+    unknown_v3 = _source(tmp_path / "v3.py", "future", schema="v3")
+    updated.target_file.write_bytes(unknown_v3.read_bytes())
+    with pytest.raises(FLStudioBridgeInstallerError, match="unrelated"):
+        install_bridge(user_data, source=source_v2_b)
+
+
 def test_installer_refuses_unrelated_existing_script_and_unsafe_directories(tmp_path: Path):
     user_data = tmp_path / "FL Studio"
     target_dir = user_data / "Settings" / "Hardware" / "N0TEBridge"
@@ -123,4 +141,4 @@ def test_bundled_source_points_at_actual_fl_midi_script():
     text = source.read_text(encoding="utf-8")
     assert source.name == "device_N0TEBridge.py"
     assert text.splitlines()[0] == "# name=N0TEBridge"
-    assert 'SCHEMA = "n0te.fl-studio-observation/v1"' in text
+    assert 'SCHEMA = "n0te.fl-studio-observation/v2"' in text

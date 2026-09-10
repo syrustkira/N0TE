@@ -16,6 +16,12 @@ SCRIPT_DIR_NAME = "N0TEBridge"
 SCRIPT_FILE_NAME = "device_N0TEBridge.py"
 SNAPSHOT_FILE_NAME = "n0te_snapshot.json"
 USER_DATA_ENV = "N0TE_FL_STUDIO_USER_DATA"
+_KNOWN_BRIDGE_SCHEMAS = frozenset(
+    {
+        'SCHEMA = "n0te.fl-studio-observation/v1"',
+        'SCHEMA = "n0te.fl-studio-observation/v2"',
+    }
+)
 
 
 class FLStudioBridgeInstallerError(RuntimeError):
@@ -105,7 +111,7 @@ def _existing_is_ours(path: Path) -> bool:
     return (
         first_line == "# name=N0TEBridge"
         and 'ADAPTER_ID = "N0TEBridge"' in text
-        and 'SCHEMA = "n0te.fl-studio-observation/v1"' in text
+        and any(schema_marker in text for schema_marker in _KNOWN_BRIDGE_SCHEMAS)
     )
 
 
