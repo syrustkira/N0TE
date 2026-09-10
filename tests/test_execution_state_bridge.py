@@ -44,3 +44,10 @@ def test_compiled_state_becomes_gate_snapshot_without_second_reasoning_loop():
         "offer",
     })
     assert snapshot.policies["services"]["required_dependencies"]["downstream"] == frozenset({"service_acquisition"})
+    assert snapshot.approvals == {}
+    assert snapshot.policies["services"]["authority_by_action_class"] == {
+        "REVERSIBLE": {
+            "requires_human": False,
+            "source_refs": frozenset({"compiled-context:source-1"}),
+        }
+    }

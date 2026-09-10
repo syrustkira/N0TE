@@ -16,6 +16,10 @@ def _upstream_dependencies(state: CompiledExecutionState, active_object: str) ->
     )
 
 
+def _compiled_authority_source(state: CompiledExecutionState) -> str:
+    return f"compiled-context:{state.source_fingerprint}"
+
+
 def compiled_state_to_trusted_snapshot(
     state: CompiledExecutionState,
     *,
@@ -26,6 +30,7 @@ def compiled_state_to_trusted_snapshot(
     if not isinstance(ttl_seconds, int) or ttl_seconds < 1:
         raise ValueError("ttl_seconds must be positive")
 
+    authority_source = _compiled_authority_source(state)
     policies: dict[str, Mapping[str, object]] = {}
     for active_object in state.retained_scope_refs:
         functions = list(state.lens_dispatch.get(active_object, ()))
@@ -37,6 +42,15 @@ def compiled_state_to_trusted_snapshot(
             "required_functions": functions,
             "required_dependencies": dependencies,
             "allowed_outcome_classes": sorted(OUTCOME_CLASSES),
+            # The compiled context may carry standing authority for reversible work
+            # only. More consequential classes remain absent and therefore fail
+            # closed until a separately trusted authority/approval source exists.
+            "authority_by_action_class": {
+                "REVERSIBLE": {
+                    "requires_human": False,
+                    "source_refs": [authority_source],
+                }
+            },
         }
 
     raw = {
@@ -47,5 +61,7 @@ def compiled_state_to_trusted_snapshot(
         "retained_scope_refs": list(state.retained_scope_refs),
         "truth_owners": dict(state.truth_owners),
         "policies": policies,
+        # Compilation must never invent human approval. Empty means exactly that.
+        "approvals": [],
     }
     return validate_trusted_context_snapshot(raw)
