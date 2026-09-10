@@ -44,7 +44,10 @@ except ImportError:
 HOST = "127.0.0.1"
 PORT = 9799
 ADAPTER_ID = "N0TEBridge"
-ADAPTER_VERSION = "3"
+# Adapter version tracks the snapshot producer contract. The observation payload
+# remains v2 even though the loopback bridge now also exposes a bounded advice
+# display endpoint; server_version below tracks that transport implementation.
+ADAPTER_VERSION = "2"
 SCHEMA = "n0te.ableton-observation/v2"
 WORKSPACE_DATA_KEY = "n0te.workspace_id.v1"
 LIVE_CALL_TIMEOUT_SECONDS = 2.0
