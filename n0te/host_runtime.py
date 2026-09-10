@@ -9,6 +9,7 @@ import socket
 import subprocess
 import sys
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Mapping
 from urllib.parse import urlparse
@@ -16,13 +17,309 @@ from urllib.parse import urlparse
 from .instance import ProcessIdentity
 from .lineage import LineageStore
 from .platforms import PlatformEnvironment
+from .shadow import HostShadow, HostShadowError, ShadowFact
+from .workspace import WorkspaceMemory
 
 _PROFILE = re.compile(r"^prf_[0-9a-f]{32}$")
 _LOOPBACK = frozenset({"localhost", "127.0.0.1", "::1"})
+_ACTIVE_TOOL_COVERAGE = frozenset({"COMPLETE", "OBSERVED"})
+_ACTIVE_TOOL_PARENT_KINDS = frozenset({"TRACK", "CHANNEL"})
 
 
 class HostRuntimeError(RuntimeError):
     """Host-neutral N0TE runtime composition could not proceed safely."""
+
+
+class ActiveToolProjectionError(HostRuntimeError):
+    """Canonical active-tool facts are incomplete or internally inconsistent."""
+
+
+@dataclass(frozen=True)
+class ActiveTool:
+    device_ref: str
+    name: str
+    parent_kind: str
+    parent_ref: str
+    position_kind: str | None
+    position: int | None
+    role: str | None
+    class_name: str | None
+    enabled: bool | None
+    offline: bool | None
+    evidence_refs: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class ActiveToolScope:
+    parent_kind: str
+    parent_ref: str
+    parent_name: str | None
+    coverage: str
+    expected_count: int | None
+    tools: tuple[ActiveTool, ...]
+    evidence_refs: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class ActiveToolProjection:
+    workspace_id: str
+    song_id: str
+    host_family: str
+    workspace_observation_id: str
+    shadow_batch_id: str
+    scopes: tuple[ActiveToolScope, ...]
+
+
+def _projection_text(value: object, field: str) -> str:
+    if not isinstance(value, str):
+        raise ActiveToolProjectionError(f"{field} must be a string")
+    text = value.strip()
+    if not text:
+        raise ActiveToolProjectionError(f"{field} must not be empty")
+    return text
+
+
+def _projection_optional_text(value: object, field: str) -> str | None:
+    if value is None:
+        return None
+    return _projection_text(value, field)
+
+
+def _projection_nonnegative_int(value: object, field: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ActiveToolProjectionError(f"{field} must be a non-negative integer")
+    return value
+
+
+def _projection_optional_bool(value: object, field: str) -> bool | None:
+    if value is None:
+        return None
+    if type(value) is not bool:
+        raise ActiveToolProjectionError(f"{field} must be bool")
+    return value
+
+
+def _projection_fields(
+    facts: tuple[ShadowFact, ...],
+    *,
+    object_kind: str,
+) -> dict[str, dict[str, ShadowFact]]:
+    grouped: dict[str, dict[str, ShadowFact]] = {}
+    for fact in facts:
+        if fact.object_kind != object_kind:
+            continue
+        fields = grouped.setdefault(fact.object_ref, {})
+        if fact.field in fields:
+            raise ActiveToolProjectionError(
+                f"duplicate {object_kind} field in current Host Shadow"
+            )
+        fields[fact.field] = fact
+    return grouped
+
+
+def project_active_tools(
+    workspaces: WorkspaceMemory,
+    shadow: HostShadow,
+    workspace_id: str,
+) -> ActiveToolProjection:
+    """Normalize current verified DEVICE_PLUGIN facts without inventing inventory truth."""
+
+    if not isinstance(workspaces, WorkspaceMemory):
+        raise TypeError("workspaces must be WorkspaceMemory")
+    if not isinstance(shadow, HostShadow):
+        raise TypeError("shadow must be HostShadow")
+    if shadow.workspaces is not workspaces:
+        raise TypeError("shadow and workspaces must share WorkspaceMemory")
+
+    workspace = workspaces.state(workspace_id)
+    try:
+        state = shadow.require_current(workspace_id)
+    except HostShadowError as exc:
+        raise ActiveToolProjectionError(
+            "active tools require a CURRENT verified Host Shadow"
+        ) from exc
+    if state.current_workspace_observation_id != workspace.current_observation.id:
+        raise ActiveToolProjectionError(
+            "active tool projection crossed workspace observation identity"
+        )
+    if state.latest_batch_id is None:
+        raise ActiveToolProjectionError(
+            "current Host Shadow is missing its latest verified batch"
+        )
+
+    track_fields = _projection_fields(state.facts, object_kind="TRACK")
+    device_fields = _projection_fields(state.facts, object_kind="DEVICE_PLUGIN")
+
+    tools_by_scope: dict[tuple[str, str], list[ActiveTool]] = {}
+    scope_evidence: dict[tuple[str, str], set[str]] = {}
+
+    for device_ref, fields in device_fields.items():
+        name_fact = fields.get("name")
+        if name_fact is None:
+            raise ActiveToolProjectionError(
+                f"device {device_ref} is missing required name evidence"
+            )
+        name = _projection_text(name_fact.value, f"{device_ref}.name")
+
+        parent_candidates: list[tuple[str, str, ShadowFact]] = []
+        for field, kind in (("track_ref", "TRACK"), ("channel_ref", "CHANNEL")):
+            fact = fields.get(field)
+            if fact is not None:
+                parent_candidates.append(
+                    (
+                        kind,
+                        _projection_text(fact.value, f"{device_ref}.{field}"),
+                        fact,
+                    )
+                )
+        if len(parent_candidates) != 1:
+            raise ActiveToolProjectionError(
+                f"device {device_ref} requires exactly one parent relation"
+            )
+        parent_kind, parent_ref, parent_fact = parent_candidates[0]
+        if parent_kind not in _ACTIVE_TOOL_PARENT_KINDS:
+            raise ActiveToolProjectionError(
+                f"device {device_ref} has unsupported parent kind"
+            )
+        if parent_kind == "TRACK" and parent_ref not in track_fields:
+            raise ActiveToolProjectionError(
+                f"device {device_ref} references an unobserved track"
+            )
+
+        index_fact = fields.get("index")
+        slot_fact = fields.get("slot")
+        if index_fact is not None and slot_fact is not None:
+            raise ActiveToolProjectionError(
+                f"device {device_ref} cannot carry both index and slot"
+            )
+        position_kind = None
+        position = None
+        position_fact = index_fact or slot_fact
+        if position_fact is not None:
+            position_kind = "INDEX" if index_fact is not None else "SLOT"
+            position = _projection_nonnegative_int(
+                position_fact.value,
+                f"{device_ref}.{position_fact.field}",
+            )
+
+        role = _projection_optional_text(
+            None if fields.get("role") is None else fields["role"].value,
+            f"{device_ref}.role",
+        )
+        class_name = _projection_optional_text(
+            None if fields.get("class_name") is None else fields["class_name"].value,
+            f"{device_ref}.class_name",
+        )
+        enabled = _projection_optional_bool(
+            None if fields.get("enabled") is None else fields["enabled"].value,
+            f"{device_ref}.enabled",
+        )
+        offline = _projection_optional_bool(
+            None if fields.get("offline") is None else fields["offline"].value,
+            f"{device_ref}.offline",
+        )
+        evidence_refs = tuple(
+            sorted({fact.evidence_ref for fact in fields.values()})
+        )
+        tool = ActiveTool(
+            device_ref=device_ref,
+            name=name,
+            parent_kind=parent_kind,
+            parent_ref=parent_ref,
+            position_kind=position_kind,
+            position=position,
+            role=role,
+            class_name=class_name,
+            enabled=enabled,
+            offline=offline,
+            evidence_refs=evidence_refs,
+        )
+        key = (parent_kind, parent_ref)
+        tools_by_scope.setdefault(key, []).append(tool)
+        scope_evidence.setdefault(key, set()).update(evidence_refs)
+        scope_evidence[key].add(parent_fact.evidence_ref)
+
+    scope_keys = set(tools_by_scope)
+    for track_ref, fields in track_fields.items():
+        if "device_count" in fields:
+            scope_keys.add(("TRACK", track_ref))
+
+    scopes: list[ActiveToolScope] = []
+    for parent_kind, parent_ref in sorted(scope_keys):
+        fields = track_fields.get(parent_ref, {}) if parent_kind == "TRACK" else {}
+        parent_name = None
+        if "name" in fields:
+            parent_name = _projection_text(
+                fields["name"].value,
+                f"{parent_ref}.name",
+            )
+
+        expected_count = None
+        coverage = "OBSERVED"
+        count_fact = fields.get("device_count")
+        if count_fact is not None:
+            expected_count = _projection_nonnegative_int(
+                count_fact.value,
+                f"{parent_ref}.device_count",
+            )
+            coverage = "COMPLETE"
+            scope_evidence.setdefault((parent_kind, parent_ref), set()).add(
+                count_fact.evidence_ref
+            )
+        if coverage not in _ACTIVE_TOOL_COVERAGE:
+            raise ActiveToolProjectionError("unsupported active tool scope coverage")
+
+        tools = list(tools_by_scope.get((parent_kind, parent_ref), ()))
+        position_kinds = {
+            tool.position_kind
+            for tool in tools
+            if tool.position_kind is not None
+        }
+        if len(position_kinds) > 1:
+            raise ActiveToolProjectionError(
+                f"scope {parent_ref} mixes incompatible position kinds"
+            )
+        positions = [
+            tool.position for tool in tools if tool.position is not None
+        ]
+        if len(positions) != len(set(positions)):
+            raise ActiveToolProjectionError(
+                f"scope {parent_ref} contains duplicate device positions"
+            )
+        tools.sort(
+            key=lambda tool: (
+                tool.position is None,
+                -1 if tool.position is None else tool.position,
+                tool.device_ref,
+            )
+        )
+        if expected_count is not None and expected_count != len(tools):
+            raise ActiveToolProjectionError(
+                f"scope {parent_ref} device_count does not match projected tools"
+            )
+
+        scopes.append(
+            ActiveToolScope(
+                parent_kind=parent_kind,
+                parent_ref=parent_ref,
+                parent_name=parent_name,
+                coverage=coverage,
+                expected_count=expected_count,
+                tools=tuple(tools),
+                evidence_refs=tuple(
+                    sorted(scope_evidence.get((parent_kind, parent_ref), set()))
+                ),
+            )
+        )
+
+    return ActiveToolProjection(
+        workspace_id=workspace.workspace.id,
+        song_id=workspace.workspace.song_id,
+        host_family=workspace.workspace.host_family,
+        workspace_observation_id=workspace.current_observation.id,
+        shadow_batch_id=state.latest_batch_id,
+        scopes=tuple(scopes),
+    )
 
 
 def is_valid_profile_id(value: object) -> bool:
