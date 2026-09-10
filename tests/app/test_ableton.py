@@ -68,6 +68,17 @@ def test_install_subcommand_delegates_to_bridge_installer(monkeypatch) -> None:
     assert calls == [["--user-library", "/custom/User Library"]]
 
 
+def test_try_volume_subcommand_delegates_to_interactive_flow(monkeypatch) -> None:
+    calls = []
+    monkeypatch.setattr(
+        ableton,
+        "run_try_volume_command",
+        lambda argv, *, environment: calls.append((list(argv), dict(environment))) or 9,
+    )
+    assert ableton.main(["try-volume", "0.61"], environment={"X": "1"}) == 9
+    assert calls == [(["0.61"], {"X": "1"})]
+
+
 def test_openai_reference_search_requires_explicit_connected_policy(capsys) -> None:
     result = ableton.main(
         ["--once"],
@@ -363,3 +374,168 @@ def test_compiler_payload_is_content_addressed_and_respects_locked_editable_targ
             )
     finally:
         _close_fixture(fixture)
+
+
+class _TryProbe:
+    def current_process(self):
+        return object()
+
+    def status(self, process):
+        return "ALIVE"
+
+
+class _TryRuntime:
+    def __init__(self, headquarters):
+        self.headquarters = headquarters
+        self.quit_calls = 0
+
+    def launch(self, *, profile_id, process, probe):
+        self.launch_args = (profile_id, process, probe)
+        return type("Launch", (), {"status": "STARTED", "reason": None})()
+
+    def quit(self):
+        self.quit_calls += 1
+        return type("Quit", (), {"status": "STOPPED", "reason": None})()
+
+
+def _interactive_try_fixture(tmp_path, *, original=0.5, target=0.65):
+    headquarters = HeadquartersMemory.create(tmp_path / "interactive-hq", "Ableton Interactive Artist")
+    headquarters.store.create_song("Interactive Try Song")
+    live_song = _Song(original)
+    bridge = N0TEBridge(_CInstance(live_song), port=0, start_server=True)
+    endpoint = f"http://127.0.0.1:{bridge.port}"
+    runtime = _TryRuntime(headquarters)
+    config = ableton.AbletonTryVolumeConfig(
+        data_root=(tmp_path / "data").resolve(),
+        state_root=(tmp_path / "state").resolve(),
+        profile_id=headquarters.store.profile_id,
+        bridge_endpoint=endpoint,
+        target_normalized=target,
+    )
+    return headquarters, live_song, bridge, runtime, config
+
+
+def _typed_token_from_prompt(prompt: str, verb: str) -> str:
+    prefix = f"Type {verb} "
+    assert prompt.startswith(prefix)
+    return prompt[len("Type "):].split(" to ", 1)[0]
+
+
+def test_try_volume_cancel_creates_no_operation_and_does_not_move_fader(tmp_path):
+    headquarters, live_song, bridge, runtime, config = _interactive_try_fixture(tmp_path)
+    output = []
+    try:
+        result = ableton.run_try_volume(
+            config,
+            process_probe=_TryProbe(),
+            runtime_factory=lambda **kwargs: runtime,
+            input_fn=lambda prompt: "CANCEL",
+            output=output.append,
+        )
+        assert result == 0
+        assert live_song.tracks[1].mixer_device.volume.value == pytest.approx(0.5)
+        assert headquarters.store._conn.execute("SELECT COUNT(*) FROM operations").fetchone()[0] == 0
+        assert any("cancelled" in line for line in output)
+        assert runtime.quit_calls == 1
+    finally:
+        bridge.disconnect()
+        headquarters.close()
+
+
+def test_try_volume_apply_then_keep_requires_exact_typed_approval(tmp_path):
+    headquarters, live_song, bridge, runtime, config = _interactive_try_fixture(tmp_path)
+    prompts = []
+    output = []
+
+    def answer(prompt):
+        prompts.append(prompt)
+        if prompt.startswith("Type APPLY "):
+            return _typed_token_from_prompt(prompt, "APPLY")
+        if prompt.startswith("Hear it in Ableton Live"):
+            return "KEEP"
+        raise AssertionError(prompt)
+
+    try:
+        result = ableton.run_try_volume(
+            config,
+            process_probe=_TryProbe(),
+            runtime_factory=lambda **kwargs: runtime,
+            input_fn=answer,
+            output=output.append,
+        )
+        assert result == 0
+        assert live_song.tracks[1].mixer_device.volume.value == pytest.approx(0.65)
+        assert headquarters.store._conn.execute("SELECT COUNT(*) FROM operations").fetchone()[0] == 1
+        assert any("KEEP" in line for line in output)
+        assert any("authority: REVERSIBLE" in line for line in output)
+        assert runtime.quit_calls == 1
+    finally:
+        bridge.disconnect()
+        headquarters.close()
+
+
+def test_try_volume_restore_is_a_second_exact_approved_transaction(tmp_path):
+    headquarters, live_song, bridge, runtime, config = _interactive_try_fixture(
+        tmp_path, original=0.43, target=0.67
+    )
+    output = []
+
+    def answer(prompt):
+        if prompt.startswith("Type APPLY "):
+            return _typed_token_from_prompt(prompt, "APPLY")
+        if prompt.startswith("Hear it in Ableton Live"):
+            return "RESTORE"
+        if prompt.startswith("Type RESTORE "):
+            return _typed_token_from_prompt(prompt, "RESTORE")
+        raise AssertionError(prompt)
+
+    try:
+        result = ableton.run_try_volume(
+            config,
+            process_probe=_TryProbe(),
+            runtime_factory=lambda **kwargs: runtime,
+            input_fn=answer,
+            output=output.append,
+        )
+        assert result == 0
+        assert live_song.tracks[1].mixer_device.volume.value == pytest.approx(0.43)
+        assert headquarters.store._conn.execute("SELECT COUNT(*) FROM operations").fetchone()[0] == 2
+        assert any("RESTORED" in line for line in output)
+        states = [
+            row[0]
+            for row in headquarters.store._conn.execute(
+                "SELECT recorded_state FROM operations ORDER BY rowid"
+            )
+        ]
+        assert states == ["SUCCEEDED", "SUCCEEDED"]
+    finally:
+        bridge.disconnect()
+        headquarters.close()
+
+
+def test_try_volume_refuses_restore_after_manual_fader_move(tmp_path):
+    headquarters, live_song, bridge, runtime, config = _interactive_try_fixture(tmp_path)
+
+    def answer(prompt):
+        if prompt.startswith("Type APPLY "):
+            return _typed_token_from_prompt(prompt, "APPLY")
+        if prompt.startswith("Hear it in Ableton Live"):
+            live_song.tracks[1].mixer_device.volume.value = 0.73
+            return "RESTORE"
+        raise AssertionError(prompt)
+
+    try:
+        with pytest.raises(ableton.AbletonCommandError, match="changed during audition"):
+            ableton.run_try_volume(
+                config,
+                process_probe=_TryProbe(),
+                runtime_factory=lambda **kwargs: runtime,
+                input_fn=answer,
+                output=lambda message: None,
+            )
+        assert live_song.tracks[1].mixer_device.volume.value == pytest.approx(0.73)
+        assert headquarters.store._conn.execute("SELECT COUNT(*) FROM operations").fetchone()[0] == 1
+        assert runtime.quit_calls == 1
+    finally:
+        bridge.disconnect()
+        headquarters.close()
