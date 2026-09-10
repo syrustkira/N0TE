@@ -17,11 +17,12 @@ from .host_session_handshake import (
 from .hosts import HostRuntimeIdentity
 from .shadow import ShadowEventInput
 
-ABLETON_SNAPSHOT_SCHEMA = "n0te.ableton-observation/v1"
+ABLETON_SNAPSHOT_SCHEMA = "n0te.ableton-observation/v2"
+ABLETON_LEGACY_SNAPSHOT_SCHEMA = "n0te.ableton-observation/v1"
 DEFAULT_ABLETON_BRIDGE_ENDPOINT = "http://127.0.0.1:9799"
 _MAX_SNAPSHOT_BYTES = 65536
 _LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
-_ALLOWED_TOP_LEVEL = frozenset(
+_BASE_ALLOWED_TOP_LEVEL = frozenset(
     {
         "schema",
         "adapter",
@@ -34,6 +35,8 @@ _ALLOWED_TOP_LEVEL = frozenset(
         "selected_track",
     }
 )
+_V2_ALLOWED_TOP_LEVEL = _BASE_ALLOWED_TOP_LEVEL | frozenset({"set_path_fingerprint"})
+_SHA256_HEX = frozenset("0123456789abcdef")
 
 
 class AbletonHostBridgeError(RuntimeError):
@@ -87,6 +90,15 @@ def _exact_fields(payload: Mapping[str, object], allowed: frozenset[str], field:
     extra = sorted(set(payload) - allowed)
     if extra:
         raise AbletonHostBridgeError(f"{field} contains unsupported fields: {extra}")
+
+
+def _sha256_fingerprint(value: object, field: str) -> str | None:
+    text = _optional_text(value, field)
+    if text is None:
+        return None
+    if len(text) != 64 or text != text.lower() or any(ch not in _SHA256_HEX for ch in text):
+        raise AbletonHostBridgeError(f"{field} must be a lowercase SHA-256 hex digest")
+    return text
 
 
 def _loopback_endpoint(value: str) -> str:
@@ -146,6 +158,7 @@ class AbletonTrackFocus:
 class AbletonObservationSnapshot:
     bridge_session_id: str
     workspace_id: str | None
+    set_path_fingerprint: str | None
     runtime: HostRuntimeIdentity
     observed_at_epoch_seconds: int
     tempo_bpm: float
@@ -157,15 +170,23 @@ class AbletonObservationSnapshot:
 
     @property
     def location_ref(self) -> str:
-        # This location is intentionally runtime-scoped. A durable workspace_id read
-        # from the Live Set is the only cross-reopen binding accepted by this bridge.
+        if self.set_path_fingerprint is not None:
+            return f"ableton-set:sha256:{self.set_path_fingerprint}"
         return f"ableton-session:{self.bridge_session_id}"
+
+    @property
+    def has_durable_set_location(self) -> bool:
+        return self.set_path_fingerprint is not None
 
     @classmethod
     def from_payload(cls, payload: object) -> "AbletonObservationSnapshot":
         root = _object(payload, "snapshot")
-        _exact_fields(root, _ALLOWED_TOP_LEVEL, "snapshot")
-        if root.get("schema") != ABLETON_SNAPSHOT_SCHEMA:
+        schema = root.get("schema")
+        if schema == ABLETON_SNAPSHOT_SCHEMA:
+            _exact_fields(root, _V2_ALLOWED_TOP_LEVEL, "snapshot")
+        elif schema == ABLETON_LEGACY_SNAPSHOT_SCHEMA:
+            _exact_fields(root, _BASE_ALLOWED_TOP_LEVEL, "snapshot")
+        else:
             raise AbletonHostBridgeError("unsupported Ableton snapshot schema")
 
         adapter = _object(root.get("adapter"), "adapter")
@@ -221,9 +242,16 @@ class AbletonObservationSnapshot:
         if workspace is not None and not workspace.startswith("wsp_"):
             raise AbletonHostBridgeError("workspace_id is not a canonical N0TE workspace ID")
 
+        set_path_fingerprint = None
+        if schema == ABLETON_SNAPSHOT_SCHEMA:
+            set_path_fingerprint = _sha256_fingerprint(
+                root.get("set_path_fingerprint"), "set_path_fingerprint"
+            )
+
         return cls(
             bridge_session_id=_text(root.get("bridge_session_id"), "bridge_session_id"),
             workspace_id=workspace,
+            set_path_fingerprint=set_path_fingerprint,
             runtime=runtime,
             observed_at_epoch_seconds=_nonnegative_int(
                 root.get("observed_at_epoch_seconds"), "observed_at_epoch_seconds"

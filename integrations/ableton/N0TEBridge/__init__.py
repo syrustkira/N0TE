@@ -1,6 +1,8 @@
 from __future__ import absolute_import, print_function
 
+import hashlib
 import json
+import os
 import platform
 import threading
 import time
@@ -37,10 +39,11 @@ except ImportError:
 HOST = "127.0.0.1"
 PORT = 9799
 ADAPTER_ID = "N0TEBridge"
-ADAPTER_VERSION = "1"
-SCHEMA = "n0te.ableton-observation/v1"
+ADAPTER_VERSION = "2"
+SCHEMA = "n0te.ableton-observation/v2"
 WORKSPACE_DATA_KEY = "n0te.workspace_id.v1"
 LIVE_CALL_TIMEOUT_SECONDS = 2.0
+_SET_PATH_HASH_DOMAIN = b"n0te.ableton-set-path/v1\x00"
 _ALLOWED_HOST_HEADERS = frozenset(
     {
         "127.0.0.1:9799",
@@ -49,8 +52,31 @@ _ALLOWED_HOST_HEADERS = frozenset(
 )
 
 
+def _set_path_fingerprint(song):
+    """Return a one-way stable fingerprint for a saved Live Set path.
+
+    The raw filesystem path never crosses the bridge boundary. Unsaved Sets expose
+    an empty file_path in Live and therefore intentionally return no durable path
+    identity until the Set is saved.
+    """
+
+    raw = getattr(song, "file_path", None)
+    if raw is None:
+        return None
+    text = str(raw).strip()
+    if not text:
+        return None
+    normalized = os.path.normcase(os.path.normpath(text))
+    if not os.path.isabs(normalized):
+        normalized = os.path.abspath(normalized)
+    normalized = normalized.replace("\\", "/")
+    os_name = (platform.system() or "unknown").strip().casefold()
+    material = (os_name + "\x00" + normalized).encode("utf-8", "surrogatepass")
+    return hashlib.sha256(_SET_PATH_HASH_DOMAIN + material).hexdigest()
+
+
 class _SnapshotHandler(BaseHTTPRequestHandler):
-    server_version = "N0TEBridge/1"
+    server_version = "N0TEBridge/2"
     sys_version = ""
 
     def log_message(self, format, *args):
@@ -256,6 +282,7 @@ class N0TEBridge(ControlSurface):
             "adapter": {"id": ADAPTER_ID, "version": ADAPTER_VERSION},
             "bridge_session_id": self._bridge_session_id,
             "workspace_id": self._workspace_id(song),
+            "set_path_fingerprint": _set_path_fingerprint(song),
             "runtime": self._runtime(),
             "observed_at_epoch_seconds": int(time.time()),
             "tempo_bpm": tempo,
