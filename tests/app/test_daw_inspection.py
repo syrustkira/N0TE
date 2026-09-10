@@ -44,7 +44,7 @@ def test_daw_inspection_unifies_current_shadow_and_active_tools(tmp_path: Path) 
             events=(
                 ShadowEventInput("TEMPO", "tempo:main", "bpm", "SET", 128.0, "host:tempo"),
                 ShadowEventInput("TRANSPORT", "transport:main", "playing", "SET", True, "host:transport"),
-                ShadowEventInput("SELECTION", "selection:main", "track_ref", "SET", "track:1", "host:selection"),
+                ShadowEventInput("ROUTING", "routing:track:1", "output_ref", "SET", "master", "host:routing"),
                 ShadowEventInput("TRACK", "track:1", "name", "SET", "Lead", "host:track"),
                 ShadowEventInput("TRACK", "track:1", "device_count", "SET", 1, "host:chain"),
                 ShadowEventInput("DEVICE_PLUGIN", "device:1", "track_ref", "SET", "track:1", "host:device"),
@@ -69,7 +69,7 @@ def test_daw_inspection_unifies_current_shadow_and_active_tools(tmp_path: Path) 
     assert inspection.read_only is True
     assert inspection.action_authority_granted is False
     assert [item.object_kind for item in inspection.objects] == [
-        "SELECTION",
+        "ROUTING",
         "TEMPO",
         "TRACK",
         "TRANSPORT",
