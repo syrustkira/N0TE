@@ -4,6 +4,7 @@ import asyncio
 import json
 import runpy
 import sys
+import time
 from pathlib import Path
 from types import ModuleType
 
@@ -164,6 +165,7 @@ def _load_fl_script(monkeypatch, snapshot_path: Path):
         4: "FL Studio 2026.1 Producer Edition",
         5: "FL Studio 2026.1.4 Producer Edition",
     }
+    hints = []
     monkeypatch.setitem(
         sys.modules,
         "mixer",
@@ -202,6 +204,7 @@ def _load_fl_script(monkeypatch, snapshot_path: Path):
             getFocusedFormID=lambda: 7,
             getFocusedFormCaption=lambda: "Serum",
             getFocusedPluginName=lambda: "Serum",
+            setHintMsg=lambda message: hints.append(message),
         ),
     )
     monkeypatch.setitem(
@@ -222,8 +225,10 @@ def _load_fl_script(monkeypatch, snapshot_path: Path):
         / "device_N0TEBridge.py"
     )
     namespace = runpy.run_path(str(script))
-    namespace["OnInit"].__globals__["_SNAPSHOT_PATH"] = str(snapshot_path)
-    return namespace, script
+    globals_ = namespace["OnInit"].__globals__
+    globals_["_SNAPSHOT_PATH"] = str(snapshot_path)
+    globals_["_NOTICE_PATH"] = str(snapshot_path.parent / "n0te_notice.json")
+    return namespace, script, hints
 
 
 def test_real_fl_script_writes_atomic_read_only_snapshot_and_external_client_reads_it(
@@ -231,7 +236,7 @@ def test_real_fl_script_writes_atomic_read_only_snapshot_and_external_client_rea
     monkeypatch,
 ):
     snapshot_path = tmp_path / "n0te_snapshot.json"
-    namespace, script = _load_fl_script(monkeypatch, snapshot_path)
+    namespace, script, hints = _load_fl_script(monkeypatch, snapshot_path)
     namespace["OnInit"]()
 
     raw = snapshot_path.read_text(encoding="utf-8")
@@ -242,6 +247,7 @@ def test_real_fl_script_writes_atomic_read_only_snapshot_and_external_client_rea
     assert payload["selected_channel"] == {"index": 2, "name": "Serum"}
     assert payload["project"]["title"] == "TellMeN0TE Project"
     assert "path" not in raw.casefold()
+    assert hints == []
 
     client = FLStudioSnapshotFileClient(
         snapshot_path,
@@ -258,11 +264,11 @@ def test_real_fl_script_writes_atomic_read_only_snapshot_and_external_client_rea
         "transport.stop",
         "setTrackName",
         "setChannelName",
-        "setHintMsg",
         "socket",
         "urllib",
     ):
         assert forbidden not in source
+    assert "ui.setHintMsg(message)" in source
 
     namespace["OnDeInit"]()
     assert not snapshot_path.exists()
@@ -270,7 +276,7 @@ def test_real_fl_script_writes_atomic_read_only_snapshot_and_external_client_rea
 
 def test_successful_project_load_rotates_bridge_session_identity(tmp_path: Path, monkeypatch):
     snapshot_path = tmp_path / "n0te_snapshot.json"
-    namespace, _ = _load_fl_script(monkeypatch, snapshot_path)
+    namespace, _, _ = _load_fl_script(monkeypatch, snapshot_path)
     namespace["OnInit"]()
     initial = json.loads(snapshot_path.read_text(encoding="utf-8"))
 
@@ -284,6 +290,49 @@ def test_successful_project_load_rotates_bridge_session_identity(tmp_path: Path,
 
     namespace["OnDeInit"]()
     assert not snapshot_path.exists()
+
+
+def test_fl_script_consumes_only_fresh_notice_for_current_project_session(
+    tmp_path: Path,
+    monkeypatch,
+):
+    snapshot_path = tmp_path / "n0te_snapshot.json"
+    namespace, _, hints = _load_fl_script(monkeypatch, snapshot_path)
+    namespace["OnInit"]()
+    initial = json.loads(snapshot_path.read_text(encoding="utf-8"))
+    notice_path = tmp_path / "n0te_notice.json"
+
+    def write_notice(session, notice_id, message, created=None):
+        notice_path.write_text(
+            json.dumps({
+                "schema": "n0te.fl-studio-notice/v1",
+                "bridge_session_id": session,
+                "notice_id": notice_id,
+                "created_at_epoch_seconds": int(time.time()) if created is None else created,
+                "message": message,
+            }),
+            encoding="utf-8",
+        )
+
+    write_notice(initial["bridge_session_id"], "notice-1", "Reference: THRILL")
+    namespace["OnIdle"]()
+    assert hints == ["Reference: THRILL"]
+    assert not notice_path.exists()
+
+    write_notice(initial["bridge_session_id"], "notice-stale", "Old", int(time.time()) - 30)
+    namespace["OnIdle"]()
+    assert hints == ["Reference: THRILL"]
+
+    namespace["OnProjectLoad"](100)
+    current = json.loads(snapshot_path.read_text(encoding="utf-8"))
+    assert current["bridge_session_id"] != initial["bridge_session_id"]
+    write_notice(initial["bridge_session_id"], "notice-old-session", "Wrong project")
+    namespace["OnIdle"]()
+    assert hints == ["Reference: THRILL"]
+
+    write_notice(current["bridge_session_id"], "notice-2", "Reference: New Project")
+    namespace["OnIdle"]()
+    assert hints == ["Reference: THRILL", "Reference: New Project"]
 
 
 def test_fl_snapshot_roundtrips_into_canonical_reference_workflow(tmp_path: Path):

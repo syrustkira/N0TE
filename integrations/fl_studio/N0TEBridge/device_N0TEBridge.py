@@ -14,15 +14,22 @@ import transport
 import ui
 
 SCHEMA = "n0te.fl-studio-observation/v1"
+NOTICE_SCHEMA = "n0te.fl-studio-notice/v1"
 ADAPTER_ID = "N0TEBridge"
 ADAPTER_VERSION = "1"
 SNAPSHOT_FILE_NAME = "n0te_snapshot.json"
+NOTICE_FILE_NAME = "n0te_notice.json"
 WRITE_INTERVAL_SECONDS = 0.75
+NOTICE_MAX_BYTES = 4096
+NOTICE_MAX_CHARS = 240
+NOTICE_MAX_AGE_SECONDS = 10
 PROJECT_LOAD_OK = 100
 
 _BRIDGE_SESSION_ID = uuid.uuid4().hex
 _SNAPSHOT_PATH = os.path.join(os.path.dirname(__file__), SNAPSHOT_FILE_NAME)
+_NOTICE_PATH = os.path.join(os.path.dirname(__file__), NOTICE_FILE_NAME)
 _LAST_WRITE_MONOTONIC = 0.0
+_LAST_NOTICE_ID = None
 
 
 def _call(fn, default=None, *args):
@@ -187,27 +194,99 @@ def _remove_own_snapshot():
         pass
 
 
+def _remove_notice_if_id(notice_id):
+    if not notice_id:
+        return
+    try:
+        with open(_NOTICE_PATH, "r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+        if payload.get("notice_id") == notice_id:
+            os.remove(_NOTICE_PATH)
+    except Exception:
+        pass
+
+
+def _poll_notice():
+    global _LAST_NOTICE_ID
+    try:
+        if not os.path.isfile(_NOTICE_PATH) or os.path.islink(_NOTICE_PATH):
+            return
+        if os.path.getsize(_NOTICE_PATH) < 2 or os.path.getsize(_NOTICE_PATH) > NOTICE_MAX_BYTES:
+            return
+        with open(_NOTICE_PATH, "r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+    except Exception:
+        return
+    if not isinstance(payload, dict):
+        return
+    if set(payload) != {
+        "schema",
+        "bridge_session_id",
+        "notice_id",
+        "created_at_epoch_seconds",
+        "message",
+    }:
+        return
+    if payload.get("schema") != NOTICE_SCHEMA:
+        return
+    notice_id = payload.get("notice_id")
+    session_id = payload.get("bridge_session_id")
+    message = payload.get("message")
+    created = payload.get("created_at_epoch_seconds")
+    if not isinstance(notice_id, str) or not notice_id.strip():
+        return
+    if notice_id == _LAST_NOTICE_ID:
+        _remove_notice_if_id(notice_id)
+        return
+    if session_id != _BRIDGE_SESSION_ID:
+        return
+    if not isinstance(message, str):
+        return
+    message = " ".join(message.split())
+    if not message or len(message) > NOTICE_MAX_CHARS:
+        return
+    if isinstance(created, bool):
+        return
+    try:
+        age = int(time.time()) - int(created)
+    except Exception:
+        return
+    if age < -2 or age > NOTICE_MAX_AGE_SECONDS:
+        return
+    try:
+        ui.setHintMsg(message)
+    except Exception:
+        return
+    _LAST_NOTICE_ID = notice_id
+    _remove_notice_if_id(notice_id)
+
+
 def _rotate_bridge_session():
-    global _BRIDGE_SESSION_ID, _LAST_WRITE_MONOTONIC
+    global _BRIDGE_SESSION_ID, _LAST_WRITE_MONOTONIC, _LAST_NOTICE_ID
     _remove_own_snapshot()
     _BRIDGE_SESSION_ID = uuid.uuid4().hex
     _LAST_WRITE_MONOTONIC = 0.0
+    _LAST_NOTICE_ID = None
 
 
 def OnInit():
     _write_snapshot(True)
+    _poll_notice()
 
 
 def OnIdle():
     _write_snapshot(False)
+    _poll_notice()
 
 
 def OnRefresh(flags):
     _write_snapshot(True)
+    _poll_notice()
 
 
 def OnDoFullRefresh():
     _write_snapshot(True)
+    _poll_notice()
 
 
 def OnProjectLoad(status):
@@ -218,6 +297,7 @@ def OnProjectLoad(status):
     if status == PROJECT_LOAD_OK:
         _rotate_bridge_session()
         _write_snapshot(True)
+        _poll_notice()
 
 
 def OnDeInit():

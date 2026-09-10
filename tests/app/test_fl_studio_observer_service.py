@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -9,7 +10,9 @@ import pytest
 from n0te.app_runtime import ApplicationRuntime
 from n0te.fl_studio_host_bridge import FLStudioHostBridgeError
 from n0te.fl_studio_observer_service import (
+    NOTICE_SCHEMA,
     STATUS_SCHEMA,
+    FLStudioAdviceFileClient,
     FLStudioObserverService,
     FLStudioObserverServiceError,
 )
@@ -61,14 +64,18 @@ def test_from_runtime_reuses_exact_owned_headquarters_and_stops_with_runtime(tmp
     ).status == "STARTED"
     runtime.headquarters.store.create_song("Observed FL Song")
 
+    bridge_dir = tmp_path / "bridge"
+    bridge_dir.mkdir()
+    snapshot_path = bridge_dir / "n0te_snapshot.json"
     service = FLStudioObserverService.from_runtime(
         runtime,
         provider_id="session-local",
-        snapshot_path=tmp_path / "n0te_snapshot.json",
+        snapshot_path=snapshot_path,
         coordinator_endpoint="http://127.0.0.1:8000/mcp",
     )
     assert service.headquarters is runtime.headquarters
     assert service.state == "READY"
+    assert service._advice_client.notice_path == bridge_dir / "n0te_notice.json"
     assert opens == [profile_id]
 
     assert runtime.quit().status == "STOPPED"
@@ -148,7 +155,7 @@ def test_service_recovers_from_missing_snapshot_without_busy_loop(tmp_path):
         headquarters.close()
 
 
-def _projection_cycle():
+def _projection_cycle(*, discovery_performed=True):
     runtime = SimpleNamespace(
         family="FL_STUDIO",
         version="2026.1.4.1234",
@@ -156,6 +163,8 @@ def _projection_cycle():
     )
     snapshot = SimpleNamespace(
         runtime=runtime,
+        bridge_session_id="fl-session-status",
+        observed_at_epoch_seconds=100,
         project_title="TellMeN0TE Project",
         tempo_bpm=132.5,
         is_playing=True,
@@ -177,9 +186,9 @@ def _projection_cycle():
         snapshot=snapshot,
         observation=observation,
         observation_committed=True,
-        discovery_performed=True,
+        discovery_performed=discovery_performed,
         discovery_deferred=False,
-        discovery_reason="EXPLICIT",
+        discovery_reason="EXPLICIT" if discovery_performed else None,
         discovery_error_class=None,
         references=references,
     )
@@ -197,20 +206,65 @@ class _ProjectionObserver:
         return self.cycle
 
 
+class _RecordingAdvice(FLStudioAdviceFileClient):
+    def __init__(self):
+        self.calls = []
+
+    def show_notice(self, message, **kwargs):
+        self.calls.append((message, kwargs))
+
+
+class _FailingAdvice(FLStudioAdviceFileClient):
+    def __init__(self):
+        pass
+
+    def show_notice(self, message, **kwargs):
+        raise FLStudioObserverServiceError("cannot display")
+
+
+def test_advice_file_client_writes_atomic_session_bound_payload(tmp_path):
+    bridge = tmp_path / "bridge"
+    bridge.mkdir()
+    client = FLStudioAdviceFileClient(bridge / "n0te_snapshot.json")
+    client.show_notice(
+        "  Reference:   One  ",
+        bridge_session_id="session-one",
+        created_at_epoch_seconds=123,
+    )
+    payload = json.loads(client.notice_path.read_text(encoding="utf-8"))
+    assert payload["schema"] == NOTICE_SCHEMA
+    assert payload["bridge_session_id"] == "session-one"
+    assert payload["created_at_epoch_seconds"] == 123
+    assert payload["message"] == "Reference: One"
+    assert isinstance(payload["notice_id"], str) and payload["notice_id"]
+    assert not list(bridge.glob("*.tmp"))
+
+    with pytest.raises(FLStudioObserverServiceError, match="240"):
+        client.show_notice("x" * 241, bridge_session_id="session-one")
+
+
 def test_status_projection_and_explicit_refresh_are_read_only_consumer_surfaces(tmp_path):
     headquarters = HeadquartersMemory.create(tmp_path, "FL Status Artist")
     observer = _ProjectionObserver(_projection_cycle())
-    service = FLStudioObserverService(headquarters, observer)
+    advice = _RecordingAdvice()
+    service = FLStudioObserverService(headquarters, observer, advice_client=advice)
     try:
         empty = service.status_projection()
         assert empty["schema"] == STATUS_SCHEMA
         assert empty["read_only"] is True
         assert empty["action_authority_granted"] is False
+        assert empty["advice_display"] == {"failure_count": 0, "last_error_class": None}
         assert empty["session"] is None
 
         cycle = asyncio.run(service.refresh_references())
         assert cycle is observer.cycle
         assert observer.force_values == [True]
+        assert advice.calls == [
+            (
+                "Reference: Reference One",
+                {"bridge_session_id": "fl-session-status"},
+            )
+        ]
         status = service.status_projection()
         assert status["service_state"] == "OBSERVING"
         assert status["connected"] is True
@@ -235,6 +289,26 @@ def test_status_projection_and_explicit_refresh_are_read_only_consumer_surfaces(
         assert "snapshot_path" not in encoded
         assert "bridge_session_id" not in encoded
         assert "permit" not in encoded
+    finally:
+        headquarters.close()
+
+
+def test_advice_failure_never_erases_valid_reference_refresh(tmp_path):
+    headquarters = HeadquartersMemory.create(tmp_path, "FL Advice Failure Artist")
+    observer = _ProjectionObserver(_projection_cycle())
+    service = FLStudioObserverService(
+        headquarters,
+        observer,
+        advice_client=_FailingAdvice(),
+    )
+    try:
+        cycle = asyncio.run(service.refresh_references())
+        assert cycle is observer.cycle
+        assert service.latest_cycle is cycle
+        assert service.state == "OBSERVING"
+        assert service.notice_failure_count == 1
+        assert service.last_notice_error_class == "FLStudioObserverServiceError"
+        assert service.status_projection()["reference_discovery"]["primary"]["title"] == "Reference One"
     finally:
         headquarters.close()
 
