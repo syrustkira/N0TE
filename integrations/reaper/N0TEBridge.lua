@@ -95,7 +95,7 @@ local function selected_tracks_json(project)
 end
 
 local function build_snapshot()
-  local project, project_filename = reaper.EnumProjects(-1, "")
+  local project, project_filename = reaper.EnumProjects(-1)
   if not project then return nil end
 
   local project_key = tostring(project) .. "\0" .. tostring(project_filename or "")
