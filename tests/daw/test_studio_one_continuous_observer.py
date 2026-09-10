@@ -8,6 +8,7 @@ from n0te.memory import HeadquartersMemory
 from n0te.studio_one_continuous_observer import StudioOneContinuousObserver
 from n0te.studio_one_midi_bridge import (
     StudioOneClockSnapshot,
+    StudioOneMidiClockMonitorClient,
     unobserved_studio_one_runtime,
 )
 
@@ -20,7 +21,7 @@ class _Clock:
         return self.value
 
 
-class _SnapshotClient:
+class _SnapshotClient(StudioOneMidiClockMonitorClient):
     def __init__(self, snapshots):
         self.snapshots = list(snapshots)
         self.index = 0
