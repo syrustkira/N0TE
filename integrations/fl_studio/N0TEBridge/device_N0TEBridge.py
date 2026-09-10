@@ -10,10 +10,21 @@ import uuid
 import channels
 import general
 import mixer
+try:
+    import plugins
+except ImportError:
+    class _UnavailablePlugins(object):
+        def isValid(self, *args):
+            raise RuntimeError("FL Studio plugins module unavailable")
+
+        def getPluginName(self, *args):
+            raise RuntimeError("FL Studio plugins module unavailable")
+
+    plugins = _UnavailablePlugins()
 import transport
 import ui
 
-SCHEMA = "n0te.fl-studio-observation/v1"
+SCHEMA = "n0te.fl-studio-observation/v2"
 NOTICE_SCHEMA = "n0te.fl-studio-notice/v1"
 ADAPTER_ID = "N0TEBridge"
 ADAPTER_VERSION = "1"
@@ -24,6 +35,7 @@ NOTICE_MAX_BYTES = 4096
 NOTICE_MAX_CHARS = 240
 NOTICE_MAX_AGE_SECONDS = 10
 PROJECT_LOAD_OK = 100
+MIXER_EFFECT_SLOT_COUNT = 10
 
 _BRIDGE_SESSION_ID = uuid.uuid4().hex
 _SNAPSHOT_PATH = os.path.join(os.path.dirname(__file__), SNAPSHOT_FILE_NAME)
@@ -37,6 +49,13 @@ def _call(fn, default=None, *args):
         return fn(*args)
     except Exception:
         return default
+
+
+def _try_call(fn, *args):
+    try:
+        return True, fn(*args)
+    except Exception:
+        return False, None
 
 
 def _version_string():
@@ -95,6 +114,41 @@ def _selected_channel():
     return {"index": index, "name": name or "Channel %d" % index}
 
 
+def _selected_mixer_plugins(selected_track):
+    if selected_track is None:
+        return None
+    track_index = int(selected_track["index"])
+    observed = []
+    for slot in range(MIXER_EFFECT_SLOT_COUNT):
+        ok, valid = _try_call(plugins.isValid, track_index, slot)
+        if not ok:
+            return {"complete": False, "plugins": []}
+        if not bool(valid):
+            continue
+        ok, name = _try_call(plugins.getPluginName, track_index, slot, 0)
+        text = "" if name is None else str(name).strip()
+        if not ok or not text:
+            return {"complete": False, "plugins": []}
+        observed.append({"slot": slot, "name": text})
+    return {"complete": True, "plugins": observed}
+
+
+def _selected_channel_generator(selected_channel):
+    if selected_channel is None:
+        return None
+    channel_index = int(selected_channel["index"])
+    ok, valid = _try_call(plugins.isValid, channel_index, -1, True)
+    if not ok:
+        return {"complete": False, "plugin": None}
+    if not bool(valid):
+        return {"complete": True, "plugin": None}
+    ok, name = _try_call(plugins.getPluginName, channel_index, -1, 0, True)
+    text = "" if name is None else str(name).strip()
+    if not ok or not text:
+        return {"complete": False, "plugin": None}
+    return {"complete": True, "plugin": {"name": text}}
+
+
 def _active_window():
     form_id = _call(ui.getFocusedFormID, -1)
     caption = str(_call(ui.getFocusedFormCaption, "")).strip()
@@ -133,6 +187,8 @@ def _snapshot():
     if loop_mode not in (0, 1):
         loop_mode = 1
 
+    selected_mixer_track = _selected_mixer_track()
+    selected_channel = _selected_channel()
     return {
         "schema": SCHEMA,
         "adapter": {"id": ADAPTER_ID, "version": ADAPTER_VERSION},
@@ -155,8 +211,10 @@ def _snapshot():
             "song_position": position,
             "loop_mode": loop_mode,
         },
-        "selected_mixer_track": _selected_mixer_track(),
-        "selected_channel": _selected_channel(),
+        "selected_mixer_track": selected_mixer_track,
+        "selected_channel": selected_channel,
+        "selected_mixer_plugins": _selected_mixer_plugins(selected_mixer_track),
+        "selected_channel_generator": _selected_channel_generator(selected_channel),
         "active_window": _active_window(),
     }
 

@@ -56,11 +56,20 @@ def _window_fingerprint(snapshot: FLStudioObservationSnapshot) -> tuple[object, 
     return None if window is None else (window.form_id, window.caption, window.plugin_name)
 
 
+def _device_fingerprint(snapshot: FLStudioObservationSnapshot) -> tuple[object, ...]:
+    return (
+        snapshot.mixer_plugin_chain_observed,
+        tuple((plugin.slot, plugin.name) for plugin in snapshot.selected_mixer_plugins),
+        snapshot.channel_generator_observed,
+        None if snapshot.selected_channel_generator is None else snapshot.selected_channel_generator.name,
+    )
+
+
 def _observation_fingerprint(snapshot: FLStudioObservationSnapshot) -> tuple[object, ...]:
     """Fields whose change is worth appending to canonical Host observation.
 
-    Normalized song position is intentionally excluded. It remains available in the
-    hot snapshot but would otherwise create an append-only Shadow batch on every poll.
+    Normalized song position is intentionally excluded. Device-chain state is included
+    because it changes the Technical Twin, but it is not part of reference discovery.
     """
 
     return (
@@ -72,6 +81,7 @@ def _observation_fingerprint(snapshot: FLStudioObservationSnapshot) -> tuple[obj
         snapshot.loop_mode,
         _mixer_track_fingerprint(snapshot),
         _window_fingerprint(snapshot),
+        _device_fingerprint(snapshot),
     )
 
 
