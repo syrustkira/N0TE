@@ -984,6 +984,140 @@ def _result_code(result, output: Callable[[str], None], *, phase: str) -> int:
     return 3
 
 
+def _result_evidence_ref(result, *, phase: str) -> str:
+    operation = result.operation
+    return (
+        operation.receipt_ref
+        or operation.evidence_ref
+        or f"operation:{operation.operation_id}:{phase.casefold()}"
+    )
+
+
+def _record_volume_audition_learning(
+    headquarters,
+    *,
+    song_id: str,
+    track_name: str,
+    track_ref: str,
+    original: float,
+    target: float,
+    decision: str,
+    try_result,
+    restore_result=None,
+):
+    learning_decision = str(decision).strip().upper()
+    if learning_decision not in {"KEEP", "REVERT"}:
+        raise AbletonCommandError(
+            "Ableton audition learning accepts only completed KEEP or REVERT decisions"
+        )
+    if try_result.status != "COMPLETE":
+        raise AbletonCommandError(
+            "cannot persist audition learning without a verified successful try"
+        )
+    if learning_decision == "REVERT" and (
+        restore_result is None or restore_result.status != "COMPLETE"
+    ):
+        raise AbletonCommandError(
+            "cannot persist a REVERT learning decision without verified restoration"
+        )
+
+    latest = headquarters.sessions.latest_for_song(song_id)
+    created_session = latest is None or latest.state != "OPEN"
+    if created_session:
+        session = headquarters.sessions.start_session(
+            song_id=song_id,
+            objective="Compare a reversible Ableton selected-track level by ear.",
+        )
+    else:
+        session = latest
+
+    try:
+        episode = headquarters.learning.create_episode(
+            session_id=session.id,
+            domain="DAW_AUDITION",
+            subject_ref=f"ableton-track-volume-audition:{try_result.operation_id}",
+            change_description=(
+                f"Selected Ableton {track_name} ({track_ref}) mixer volume changed "
+                f"from normalized {original:.6f} to {target:.6f} for artist audition."
+            ),
+        )
+        headquarters.learning.append_consequence(
+            episode.id,
+            observation=(
+                f"Ableton Live applied and verified {track_ref} mixer volume at "
+                f"normalized {target:.6f}."
+            ),
+            source_kind="OBSERVED",
+            source_ref=_result_evidence_ref(try_result, phase="TRY"),
+            confidence=1.0,
+            conditions=(
+                f"track_ref={track_ref}",
+                f"original_normalized={original:.6f}",
+                f"tried_normalized={target:.6f}",
+            ),
+        )
+        if learning_decision == "REVERT":
+            headquarters.learning.append_consequence(
+                episode.id,
+                observation=(
+                    f"Ableton Live restored and verified {track_ref} mixer volume at "
+                    f"the captured original normalized {original:.6f}."
+                ),
+                source_kind="OBSERVED",
+                source_ref=_result_evidence_ref(restore_result, phase="RESTORE"),
+                confidence=1.0,
+                conditions=(
+                    f"track_ref={track_ref}",
+                    f"restored_normalized={original:.6f}",
+                ),
+            )
+            rationale = (
+                "Artist explicitly chose RESTORE for the verified Ableton try, and "
+                "the captured original level was restored and verified."
+            )
+        else:
+            rationale = (
+                "Artist explicitly chose KEEP for the verified Ableton selected-track volume try."
+            )
+
+        headquarters.learning.decide(
+            episode.id,
+            decision=learning_decision,
+            rationale=rationale,
+            confidence=1.0,
+        )
+        if created_session:
+            headquarters.sessions.close_session(
+                session.id,
+                debrief_summary=(
+                    f"Ableton selected-track volume audition completed with "
+                    f"{learning_decision}. N0TE recorded only verified host state and the explicit artist decision."
+                ),
+                next_action="Continue producing the active Song using the recorded audition decision.",
+            )
+        recorded = headquarters.learning.get_episode(episode.id)
+        assert recorded is not None
+        return recorded
+    except Exception:
+        if created_session:
+            current = headquarters.sessions.get_session(session.id)
+            if current is not None and current.state == "OPEN":
+                try:
+                    headquarters.sessions.append_scratch(
+                        session.id,
+                        kind="UNRESOLVED",
+                        body="Ableton audition learning persistence did not complete cleanly.",
+                    )
+                    headquarters.sessions.close_session(
+                        session.id,
+                        debrief_summary="Ableton audition completed, but its Learning record requires review.",
+                        next_action="Review the latest Ableton transaction receipts before recording learning manually.",
+                    )
+                except Exception:
+                    pass
+        raise
+
+
 def run_try_volume(
     config: AbletonTryVolumeConfig,
     *,
@@ -1082,8 +1216,18 @@ def run_try_volume(
             output("Decision not recorded. Type exactly KEEP or RESTORE.")
 
         if decision == "KEEP":
+            learning = _record_volume_audition_learning(
+                headquarters,
+                song_id=song.id,
+                track_name=track.name,
+                track_ref=track.ref,
+                original=original,
+                target=target,
+                decision="KEEP",
+                try_result=result,
+            )
             output(
-                f"N0TE DECIDE • KEEP • verified tried level {target:.6f} remains on {track.name}."
+                f"N0TE DECIDE • KEEP • verified tried level {target:.6f} remains on {track.name} • learning {learning.id}."
             )
             return 0
 
@@ -1137,8 +1281,19 @@ def run_try_volume(
         code = _result_code(restore_result, output, phase="RESTORE")
         if code:
             return code
+        learning = _record_volume_audition_learning(
+            headquarters,
+            song_id=song.id,
+            track_name=track.name,
+            track_ref=track.ref,
+            original=original,
+            target=target,
+            decision="REVERT",
+            try_result=result,
+            restore_result=restore_result,
+        )
         output(
-            f"N0TE DECIDE • RESTORED • {track.name}: {target:.6f} → {original:.6f}"
+            f"N0TE DECIDE • RESTORED • {track.name}: {target:.6f} → {original:.6f} • learning {learning.id}."
         )
         return 0
     except BaseException as exc:

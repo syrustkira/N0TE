@@ -425,6 +425,8 @@ def test_try_volume_cancel_creates_no_operation_and_does_not_move_fader(tmp_path
     headquarters, live_song, bridge, runtime, config = _interactive_try_fixture(tmp_path)
     output = []
     try:
+        song = headquarters.store.active_song()
+        assert song is not None
         result = ableton.run_try_volume(
             config,
             process_probe=_TryProbe(),
@@ -435,6 +437,8 @@ def test_try_volume_cancel_creates_no_operation_and_does_not_move_fader(tmp_path
         assert result == 0
         assert live_song.tracks[1].mixer_device.volume.value == pytest.approx(0.5)
         assert headquarters.store._conn.execute("SELECT COUNT(*) FROM operations").fetchone()[0] == 0
+        assert headquarters.learning.episodes_for_song(song.id) == ()
+        assert headquarters.sessions.latest_for_song(song.id) is None
         assert any("cancelled" in line for line in output)
         assert runtime.quit_calls == 1
     finally:
@@ -456,6 +460,8 @@ def test_try_volume_apply_then_keep_requires_exact_typed_approval(tmp_path):
         raise AssertionError(prompt)
 
     try:
+        song = headquarters.store.active_song()
+        assert song is not None
         result = ableton.run_try_volume(
             config,
             process_probe=_TryProbe(),
@@ -466,7 +472,19 @@ def test_try_volume_apply_then_keep_requires_exact_typed_approval(tmp_path):
         assert result == 0
         assert live_song.tracks[1].mixer_device.volume.value == pytest.approx(0.65)
         assert headquarters.store._conn.execute("SELECT COUNT(*) FROM operations").fetchone()[0] == 1
+        episodes = headquarters.learning.episodes_for_song(song.id)
+        assert len(episodes) == 1
+        episode = episodes[0]
+        assert episode.domain == "DAW_AUDITION"
+        assert episode.subject_ref.startswith("ableton-track-volume-audition:op_")
+        assert episode.decision is not None
+        assert episode.decision.decision == "KEEP"
+        assert len(episode.consequences) == 1
+        assert episode.consequences[0].source_kind == "OBSERVED"
+        assert "applied and verified" in episode.consequences[0].observation
+        assert headquarters.sessions.get_session(episode.session_id).state == "CLOSED"
         assert any("KEEP" in line for line in output)
+        assert any("learning learn_" in line for line in output)
         assert any("authority: REVERSIBLE" in line for line in output)
         assert runtime.quit_calls == 1
     finally:
@@ -490,6 +508,8 @@ def test_try_volume_restore_is_a_second_exact_approved_transaction(tmp_path):
         raise AssertionError(prompt)
 
     try:
+        song = headquarters.store.active_song()
+        assert song is not None
         result = ableton.run_try_volume(
             config,
             process_probe=_TryProbe(),
@@ -511,6 +531,50 @@ def test_try_volume_restore_is_a_second_exact_approved_transaction(tmp_path):
             headquarters.operations.get(operation_id).recorded_state
             for operation_id in operation_ids
         ] == ["SUCCEEDED", "SUCCEEDED"]
+        episodes = headquarters.learning.episodes_for_song(song.id)
+        assert len(episodes) == 1
+        episode = episodes[0]
+        assert episode.decision is not None
+        assert episode.decision.decision == "REVERT"
+        assert len(episode.consequences) == 2
+        assert all(item.source_kind == "OBSERVED" for item in episode.consequences)
+        assert "restored and verified" in episode.consequences[1].observation
+        assert headquarters.sessions.get_session(episode.session_id).state == "CLOSED"
+        assert any("learning learn_" in line for line in output)
+    finally:
+        bridge.disconnect()
+        headquarters.close()
+
+
+def test_try_volume_reuses_existing_open_production_session_for_learning(tmp_path):
+    headquarters, live_song, bridge, runtime, config = _interactive_try_fixture(tmp_path)
+    song = headquarters.store.active_song()
+    assert song is not None
+    production_session = headquarters.sessions.start_session(
+        song_id=song.id,
+        objective="Continue the active production session.",
+    )
+
+    def answer(prompt):
+        if prompt.startswith("Type APPLY "):
+            return _typed_token_from_prompt(prompt, "APPLY")
+        if prompt.startswith("Hear it in Ableton Live"):
+            return "KEEP"
+        raise AssertionError(prompt)
+
+    try:
+        assert ableton.run_try_volume(
+            config,
+            process_probe=_TryProbe(),
+            runtime_factory=lambda **kwargs: runtime,
+            input_fn=answer,
+            output=lambda message: None,
+        ) == 0
+        episodes = headquarters.learning.episodes_for_song(song.id)
+        assert len(episodes) == 1
+        assert episodes[0].session_id == production_session.id
+        assert headquarters.sessions.get_session(production_session.id).state == "OPEN"
+        assert live_song.tracks[1].mixer_device.volume.value == pytest.approx(0.65)
     finally:
         bridge.disconnect()
         headquarters.close()
@@ -528,6 +592,8 @@ def test_try_volume_refuses_restore_after_manual_fader_move(tmp_path):
         raise AssertionError(prompt)
 
     try:
+        song = headquarters.store.active_song()
+        assert song is not None
         with pytest.raises(ableton.AbletonCommandError, match="changed during audition"):
             ableton.run_try_volume(
                 config,
@@ -538,6 +604,8 @@ def test_try_volume_refuses_restore_after_manual_fader_move(tmp_path):
             )
         assert live_song.tracks[1].mixer_device.volume.value == pytest.approx(0.73)
         assert headquarters.store._conn.execute("SELECT COUNT(*) FROM operations").fetchone()[0] == 1
+        assert headquarters.learning.episodes_for_song(song.id) == ()
+        assert headquarters.sessions.latest_for_song(song.id) is None
         assert runtime.quit_calls == 1
     finally:
         bridge.disconnect()
