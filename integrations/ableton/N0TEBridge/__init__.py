@@ -44,15 +44,16 @@ except ImportError:
 HOST = "127.0.0.1"
 PORT = 9799
 ADAPTER_ID = "N0TEBridge"
-# Adapter version tracks the snapshot producer contract. The observation payload
-# remains v2 even though the loopback bridge now also exposes a bounded advice
-# display endpoint; server_version below tracks that transport implementation.
 ADAPTER_VERSION = "2"
 SCHEMA = "n0te.ableton-observation/v2"
 WORKSPACE_DATA_KEY = "n0te.workspace_id.v1"
 LIVE_CALL_TIMEOUT_SECONDS = 2.0
 NOTICE_MAX_CHARS = 240
 _NOTICE_MAX_BODY_BYTES = 2048
+_ACTION_MAX_BODY_BYTES = 4096
+TRACK_VOLUME_STATE_SCHEMA = "n0te.ableton-selected-track-volume-state/v1"
+TRACK_VOLUME_ACTION_SCHEMA = "n0te.ableton-selected-track-volume-action/v1"
+_TRACK_VOLUME_TOLERANCE = 0.0001
 _SET_PATH_HASH_DOMAIN = b"n0te.ableton-set-path/v1\x00"
 _ALLOWED_HOST_HEADERS = frozenset(
     {
@@ -62,13 +63,12 @@ _ALLOWED_HOST_HEADERS = frozenset(
 )
 
 
-def _set_path_fingerprint(song):
-    """Return a one-way stable fingerprint for a saved Live Set path.
+class _ConflictError(ValueError):
+    """The requested reversible action is stale and was not applied."""
 
-    The raw filesystem path never crosses the bridge boundary. Unsaved Sets expose
-    an empty file_path in Live and therefore intentionally return no durable path
-    identity until the Set is saved.
-    """
+
+def _set_path_fingerprint(song):
+    """Return a one-way stable fingerprint for a saved Live Set path."""
 
     raw = getattr(song, "file_path", None)
     if raw is None:
@@ -96,8 +96,29 @@ def _notice_text(value):
     return text
 
 
+def _finite_unit(value, field):
+    if isinstance(value, bool):
+        raise ValueError("%s must be numeric" % field)
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        raise ValueError("%s must be numeric" % field)
+    if number != number or number in (float("inf"), float("-inf")):
+        raise ValueError("%s must be finite" % field)
+    if number < 0.0 or number > 1.0:
+        raise ValueError("%s must be between 0 and 1" % field)
+    return number
+
+
+def _required_text(value, field):
+    text = str(value).strip()
+    if not text:
+        raise ValueError("%s must not be empty" % field)
+    return text
+
+
 class _SnapshotHandler(BaseHTTPRequestHandler):
-    server_version = "N0TEBridge/3"
+    server_version = "N0TEBridge/4"
     sys_version = ""
 
     def log_message(self, format, *args):
@@ -120,7 +141,7 @@ class _SnapshotHandler(BaseHTTPRequestHandler):
         allowed = getattr(self.server, "allowed_host_headers", _ALLOWED_HOST_HEADERS)
         return host in allowed
 
-    def _read_json_object(self):
+    def _read_json_object(self, maximum_bytes):
         content_type = (self.headers.get("Content-Type") or "").split(";", 1)[0].strip().lower()
         if content_type != "application/json":
             raise ValueError("Content-Type must be application/json")
@@ -131,7 +152,7 @@ class _SnapshotHandler(BaseHTTPRequestHandler):
             length = int(length_header)
         except ValueError:
             raise ValueError("Content-Length is invalid")
-        if length <= 0 or length > _NOTICE_MAX_BODY_BYTES:
+        if length <= 0 or length > maximum_bytes:
             raise ValueError("request body size is invalid")
         raw = self.rfile.read(length)
         if len(raw) != length:
@@ -148,13 +169,16 @@ class _SnapshotHandler(BaseHTTPRequestHandler):
         if not self._request_is_local():
             self._json(403, {"ok": False, "error": "loopback host/origin policy rejected request"})
             return
-        if self.path != "/snapshot":
-            self._json(404, {"ok": False, "error": "not found"})
-            return
         try:
-            payload = self.server.bridge.request_snapshot()
+            if self.path == "/snapshot":
+                payload = self.server.bridge.request_snapshot()
+            elif self.path == "/action/selected-track-volume":
+                payload = self.server.bridge.request_selected_track_volume_state()
+            else:
+                self._json(404, {"ok": False, "error": "not found"})
+                return
         except Exception as error:
-            self._json(503, {"ok": False, "error": "snapshot unavailable: %s" % error})
+            self._json(503, {"ok": False, "error": "bridge state unavailable: %s" % error})
             return
         self._json(200, payload)
 
@@ -162,21 +186,29 @@ class _SnapshotHandler(BaseHTTPRequestHandler):
         if not self._request_is_local():
             self._json(403, {"ok": False, "error": "loopback host/origin policy rejected request"})
             return
-        if self.path != "/notice":
-            self._json(404, {"ok": False, "error": "not found"})
-            return
         try:
-            payload = self._read_json_object()
-            if set(payload) != {"message"}:
-                raise ValueError("notice body must contain only message")
-            self.server.bridge.request_notice(payload["message"])
+            if self.path == "/notice":
+                payload = self._read_json_object(_NOTICE_MAX_BODY_BYTES)
+                if set(payload) != {"message"}:
+                    raise ValueError("notice body must contain only message")
+                self.server.bridge.request_notice(payload["message"])
+                response = {"ok": True}
+            elif self.path == "/action/selected-track-volume":
+                payload = self._read_json_object(_ACTION_MAX_BODY_BYTES)
+                response = self.server.bridge.request_selected_track_volume_action(payload)
+            else:
+                self._json(404, {"ok": False, "error": "not found"})
+                return
+        except _ConflictError as error:
+            self._json(409, {"ok": False, "error": str(error)})
+            return
         except ValueError as error:
             self._json(400, {"ok": False, "error": str(error)})
             return
         except Exception as error:
-            self._json(503, {"ok": False, "error": "notice unavailable: %s" % error})
+            self._json(503, {"ok": False, "error": "action unavailable: %s" % error})
             return
-        self._json(200, {"ok": True})
+        self._json(200, response)
 
     def do_PUT(self):
         self._json(405, {"ok": False, "error": "method not allowed"})
@@ -194,14 +226,13 @@ class _BridgeServer(ThreadingHTTPServer):
 
 
 class N0TEBridge(ControlSurface):
-    """Dependency-light Ableton observation + advice-display bridge.
+    """Dependency-light Ableton observation, advice and reversible action bridge.
 
-    The bridge exposes no tempo/transport/device/track setters, no Song selection,
-    no calibration/provider input and no persistent Set writes. It observes Live on
-    Live's main thread, serves one bounded JSON snapshot over IPv4 loopback, and may
-    display a bounded N0TE advice notice through ControlSurface.show_message().
-    The bridge session identifier is scoped to the current Live Song object so a
-    save keeps continuity while loading another Set rotates session identity.
+    Observation remains read-only. The sole mutation route is selected-track mixer
+    volume, guarded by current Live Song session identity, exact selected-track
+    identity and an optimistic current-value precondition. N0TE's external
+    AuthorityService and transaction journal remain the authority owners; this
+    bridge only supplies the narrow host primitive and refuses stale mutations.
     """
 
     def __init__(self, c_instance, host=HOST, port=PORT, start_server=True):
@@ -241,7 +272,7 @@ class N0TEBridge(ControlSurface):
         self._server = server
         self._server_thread = thread
         self.port = actual_port
-        self._log("observation/advice bridge listening on http://%s:%s" % (self.host, self.port))
+        self._log("N0TE bridge listening on http://%s:%s" % (self.host, self.port))
 
     def disconnect(self):
         server = self._server
@@ -289,6 +320,14 @@ class N0TEBridge(ControlSurface):
         text = _notice_text(message)
         return self._call_live_thread(lambda: self._show_notice(text))
 
+    def request_selected_track_volume_state(self):
+        return self._call_live_thread(self._selected_track_volume_state)
+
+    def request_selected_track_volume_action(self, payload):
+        return self._call_live_thread(
+            lambda: self._apply_selected_track_volume_action(payload)
+        )
+
     def _show_notice(self, text):
         self.show_message("N0TE: %s" % text)
         return text
@@ -328,6 +367,95 @@ class N0TEBridge(ControlSurface):
             "kind": kind,
             "index": index,
             "name": str(getattr(selected, "name", kind)).strip() or kind,
+        }
+
+    @staticmethod
+    def _track_ref(selected):
+        if selected["kind"] == "MASTER":
+            return "master:main"
+        prefix = "track" if selected["kind"] == "TRACK" else "return"
+        return "%s:%s" % (prefix, int(selected["index"]))
+
+    def _selected_track_and_volume_parameter(self, song):
+        selected_info = self._selected_track(song)
+        if selected_info is None:
+            raise ValueError("Ableton has no safely identified selected track")
+        selected = getattr(getattr(song, "view", None), "selected_track", None)
+        mixer = getattr(selected, "mixer_device", None)
+        parameter = getattr(mixer, "volume", None)
+        if parameter is None:
+            raise ValueError("selected track mixer volume is unavailable")
+        minimum = float(getattr(parameter, "min", 0.0))
+        maximum = float(getattr(parameter, "max", 1.0))
+        value = float(getattr(parameter, "value"))
+        if not maximum > minimum:
+            raise ValueError("selected track mixer volume range is invalid")
+        normalized = (value - minimum) / (maximum - minimum)
+        if normalized < -_TRACK_VOLUME_TOLERANCE or normalized > 1.0 + _TRACK_VOLUME_TOLERANCE:
+            raise ValueError("selected track mixer volume is outside its advertised range")
+        return selected_info, parameter, min(1.0, max(0.0, normalized)), minimum, maximum
+
+    def _selected_track_volume_state(self):
+        song = self.song()
+        session = self._session_id_for_song(song)
+        selected, parameter, normalized, minimum, maximum = self._selected_track_and_volume_parameter(song)
+        return {
+            "schema": TRACK_VOLUME_STATE_SCHEMA,
+            "bridge_session_id": session,
+            "track_ref": self._track_ref(selected),
+            "normalized": normalized,
+            "parameter_enabled": bool(getattr(parameter, "is_enabled", True)),
+            "parameter_minimum": minimum,
+            "parameter_maximum": maximum,
+        }
+
+    def _apply_selected_track_volume_action(self, payload):
+        if not isinstance(payload, dict):
+            raise ValueError("action body must be an object")
+        allowed = {
+            "schema",
+            "bridge_session_id",
+            "action_id",
+            "track_ref",
+            "expected_normalized",
+            "desired_normalized",
+        }
+        if set(payload) != allowed:
+            raise ValueError("track-volume action contains unsupported or missing fields")
+        if payload.get("schema") != TRACK_VOLUME_ACTION_SCHEMA:
+            raise ValueError("unsupported track-volume action schema")
+        requested_session = _required_text(payload.get("bridge_session_id"), "bridge_session_id")
+        action_id = _required_text(payload.get("action_id"), "action_id")
+        requested_track = _required_text(payload.get("track_ref"), "track_ref")
+        expected = _finite_unit(payload.get("expected_normalized"), "expected_normalized")
+        desired = _finite_unit(payload.get("desired_normalized"), "desired_normalized")
+
+        song = self.song()
+        current_session = self._session_id_for_song(song)
+        if requested_session != current_session:
+            raise _ConflictError("Ableton Song session changed before action; nothing applied")
+        selected, parameter, before, minimum, maximum = self._selected_track_and_volume_parameter(song)
+        current_track = self._track_ref(selected)
+        if requested_track != current_track:
+            raise _ConflictError("selected Ableton track changed before action; nothing applied")
+        if abs(before - expected) > _TRACK_VOLUME_TOLERANCE:
+            raise _ConflictError("selected track volume changed before action; nothing applied")
+        if not bool(getattr(parameter, "is_enabled", True)):
+            raise _ConflictError("selected track volume parameter is disabled; nothing applied")
+
+        parameter.value = minimum + desired * (maximum - minimum)
+        after_raw = float(getattr(parameter, "value"))
+        after = (after_raw - minimum) / (maximum - minimum)
+        if abs(after - desired) > _TRACK_VOLUME_TOLERANCE:
+            raise RuntimeError("Ableton did not confirm the requested track-volume value")
+        return {
+            "ok": True,
+            "schema": TRACK_VOLUME_ACTION_SCHEMA,
+            "bridge_session_id": current_session,
+            "action_id": action_id,
+            "track_ref": current_track,
+            "before_normalized": before,
+            "after_normalized": after,
         }
 
     def _runtime(self):
