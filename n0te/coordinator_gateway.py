@@ -1,12 +1,18 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from typing import Callable, Generic, Iterable, Mapping, Protocol, TypeVar
+from urllib.parse import urlparse
+
+from mcp import Client
 
 from governance.execution_permit import ExecutionPermitAuthority
 from governance.trusted_context import TrustedContextSnapshot
 
+from .audio_engineering import EngineeringSnapshot
 from .authority import ActionIntent
+from .host_observation import HostObservationBinding
 from .network import NetworkPolicy, NetworkRoute, TransportDecision
 from .reference_calibration import (
     RankedReferenceCandidate,
@@ -14,8 +20,12 @@ from .reference_calibration import (
     ReferenceDiscoveryProvider,
     discover_ranked_references,
 )
+from .session_reference_calibration import build_session_reference_evidence_bundle
+from .shadow import HostShadowState
 
 T = TypeVar("T")
+DEFAULT_COORDINATOR_MCP_ENDPOINT = "http://127.0.0.1:8000/mcp"
+_LOOPBACK_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
 
 
 class ContextProvider(Protocol):
@@ -28,6 +38,10 @@ class CoordinatorGatewayError(RuntimeError):
 
 class ReferenceDiscoveryGatewayError(CoordinatorGatewayError):
     """A read-only reference provider could not be used under current policy."""
+
+
+class CoordinatorReferenceClientError(CoordinatorGatewayError):
+    """A host-side read-only reference request failed its coordinator boundary."""
 
 
 class MutationVerificationError(CoordinatorGatewayError):
@@ -198,6 +212,208 @@ class ReferenceDiscoveryGateway:
             registration_source_ref=registration.registration_source_ref,
             transport_reason_codes=decision.reason_codes,
             ranked=ranked,
+        )
+
+
+def _loopback_mcp_endpoint(value: str) -> str:
+    endpoint = str(value).strip()
+    if not endpoint:
+        raise CoordinatorReferenceClientError("coordinator endpoint must not be empty")
+    parsed = urlparse(endpoint)
+    if parsed.scheme not in {"http", "https"}:
+        raise CoordinatorReferenceClientError(
+            "coordinator endpoint must use http or https"
+        )
+    host = (parsed.hostname or "").casefold()
+    if host not in _LOOPBACK_HOSTS:
+        raise CoordinatorReferenceClientError(
+            "host observation evidence may be sent only to a loopback coordinator"
+        )
+    if parsed.username is not None or parsed.password is not None:
+        raise CoordinatorReferenceClientError(
+            "coordinator endpoint must not embed credentials"
+        )
+    if parsed.query or parsed.fragment or parsed.params:
+        raise CoordinatorReferenceClientError(
+            "coordinator endpoint must not include params, query or fragment"
+        )
+    if parsed.path.rstrip("/") != "/mcp":
+        raise CoordinatorReferenceClientError(
+            "coordinator endpoint must target the /mcp Streamable HTTP path"
+        )
+    try:
+        port = parsed.port
+    except ValueError as exc:
+        raise CoordinatorReferenceClientError("coordinator endpoint has invalid port") from exc
+    if port is not None and not 1 <= port <= 65535:
+        raise CoordinatorReferenceClientError("coordinator endpoint has invalid port")
+    return endpoint
+
+
+def _request_strings(values: Iterable[str], field: str) -> list[str]:
+    if isinstance(values, (str, bytes)):
+        raise CoordinatorReferenceClientError(f"{field} must be a sequence")
+    out: list[str] = []
+    for raw in values:
+        text = str(raw).strip()
+        if not text:
+            raise CoordinatorReferenceClientError(
+                f"{field} must contain non-empty values"
+            )
+        out.append(text)
+    return out
+
+
+def _validated_reference_response(
+    payload: object,
+    *,
+    provider_id: str,
+    session: dict[str, object],
+) -> dict[str, object]:
+    if not isinstance(payload, dict):
+        raise CoordinatorReferenceClientError(
+            "coordinator returned no structured reference-discovery payload"
+        )
+    if payload.get("provider_id") != provider_id:
+        raise CoordinatorReferenceClientError(
+            "coordinator response provider does not match request"
+        )
+    if payload.get("read_only") is not True:
+        raise CoordinatorReferenceClientError(
+            "coordinator reference response is not explicitly read-only"
+        )
+    if payload.get("action_authority_granted") is not False:
+        raise CoordinatorReferenceClientError(
+            "coordinator reference response attempted to grant action authority"
+        )
+
+    binding = session.get("binding")
+    calibration = payload.get("session_calibration")
+    if not isinstance(binding, dict) or not isinstance(calibration, dict):
+        raise CoordinatorReferenceClientError(
+            "coordinator response is missing session identity evidence"
+        )
+    for field in ("workspace_id", "song_id", "workspace_observation_id"):
+        expected = binding.get(field)
+        if not isinstance(expected, str) or calibration.get(field) != expected:
+            raise CoordinatorReferenceClientError(
+                f"coordinator response crossed session identity: {field}"
+            )
+
+    ranked = payload.get("ranked")
+    primary = payload.get("primary")
+    if not isinstance(ranked, list):
+        raise CoordinatorReferenceClientError(
+            "coordinator response ranked references must be a list"
+        )
+    if primary is not None and not isinstance(primary, dict):
+        raise CoordinatorReferenceClientError(
+            "coordinator response primary reference must be an object or null"
+        )
+    if ranked:
+        if primary is None or primary != ranked[0]:
+            raise CoordinatorReferenceClientError(
+                "coordinator primary reference must equal the first ranked candidate"
+            )
+    elif primary is not None:
+        raise CoordinatorReferenceClientError(
+            "coordinator returned a primary reference without ranked candidates"
+        )
+
+    try:
+        encoded = json.dumps(
+            payload,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
+    except (TypeError, ValueError) as exc:
+        raise CoordinatorReferenceClientError(
+            "coordinator reference response is not JSON-transportable"
+        ) from exc
+    return json.loads(encoded)
+
+
+class CoordinatorReferenceClient:
+    """Host-side loopback client for the coordinator's read-only reference tool.
+
+    The client owns only evidence transport. It serializes typed current host state,
+    calls the coordinator over MCP Streamable HTTP, and verifies that the response
+    remains bound to the same workspace/Song/observation with no action authority.
+    It never persists a reference, mutates a DAW, or accepts a remote coordinator URL.
+    """
+
+    def __init__(
+        self,
+        endpoint: str = DEFAULT_COORDINATOR_MCP_ENDPOINT,
+        *,
+        client_factory: Callable[..., object] = Client,
+    ) -> None:
+        if not callable(client_factory):
+            raise TypeError("client_factory must be callable")
+        self.endpoint = _loopback_mcp_endpoint(endpoint)
+        self._client_factory = client_factory
+
+    async def discover_session(
+        self,
+        provider_id: str,
+        binding: HostObservationBinding,
+        shadow: HostShadowState,
+        *,
+        comparison_dimensions: Iterable[str],
+        engineering_snapshot: EngineeringSnapshot | None = None,
+        semantic_tags: Iterable[str] = (),
+        required_features: Iterable[str] = (),
+        desired_tags: Iterable[str] = (),
+        feature_weights: Mapping[str, float] | None = None,
+        discovery_limit: int = 12,
+        result_limit: int = 3,
+    ) -> dict[str, object]:
+        provider = str(provider_id).strip()
+        if not provider:
+            raise CoordinatorReferenceClientError("provider_id must not be empty")
+        session = build_session_reference_evidence_bundle(
+            binding,
+            shadow,
+            engineering_snapshot=engineering_snapshot,
+        )
+        arguments = {
+            "provider_id": provider,
+            "session": session,
+            "comparison_dimensions": _request_strings(
+                comparison_dimensions, "comparison_dimensions"
+            ),
+            "semantic_tags": _request_strings(semantic_tags, "semantic_tags"),
+            "required_features": _request_strings(
+                required_features, "required_features"
+            ),
+            "desired_tags": _request_strings(desired_tags, "desired_tags"),
+            "feature_weights": (
+                None if feature_weights is None else dict(feature_weights)
+            ),
+            "discovery_limit": discovery_limit,
+            "result_limit": result_limit,
+        }
+        try:
+            async with self._client_factory(
+                self.endpoint,
+                raise_exceptions=True,
+            ) as client:
+                result = await client.call_tool(
+                    "discover_session_reference_candidates",
+                    arguments,
+                )
+        except CoordinatorReferenceClientError:
+            raise
+        except Exception as exc:
+            raise CoordinatorReferenceClientError(
+                "loopback coordinator reference discovery failed"
+            ) from exc
+
+        return _validated_reference_response(
+            getattr(result, "structured_content", None),
+            provider_id=provider,
+            session=session,
         )
 
 

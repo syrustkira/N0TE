@@ -7,16 +7,20 @@ from mcp import Client
 
 import n0te.coordinator_mcp as coordinator_mcp_module
 from n0te.coordinator_gateway import (
+    CoordinatorReferenceClient,
+    CoordinatorReferenceClientError,
     ReferenceDiscoveryGateway,
     ReferenceDiscoveryGatewayError,
 )
 from n0te.coordinator_mcp import mcp
+from n0te.host_observation import HostObservationBinding
 from n0te.hosts import HostRuntimeIdentity
 from n0te.network import NetworkPolicy, NetworkRoute
 from n0te.reference_calibration import (
     ReferenceCalibrationProfile,
     ReferenceCandidate,
 )
+from n0te.shadow import HostShadowState, ShadowFact
 
 
 EXPECTED_GATE_TOOLS = {
@@ -394,6 +398,42 @@ def _session_bundle(*, observation_id: str = "observation:1") -> dict:
     }
 
 
+def _typed_session() -> tuple[HostObservationBinding, HostShadowState]:
+    runtime = HostRuntimeIdentity.from_runtime_labels(
+        host_family="ABLETON_LIVE",
+        version="12.1",
+        edition="Standard",
+        os_name="Darwin",
+        machine="arm64",
+    )
+    binding = HostObservationBinding(
+        workspace_id="workspace:1",
+        song_id="song:1",
+        workspace_observation_id="observation:1",
+        host_runtime_fingerprint=runtime.fingerprint,
+        runtime=runtime,
+    )
+    shadow = HostShadowState(
+        status="CURRENT",
+        workspace_id="workspace:1",
+        current_workspace_observation_id="observation:1",
+        baseline_batch_id="batch:1",
+        latest_batch_id="batch:1",
+        facts=(
+            ShadowFact(
+                object_kind="TEMPO",
+                object_ref="tempo:main",
+                field="bpm",
+                value=128.0,
+                batch_id="batch:1",
+                actor="EXTERNAL",
+                evidence_ref="host:ableton:tempo",
+            ),
+        ),
+    )
+    return binding, shadow
+
+
 def test_session_reference_tool_derives_calibration_from_host_observation(monkeypatch):
     provider = _Provider()
     monkeypatch.setenv("N0TE_NETWORK_MODE", "OFFLINE")
@@ -467,3 +507,102 @@ def test_session_bundle_rejects_hand_authored_calibration_fields():
     session["calibration"] = {"TEMPO_BPM": 160.0}
     with pytest.raises(ValueError, match="unsupported fields"):
         coordinator_mcp_module._session_evidence(session)
+
+
+def test_host_side_reference_client_refuses_non_loopback_coordinator():
+    with pytest.raises(CoordinatorReferenceClientError, match="loopback"):
+        CoordinatorReferenceClient("https://coordinator.example.test/mcp")
+    with pytest.raises(CoordinatorReferenceClientError, match="/mcp"):
+        CoordinatorReferenceClient("http://127.0.0.1:8000/reference-search")
+
+
+def test_host_side_reference_client_roundtrips_typed_session_through_mcp(monkeypatch):
+    provider = _Provider()
+    monkeypatch.setenv("N0TE_NETWORK_MODE", "OFFLINE")
+    monkeypatch.delenv("N0TE_REFERENCE_SEARCH_BACKEND", raising=False)
+    monkeypatch.delenv("N0TE_REFERENCE_SEARCH_ENDPOINT", raising=False)
+    monkeypatch.delenv("N0TE_REFERENCE_SEARCH_PROVIDER_ID", raising=False)
+    coordinator_mcp_module._reference_runtime.cache_clear()
+    try:
+        coordinator_mcp_module.register_reference_discovery_provider(
+            "session-local",
+            provider=provider,
+            route_id="session-local-library",
+            route_kind="LOCALHOST",
+            route_description="test local session references",
+            registration_source_ref="test:session-local",
+        )
+
+        def in_process_client(_endpoint, **kwargs):
+            return Client(mcp, **kwargs)
+
+        host_client = CoordinatorReferenceClient(
+            client_factory=in_process_client,
+        )
+        binding, shadow = _typed_session()
+        result = asyncio.run(
+            host_client.discover_session(
+                "session-local",
+                binding,
+                shadow,
+                comparison_dimensions=("tempo",),
+                semantic_tags=("electronic",),
+                required_features=("tempo_bpm",),
+                desired_tags=("electronic",),
+                result_limit=2,
+            )
+        )
+
+        assert provider.calls
+        assert provider.calls[0][0].feature_map() == {"TEMPO_BPM": 128.0}
+        assert result["provider_id"] == "session-local"
+        assert result["session_calibration"]["workspace_id"] == "workspace:1"
+        assert result["session_calibration"]["song_id"] == "song:1"
+        assert result["session_calibration"]["workspace_observation_id"] == "observation:1"
+        assert result["primary"]["title"] == "Near"
+        assert result["read_only"] is True
+        assert result["action_authority_granted"] is False
+    finally:
+        coordinator_mcp_module._reference_runtime.cache_clear()
+
+
+def test_host_side_reference_client_rejects_forged_action_authority():
+    class _ForgedResult:
+        structured_content = {
+            "provider_id": "session-local",
+            "read_only": True,
+            "action_authority_granted": True,
+            "primary": None,
+            "ranked": [],
+            "session_calibration": {
+                "workspace_id": "workspace:1",
+                "song_id": "song:1",
+                "workspace_observation_id": "observation:1",
+            },
+        }
+
+    class _ForgedClient:
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb):
+            return False
+
+        async def call_tool(self, name, arguments):
+            assert name == "discover_session_reference_candidates"
+            return _ForgedResult()
+
+    def forged_factory(_endpoint, **_kwargs):
+        return _ForgedClient()
+
+    host_client = CoordinatorReferenceClient(client_factory=forged_factory)
+    binding, shadow = _typed_session()
+    with pytest.raises(CoordinatorReferenceClientError, match="action authority"):
+        asyncio.run(
+            host_client.discover_session(
+                "session-local",
+                binding,
+                shadow,
+                comparison_dimensions=("tempo",),
+            )
+        )
