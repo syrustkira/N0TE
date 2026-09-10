@@ -9,6 +9,7 @@ import pytest
 from n0te.ableton_host_bridge import AbletonHostBridgeError
 from n0te.ableton_observer_service import (
     STATUS_SCHEMA,
+    AbletonAdviceClient,
     AbletonObserverService,
     AbletonObserverServiceError,
 )
@@ -141,7 +142,7 @@ def test_service_recovers_from_missing_live_bridge_without_busy_loop(tmp_path):
         headquarters.close()
 
 
-def _projection_cycle():
+def _projection_cycle(*, discovery_performed=True):
     track = SimpleNamespace(kind="TRACK", index=2, name="Hook", ref="track:2")
     runtime = SimpleNamespace(
         family="ABLETON_LIVE",
@@ -178,9 +179,9 @@ def _projection_cycle():
         snapshot=snapshot,
         observation=observation,
         observation_committed=True,
-        discovery_performed=True,
+        discovery_performed=discovery_performed,
         discovery_deferred=False,
-        discovery_reason="EXPLICIT",
+        discovery_reason="EXPLICIT" if discovery_performed else None,
         discovery_error_class=None,
         references=references,
     )
@@ -198,11 +199,23 @@ class _ProjectionObserver:
         return self.cycle
 
 
+class _RecordingAdviceClient(AbletonAdviceClient):
+    def __init__(self, *, fail=False):
+        self.messages = []
+        self.fail = fail
+
+    def show_notice(self, message):
+        self.messages.append(message)
+        if self.fail:
+            raise AbletonHostBridgeError("display unavailable")
+
+
 def test_status_projection_exposes_music_state_without_internal_or_mutation_authority(tmp_path):
     headquarters = HeadquartersMemory.create(tmp_path, "Status Projection Artist")
     cycle = _projection_cycle()
     observer = _ProjectionObserver(cycle)
-    service = AbletonObserverService(headquarters, observer)
+    advice = _RecordingAdviceClient()
+    service = AbletonObserverService(headquarters, observer, advice_client=advice)
     try:
         empty = service.status_projection()
         assert empty == {
@@ -211,6 +224,7 @@ def test_status_projection_exposes_music_state_without_internal_or_mutation_auth
             "connected": False,
             "bridge_failure_count": 0,
             "last_bridge_error_class": None,
+            "advice_display": {"failure_count": 0, "last_error_class": None},
             "read_only": True,
             "action_authority_granted": False,
             "session": None,
@@ -220,6 +234,7 @@ def test_status_projection_exposes_music_state_without_internal_or_mutation_auth
         refreshed = asyncio.run(service.refresh_references())
         assert refreshed is cycle
         assert observer.force_values == [True]
+        assert advice.messages == ["Reference: Reference One"]
         status = service.status_projection()
         assert status["schema"] == STATUS_SCHEMA
         assert status["service_state"] == "OBSERVING"
@@ -252,6 +267,24 @@ def test_status_projection_exposes_music_state_without_internal_or_mutation_auth
         assert "workspace_observation_id" not in encoded
         assert "bridge_session" not in encoded
         assert "permit" not in encoded.lower()
+    finally:
+        headquarters.close()
+
+
+def test_advice_display_failure_never_erases_reference_refresh(tmp_path):
+    headquarters = HeadquartersMemory.create(tmp_path, "Advice Failure Artist")
+    cycle = _projection_cycle()
+    observer = _ProjectionObserver(cycle)
+    advice = _RecordingAdviceClient(fail=True)
+    service = AbletonObserverService(headquarters, observer, advice_client=advice)
+    try:
+        refreshed = asyncio.run(service.refresh_references())
+        assert refreshed is cycle
+        assert service.latest_cycle is cycle
+        assert service.state == "OBSERVING"
+        assert service.notice_failure_count == 1
+        assert service.last_notice_error_class == "AbletonHostBridgeError"
+        assert service.status_projection()["reference_discovery"]["primary"]["title"] == "Reference One"
     finally:
         headquarters.close()
 

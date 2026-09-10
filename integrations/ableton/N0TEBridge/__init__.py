@@ -27,6 +27,11 @@ except ImportError:
         def schedule_message(self, delay, callback):
             callback()
 
+        def show_message(self, message):
+            shower = getattr(self._c_instance, "show_message", None)
+            if callable(shower):
+                shower(message)
+
         def log_message(self, message):
             logger = getattr(self._c_instance, "log_message", None)
             if callable(logger):
@@ -39,10 +44,12 @@ except ImportError:
 HOST = "127.0.0.1"
 PORT = 9799
 ADAPTER_ID = "N0TEBridge"
-ADAPTER_VERSION = "2"
+ADAPTER_VERSION = "3"
 SCHEMA = "n0te.ableton-observation/v2"
 WORKSPACE_DATA_KEY = "n0te.workspace_id.v1"
 LIVE_CALL_TIMEOUT_SECONDS = 2.0
+NOTICE_MAX_CHARS = 240
+_NOTICE_MAX_BODY_BYTES = 2048
 _SET_PATH_HASH_DOMAIN = b"n0te.ableton-set-path/v1\x00"
 _ALLOWED_HOST_HEADERS = frozenset(
     {
@@ -75,8 +82,19 @@ def _set_path_fingerprint(song):
     return hashlib.sha256(_SET_PATH_HASH_DOMAIN + material).hexdigest()
 
 
+def _notice_text(value):
+    if not isinstance(value, str):
+        raise ValueError("message must be a string")
+    text = " ".join(value.split())
+    if not text:
+        raise ValueError("message must not be empty")
+    if len(text) > NOTICE_MAX_CHARS:
+        raise ValueError("message exceeds %s characters" % NOTICE_MAX_CHARS)
+    return text
+
+
 class _SnapshotHandler(BaseHTTPRequestHandler):
-    server_version = "N0TEBridge/2"
+    server_version = "N0TEBridge/3"
     sys_version = ""
 
     def log_message(self, format, *args):
@@ -99,6 +117,30 @@ class _SnapshotHandler(BaseHTTPRequestHandler):
         allowed = getattr(self.server, "allowed_host_headers", _ALLOWED_HOST_HEADERS)
         return host in allowed
 
+    def _read_json_object(self):
+        content_type = (self.headers.get("Content-Type") or "").split(";", 1)[0].strip().lower()
+        if content_type != "application/json":
+            raise ValueError("Content-Type must be application/json")
+        length_header = self.headers.get("Content-Length")
+        if length_header is None:
+            raise ValueError("Content-Length is required")
+        try:
+            length = int(length_header)
+        except ValueError:
+            raise ValueError("Content-Length is invalid")
+        if length <= 0 or length > _NOTICE_MAX_BODY_BYTES:
+            raise ValueError("request body size is invalid")
+        raw = self.rfile.read(length)
+        if len(raw) != length:
+            raise ValueError("request body is incomplete")
+        try:
+            payload = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, ValueError):
+            raise ValueError("request body must be UTF-8 JSON")
+        if not isinstance(payload, dict):
+            raise ValueError("request body must be an object")
+        return payload
+
     def do_GET(self):
         if not self._request_is_local():
             self._json(403, {"ok": False, "error": "loopback host/origin policy rejected request"})
@@ -114,16 +156,33 @@ class _SnapshotHandler(BaseHTTPRequestHandler):
         self._json(200, payload)
 
     def do_POST(self):
-        self._json(405, {"ok": False, "error": "read-only bridge"})
+        if not self._request_is_local():
+            self._json(403, {"ok": False, "error": "loopback host/origin policy rejected request"})
+            return
+        if self.path != "/notice":
+            self._json(404, {"ok": False, "error": "not found"})
+            return
+        try:
+            payload = self._read_json_object()
+            if set(payload) != {"message"}:
+                raise ValueError("notice body must contain only message")
+            self.server.bridge.request_notice(payload["message"])
+        except ValueError as error:
+            self._json(400, {"ok": False, "error": str(error)})
+            return
+        except Exception as error:
+            self._json(503, {"ok": False, "error": "notice unavailable: %s" % error})
+            return
+        self._json(200, {"ok": True})
 
     def do_PUT(self):
-        self.do_POST()
+        self._json(405, {"ok": False, "error": "method not allowed"})
 
     def do_PATCH(self):
-        self.do_POST()
+        self.do_PUT()
 
     def do_DELETE(self):
-        self.do_POST()
+        self.do_PUT()
 
 
 class _BridgeServer(ThreadingHTTPServer):
@@ -132,11 +191,12 @@ class _BridgeServer(ThreadingHTTPServer):
 
 
 class N0TEBridge(ControlSurface):
-    """Dependency-light, read-only Ableton observation bridge.
+    """Dependency-light Ableton observation + advice-display bridge.
 
-    The bridge intentionally exposes no setters, transport controls, device writes,
-    calibration fields, Song selection, or provider requests. It observes Live on
-    Live's main thread and serves one bounded JSON snapshot over IPv4 loopback.
+    The bridge exposes no tempo/transport/device/track setters, no Song selection,
+    no calibration/provider input and no persistent Set writes. It observes Live on
+    Live's main thread, serves one bounded JSON snapshot over IPv4 loopback, and may
+    display a bounded N0TE advice notice through ControlSurface.show_message().
     The bridge session identifier is scoped to the current Live Song object so a
     save keeps continuity while loading another Set rotates session identity.
     """
@@ -178,7 +238,7 @@ class N0TEBridge(ControlSurface):
         self._server = server
         self._server_thread = thread
         self.port = actual_port
-        self._log("read-only snapshot bridge listening on http://%s:%s" % (self.host, self.port))
+        self._log("observation/advice bridge listening on http://%s:%s" % (self.host, self.port))
 
     def disconnect(self):
         server = self._server
@@ -221,6 +281,14 @@ class N0TEBridge(ControlSurface):
 
     def request_snapshot(self):
         return self._call_live_thread(self._capture_snapshot)
+
+    def request_notice(self, message):
+        text = _notice_text(message)
+        return self._call_live_thread(lambda: self._show_notice(text))
+
+    def _show_notice(self, text):
+        self.show_message("N0TE: %s" % text)
+        return text
 
     def _session_id_for_song(self, song):
         if song is not self._observed_song or self._bridge_session_id is None:
