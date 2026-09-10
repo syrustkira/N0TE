@@ -16,6 +16,12 @@ SCRIPT_DIR_NAME = "N0TEBridge"
 SCRIPT_FILE_NAME = "N0TEBridge.lua"
 SNAPSHOT_FILE_NAME = "n0te_snapshot.json"
 RESOURCE_PATH_ENV = "N0TE_REAPER_RESOURCE_PATH"
+_KNOWN_BRIDGE_SCHEMAS = frozenset(
+    {
+        'local SCHEMA = "n0te.reaper-observation/v1"',
+        'local SCHEMA = "n0te.reaper-observation/v2"',
+    }
+)
 
 
 class ReaperBridgeInstallerError(RuntimeError):
@@ -147,7 +153,7 @@ def _existing_is_ours(path: Path) -> bool:
         return False
     return (
         "N0TE REAPER read-side bridge" in text
-        and 'local SCHEMA = "n0te.reaper-observation/v1"' in text
+        and any(marker in text for marker in _KNOWN_BRIDGE_SCHEMAS)
         and 'local ADAPTER_ID = "n0te-reaper-reascript"' in text
     )
 

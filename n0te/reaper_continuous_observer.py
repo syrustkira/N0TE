@@ -46,16 +46,28 @@ def _text(value: object, field: str) -> str:
     return text
 
 
-def _selected_tracks_fingerprint(snapshot: ReaperObservationSnapshot) -> tuple[tuple[object, ...], ...]:
+def _selected_tracks_fingerprint(
+    snapshot: ReaperObservationSnapshot,
+) -> tuple[tuple[object, ...], ...]:
     return tuple((track.index, track.guid, track.name) for track in snapshot.selected_tracks)
+
+
+def _device_fingerprint(snapshot: ReaperObservationSnapshot) -> tuple[object, ...]:
+    return (
+        snapshot.track_fx_chain_observed,
+        tuple(
+            (fx.index, fx.name, fx.enabled, fx.offline)
+            for fx in snapshot.selected_track_fx
+        ),
+    )
 
 
 def _observation_fingerprint(snapshot: ReaperObservationSnapshot) -> tuple[object, ...]:
     """Only facts that map to canonical identity/focus/Shadow trigger a commit.
 
     Play position, project state-change count and total track count remain hot snapshot
-    telemetry. They are intentionally excluded so polling does not create append-only
-    history for facts N0TE cannot yet represent semantically in Host Shadow.
+    telemetry. Device-chain facts are local technical truth and therefore do trigger a
+    Host Shadow refresh, but they are deliberately absent from reference discovery.
     """
 
     return (
@@ -67,6 +79,7 @@ def _observation_fingerprint(snapshot: ReaperObservationSnapshot) -> tuple[objec
         snapshot.play_state,
         snapshot.repeat_enabled,
         _selected_tracks_fingerprint(snapshot),
+        _device_fingerprint(snapshot),
     )
 
 

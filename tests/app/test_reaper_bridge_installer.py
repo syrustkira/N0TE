@@ -7,6 +7,7 @@ import pytest
 from n0te.platforms import PlatformEnvironment
 from n0te.reaper_bridge_installer import (
     ReaperBridgeInstallerError,
+    bundled_bridge_source,
     install_bridge,
     resolve_resource_path,
 )
@@ -18,10 +19,10 @@ def _resource(root: Path) -> Path:
     return root
 
 
-def _source(path: Path, marker="v1") -> Path:
+def _source(path: Path, marker="v1", *, schema="v1") -> Path:
     path.write_text(
         "-- N0TE REAPER read-side bridge.\n"
-        'local SCHEMA = "n0te.reaper-observation/v1"\n'
+        f'local SCHEMA = "n0te.reaper-observation/{schema}"\n'
         'local ADAPTER_ID = "n0te-reaper-reascript"\n'
         f"-- {marker}\n",
         encoding="utf-8",
@@ -79,6 +80,23 @@ def test_install_is_atomic_idempotent_and_returns_snapshot_path(tmp_path: Path):
     assert third.target_file.read_bytes() == updated_source.read_bytes()
 
 
+def test_installer_recognizes_current_v2_bridge_but_not_unknown_future_schema(tmp_path: Path):
+    resource = _resource(tmp_path / "resource")
+    source_v2_a = _source(tmp_path / "v2-a.lua", marker="a", schema="v2")
+    source_v2_b = _source(tmp_path / "v2-b.lua", marker="b", schema="v2")
+
+    first = install_bridge(resource, source=source_v2_a)
+    assert first.status == "INSTALLED"
+    updated = install_bridge(resource, source=source_v2_b)
+    assert updated.status == "UPDATED"
+    assert updated.target_file.read_bytes() == source_v2_b.read_bytes()
+
+    unknown_v3 = _source(tmp_path / "v3.lua", marker="future", schema="v3")
+    updated.target_file.write_bytes(unknown_v3.read_bytes())
+    with pytest.raises(ReaperBridgeInstallerError, match="unrelated"):
+        install_bridge(resource, source=source_v2_b)
+
+
 def test_installer_refuses_unrelated_existing_target(tmp_path: Path):
     resource = _resource(tmp_path / "resource")
     target_dir = resource / "Scripts" / "N0TEBridge"
@@ -101,3 +119,9 @@ def test_installer_refuses_unexpected_directory_contents(tmp_path: Path):
 
     with pytest.raises(ReaperBridgeInstallerError, match="unexpected files"):
         install_bridge(resource, source=source)
+
+
+def test_bundled_source_is_current_v2_read_side_bridge():
+    text = bundled_bridge_source().read_text(encoding="utf-8")
+    assert 'local SCHEMA = "n0te.reaper-observation/v2"' in text
+    assert 'local ADAPTER_ID = "n0te-reaper-reascript"' in text

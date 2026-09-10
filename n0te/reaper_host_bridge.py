@@ -17,11 +17,14 @@ from .host_session_handshake import (
 from .hosts import HostRuntimeIdentity
 from .shadow import ShadowEventInput
 
-REAPER_SNAPSHOT_SCHEMA = "n0te.reaper-observation/v1"
+REAPER_SNAPSHOT_SCHEMA = "n0te.reaper-observation/v2"
+REAPER_LEGACY_SNAPSHOT_SCHEMA = "n0te.reaper-observation/v1"
 DEFAULT_REAPER_SNAPSHOT_NAME = "n0te_snapshot.json"
 _MAX_SNAPSHOT_BYTES = 65536
 _MAX_SELECTED_TRACKS = 32
-_ALLOWED_TOP_LEVEL = frozenset(
+_MAX_SELECTED_TRACK_FX = 64
+_MAX_FX_NAME_CHARS = 256
+_BASE_ALLOWED_TOP_LEVEL = frozenset(
     {
         "schema",
         "adapter",
@@ -36,6 +39,7 @@ _ALLOWED_TOP_LEVEL = frozenset(
         "selection_truncated",
     }
 )
+_V2_ALLOWED_TOP_LEVEL = _BASE_ALLOWED_TOP_LEVEL | frozenset({"selected_track_fx"})
 
 
 class ReaperHostBridgeError(RuntimeError):
@@ -46,6 +50,13 @@ def _text(value: object, field: str) -> str:
     text = str(value).strip()
     if not text:
         raise ReaperHostBridgeError(f"{field} must not be empty")
+    return text
+
+
+def _bounded_text(value: object, field: str, *, maximum: int) -> str:
+    text = _text(value, field)
+    if len(text) > maximum:
+        raise ReaperHostBridgeError(f"{field} exceeds {maximum} characters")
     return text
 
 
@@ -81,6 +92,12 @@ def _integer(
     return number
 
 
+def _bool(value: object, field: str) -> bool:
+    if type(value) is not bool:
+        raise ReaperHostBridgeError(f"{field} must be bool")
+    return value
+
+
 def _object(value: object, field: str) -> dict[str, object]:
     if not isinstance(value, dict):
         raise ReaperHostBridgeError(f"{field} must be an object")
@@ -94,9 +111,7 @@ def _exact_fields(
 ) -> None:
     extra = sorted(set(payload) - allowed)
     if extra:
-        raise ReaperHostBridgeError(
-            f"{field} contains unsupported fields: {extra}"
-        )
+        raise ReaperHostBridgeError(f"{field} contains unsupported fields: {extra}")
 
 
 @dataclass(frozen=True)
@@ -116,6 +131,32 @@ class ReaperSelectedTrack:
 
 
 @dataclass(frozen=True)
+class ReaperTrackFX:
+    index: int
+    name: str
+    enabled: bool
+    offline: bool
+
+    def __post_init__(self) -> None:
+        object.__setattr__(
+            self,
+            "index",
+            _integer(self.index, "selected_track_fx.index", minimum=0, maximum=63),
+        )
+        object.__setattr__(
+            self,
+            "name",
+            _bounded_text(
+                self.name,
+                "selected_track_fx.name",
+                maximum=_MAX_FX_NAME_CHARS,
+            ),
+        )
+        object.__setattr__(self, "enabled", _bool(self.enabled, "selected_track_fx.enabled"))
+        object.__setattr__(self, "offline", _bool(self.offline, "selected_track_fx.offline"))
+
+
+@dataclass(frozen=True)
 class ReaperObservationSnapshot:
     bridge_session_id: str
     runtime: HostRuntimeIdentity
@@ -130,6 +171,8 @@ class ReaperObservationSnapshot:
     track_count: int
     selected_tracks: tuple[ReaperSelectedTrack, ...]
     selection_truncated: bool
+    selected_track_fx: tuple[ReaperTrackFX, ...]
+    track_fx_chain_observed: bool
     adapter_id: str
     adapter_version: str
 
@@ -155,11 +198,13 @@ class ReaperObservationSnapshot:
         tempo = _finite(self.tempo_bpm, "tempo_bpm")
         if not 20.0 <= tempo <= 400.0:
             raise ReaperHostBridgeError("tempo_bpm must be between 20 and 400")
-        play_state = _integer(self.play_state, "transport.play_state", minimum=0, maximum=7)
-        position = _finite(
-            self.play_position_seconds,
-            "transport.play_position_seconds",
+        play_state = _integer(
+            self.play_state,
+            "transport.play_state",
+            minimum=0,
+            maximum=7,
         )
+        position = _finite(self.play_position_seconds, "transport.play_position_seconds")
         if position < 0:
             raise ReaperHostBridgeError(
                 "transport.play_position_seconds must be non-negative"
@@ -185,6 +230,27 @@ class ReaperObservationSnapshot:
             raise ReaperHostBridgeError(
                 "truncated selection must contain the maximum emitted track count"
             )
+        fx = tuple(self.selected_track_fx)
+        if not all(isinstance(item, ReaperTrackFX) for item in fx):
+            raise TypeError("selected_track_fx must contain ReaperTrackFX values")
+        if len(fx) > _MAX_SELECTED_TRACK_FX:
+            raise ReaperHostBridgeError("selected_track_fx exceeds bridge bound")
+        if type(self.track_fx_chain_observed) is not bool:
+            raise ReaperHostBridgeError("track_fx_chain_observed must be bool")
+        if self.track_fx_chain_observed and len(tracks) != 1:
+            raise ReaperHostBridgeError(
+                "selected track FX chain requires exactly one selected track"
+            )
+        if not self.track_fx_chain_observed and fx:
+            raise ReaperHostBridgeError(
+                "unobserved selected track FX chain must not contain plugin claims"
+            )
+        if self.track_fx_chain_observed:
+            indexes = [item.index for item in fx]
+            if indexes != list(range(len(fx))):
+                raise ReaperHostBridgeError(
+                    "selected track FX indexes must be contiguous chain positions"
+                )
         object.__setattr__(self, "bridge_session_id", session)
         object.__setattr__(self, "observed_at_epoch_seconds", observed)
         object.__setattr__(self, "project_name", project_name)
@@ -194,14 +260,19 @@ class ReaperObservationSnapshot:
         object.__setattr__(self, "play_position_seconds", position)
         object.__setattr__(self, "track_count", track_count)
         object.__setattr__(self, "selected_tracks", tracks)
+        object.__setattr__(self, "selected_track_fx", fx)
         object.__setattr__(self, "adapter_id", _text(self.adapter_id, "adapter.id"))
         object.__setattr__(self, "adapter_version", _text(self.adapter_version, "adapter.version"))
 
     @classmethod
     def from_payload(cls, payload: object) -> "ReaperObservationSnapshot":
         root = _object(payload, "snapshot")
-        _exact_fields(root, _ALLOWED_TOP_LEVEL, "snapshot")
-        if root.get("schema") != REAPER_SNAPSHOT_SCHEMA:
+        schema = root.get("schema")
+        if schema == REAPER_SNAPSHOT_SCHEMA:
+            _exact_fields(root, _V2_ALLOWED_TOP_LEVEL, "snapshot")
+        elif schema == REAPER_LEGACY_SNAPSHOT_SCHEMA:
+            _exact_fields(root, _BASE_ALLOWED_TOP_LEVEL, "snapshot")
+        else:
             raise ReaperHostBridgeError("unsupported REAPER snapshot schema")
 
         adapter = _object(root.get("adapter"), "adapter")
@@ -229,8 +300,7 @@ class ReaperObservationSnapshot:
             frozenset({"name", "saved", "state_change_count"}),
             "project",
         )
-        if type(project.get("saved")) is not bool:
-            raise ReaperHostBridgeError("project.saved must be bool")
+        project_saved = _bool(project.get("saved"), "project.saved")
 
         transport = _object(root.get("transport"), "transport")
         _exact_fields(
@@ -238,8 +308,10 @@ class ReaperObservationSnapshot:
             frozenset({"play_state", "play_position_seconds", "repeat_enabled"}),
             "transport",
         )
-        if type(transport.get("repeat_enabled")) is not bool:
-            raise ReaperHostBridgeError("transport.repeat_enabled must be bool")
+        repeat_enabled = _bool(
+            transport.get("repeat_enabled"),
+            "transport.repeat_enabled",
+        )
 
         raw_tracks = root.get("selected_tracks")
         if not isinstance(raw_tracks, list):
@@ -254,13 +326,91 @@ class ReaperObservationSnapshot:
             )
             tracks.append(
                 ReaperSelectedTrack(
-                    index=_integer(item.get("index"), f"selected_tracks[{index}].index", minimum=0),
+                    index=_integer(
+                        item.get("index"),
+                        f"selected_tracks[{index}].index",
+                        minimum=0,
+                    ),
                     guid=_text(item.get("guid"), f"selected_tracks[{index}].guid"),
                     name=_text(item.get("name"), f"selected_tracks[{index}].name"),
                 )
             )
-        if type(root.get("selection_truncated")) is not bool:
-            raise ReaperHostBridgeError("selection_truncated must be bool")
+        selection_truncated = _bool(
+            root.get("selection_truncated"),
+            "selection_truncated",
+        )
+
+        track_fx: tuple[ReaperTrackFX, ...] = ()
+        track_fx_chain_observed = False
+        if schema == REAPER_SNAPSHOT_SCHEMA and "selected_track_fx" in root:
+            raw_fx = root.get("selected_track_fx")
+            if raw_fx is not None:
+                if len(tracks) != 1:
+                    raise ReaperHostBridgeError(
+                        "selected_track_fx require exactly one selected track"
+                    )
+                fx_state = _object(raw_fx, "selected_track_fx")
+                _exact_fields(
+                    fx_state,
+                    frozenset({"complete", "plugins"}),
+                    "selected_track_fx",
+                )
+                complete = _bool(fx_state.get("complete"), "selected_track_fx.complete")
+                raw_plugins = fx_state.get("plugins")
+                if not isinstance(raw_plugins, list):
+                    raise ReaperHostBridgeError(
+                        "selected_track_fx.plugins must be an array"
+                    )
+                if len(raw_plugins) > _MAX_SELECTED_TRACK_FX:
+                    raise ReaperHostBridgeError(
+                        "selected_track_fx.plugins exceeds bridge bound"
+                    )
+                if not complete and raw_plugins:
+                    raise ReaperHostBridgeError(
+                        "incomplete selected_track_fx must not contain partial evidence"
+                    )
+                if complete:
+                    parsed_fx: list[ReaperTrackFX] = []
+                    for expected_index, raw_plugin in enumerate(raw_plugins):
+                        item = _object(
+                            raw_plugin,
+                            f"selected_track_fx.plugins[{expected_index}]",
+                        )
+                        _exact_fields(
+                            item,
+                            frozenset({"index", "name", "enabled", "offline"}),
+                            f"selected_track_fx.plugins[{expected_index}]",
+                        )
+                        raw_index = _integer(
+                            item.get("index"),
+                            f"selected_track_fx.plugins[{expected_index}].index",
+                            minimum=0,
+                            maximum=63,
+                        )
+                        if raw_index != expected_index:
+                            raise ReaperHostBridgeError(
+                                "selected track FX indexes must be contiguous chain positions"
+                            )
+                        parsed_fx.append(
+                            ReaperTrackFX(
+                                index=raw_index,
+                                name=_bounded_text(
+                                    item.get("name"),
+                                    f"selected_track_fx.plugins[{expected_index}].name",
+                                    maximum=_MAX_FX_NAME_CHARS,
+                                ),
+                                enabled=_bool(
+                                    item.get("enabled"),
+                                    f"selected_track_fx.plugins[{expected_index}].enabled",
+                                ),
+                                offline=_bool(
+                                    item.get("offline"),
+                                    f"selected_track_fx.plugins[{expected_index}].offline",
+                                ),
+                            )
+                        )
+                    track_fx = tuple(parsed_fx)
+                    track_fx_chain_observed = True
 
         return cls(
             bridge_session_id=_text(root.get("bridge_session_id"), "bridge_session_id"),
@@ -271,7 +421,7 @@ class ReaperObservationSnapshot:
                 minimum=0,
             ),
             project_name=_text(project.get("name"), "project.name"),
-            project_saved=project["saved"],
+            project_saved=project_saved,
             project_state_change_count=_integer(
                 project.get("state_change_count"),
                 "project.state_change_count",
@@ -288,10 +438,12 @@ class ReaperObservationSnapshot:
                 transport.get("play_position_seconds"),
                 "transport.play_position_seconds",
             ),
-            repeat_enabled=transport["repeat_enabled"],
+            repeat_enabled=repeat_enabled,
             track_count=_integer(root.get("track_count"), "track_count", minimum=0),
             selected_tracks=tuple(tracks),
-            selection_truncated=root["selection_truncated"],
+            selection_truncated=selection_truncated,
+            selected_track_fx=track_fx,
+            track_fx_chain_observed=track_fx_chain_observed,
             adapter_id=_text(adapter.get("id"), "adapter.id"),
             adapter_version=_text(adapter.get("version"), "adapter.version"),
         )
@@ -362,16 +514,21 @@ class ReaperObservationSnapshot:
                     **base,
                 )
             )
+        if self.track_fx_chain_observed:
+            facts.append(
+                CapabilityFactInput(
+                    capability="device.chain.read",
+                    evidence_ref=f"reaper:snapshot:{session}:selected-track-fx",
+                    **base,
+                )
+            )
         return tuple(facts)
 
     def focus_dimensions(self) -> tuple[FocusDimension, ...]:
         if not self.selected_tracks:
             return ()
         refs = tuple(item.focus_ref for item in self.selected_tracks)
-        if len(refs) == 1:
-            state = "OBSERVED_EXACT"
-        else:
-            state = "OBSERVED_AMBIGUOUS"
+        state = "OBSERVED_EXACT" if len(refs) == 1 else "OBSERVED_AMBIGUOUS"
         return (
             FocusDimension(
                 dimension="TRACK",
@@ -445,6 +602,67 @@ class ReaperObservationSnapshot:
                     evidence_ref=f"reaper:snapshot:{session}:selected-tracks",
                 )
             )
+
+        if self.track_fx_chain_observed:
+            track = self.selected_tracks[0]
+            evidence_ref = f"reaper:snapshot:{session}:selected-track-fx"
+            events.append(
+                ShadowEventInput(
+                    object_kind="TRACK",
+                    object_ref=track.focus_ref,
+                    field="device_count",
+                    action="SET",
+                    value=len(self.selected_track_fx),
+                    evidence_ref=evidence_ref,
+                )
+            )
+            for fx in self.selected_track_fx:
+                fx_ref = f"reaper-fx:{track.guid}:{fx.index}"
+                fx_evidence = f"{evidence_ref}:{fx.index}"
+                events.extend(
+                    (
+                        ShadowEventInput(
+                            object_kind="DEVICE_PLUGIN",
+                            object_ref=fx_ref,
+                            field="track_ref",
+                            action="SET",
+                            value=track.focus_ref,
+                            evidence_ref=fx_evidence,
+                        ),
+                        ShadowEventInput(
+                            object_kind="DEVICE_PLUGIN",
+                            object_ref=fx_ref,
+                            field="index",
+                            action="SET",
+                            value=fx.index,
+                            evidence_ref=fx_evidence,
+                        ),
+                        ShadowEventInput(
+                            object_kind="DEVICE_PLUGIN",
+                            object_ref=fx_ref,
+                            field="name",
+                            action="SET",
+                            value=fx.name,
+                            evidence_ref=fx_evidence,
+                        ),
+                        ShadowEventInput(
+                            object_kind="DEVICE_PLUGIN",
+                            object_ref=fx_ref,
+                            field="enabled",
+                            action="SET",
+                            value=fx.enabled,
+                            evidence_ref=fx_evidence,
+                        ),
+                        ShadowEventInput(
+                            object_kind="DEVICE_PLUGIN",
+                            object_ref=fx_ref,
+                            field="offline",
+                            action="SET",
+                            value=fx.offline,
+                            evidence_ref=fx_evidence,
+                        ),
+                    )
+                )
         return ShadowObservationInput(
             coverage="FULL",
             actor="EXTERNAL",

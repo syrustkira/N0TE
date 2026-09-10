@@ -8,7 +8,12 @@ import pytest
 
 from n0te.host_session_handshake import HostSessionReferenceWorkflow
 from n0te.memory import HeadquartersMemory
+from n0te.reaper_continuous_observer import (
+    _observation_fingerprint,
+    _reference_fingerprint,
+)
 from n0te.reaper_host_bridge import (
+    REAPER_LEGACY_SNAPSHOT_SCHEMA,
     REAPER_SNAPSHOT_SCHEMA,
     ReaperHostBridgeError,
     ReaperObservationSnapshot,
@@ -60,6 +65,7 @@ def test_snapshot_maps_reaper_truth_to_focus_capabilities_and_shadow():
     assert snapshot.is_playing is True
     assert snapshot.is_paused is False
     assert snapshot.is_recording is False
+    assert snapshot.track_fx_chain_observed is False
 
     capabilities = {fact.capability for fact in snapshot.capabilities()}
     assert capabilities == {
@@ -218,6 +224,85 @@ def test_reaper_snapshot_reaches_canonical_reference_workflow(tmp_path: Path):
         headquarters.close()
 
 
+def test_v2_selected_track_fx_map_to_canonical_device_plugin_facts():
+    payload = _payload()
+    payload["selected_track_fx"] = {
+        "complete": True,
+        "plugins": [
+            {"index": 0, "name": "ReaEQ", "enabled": True, "offline": False},
+            {"index": 1, "name": "StandardCLIP", "enabled": False, "offline": False},
+        ],
+    }
+    snapshot = ReaperObservationSnapshot.from_payload(payload)
+    assert snapshot.track_fx_chain_observed is True
+    assert [(fx.index, fx.name, fx.enabled, fx.offline) for fx in snapshot.selected_track_fx] == [
+        (0, "ReaEQ", True, False),
+        (1, "StandardCLIP", False, False),
+    ]
+    assert "device.chain.read" in {item.capability for item in snapshot.capabilities()}
+
+    facts = {
+        (event.object_kind, event.object_ref, event.field): event.value
+        for event in snapshot.shadow().events
+    }
+    track_ref = "reaper-track:{TRACK-ONE}"
+    assert facts[("TRACK", track_ref, "device_count")] == 2
+    assert facts[("DEVICE_PLUGIN", "reaper-fx:{TRACK-ONE}:0", "name")] == "ReaEQ"
+    assert facts[("DEVICE_PLUGIN", "reaper-fx:{TRACK-ONE}:0", "enabled")] is True
+    assert facts[("DEVICE_PLUGIN", "reaper-fx:{TRACK-ONE}:1", "offline")] is False
+
+
+def test_incomplete_or_ambiguous_fx_evidence_never_claims_partial_chain():
+    payload = _payload()
+    payload["selected_track_fx"] = {"complete": False, "plugins": []}
+    snapshot = ReaperObservationSnapshot.from_payload(payload)
+    assert snapshot.track_fx_chain_observed is False
+    assert "device.chain.read" not in {item.capability for item in snapshot.capabilities()}
+    assert not any(item.object_kind == "DEVICE_PLUGIN" for item in snapshot.shadow().events)
+
+    payload["selected_track_fx"] = {
+        "complete": False,
+        "plugins": [{"index": 0, "name": "Untrusted", "enabled": True, "offline": False}],
+    }
+    with pytest.raises(ReaperHostBridgeError, match="partial evidence"):
+        ReaperObservationSnapshot.from_payload(payload)
+
+    ambiguous = _payload(
+        selected_tracks=[
+            {"index": 1, "guid": "{TRACK-A}", "name": "A"},
+            {"index": 2, "guid": "{TRACK-B}", "name": "B"},
+        ]
+    )
+    ambiguous["selected_track_fx"] = {"complete": True, "plugins": []}
+    with pytest.raises(ReaperHostBridgeError, match="exactly one selected track"):
+        ReaperObservationSnapshot.from_payload(ambiguous)
+
+
+def test_legacy_v1_keeps_fx_evidence_unobserved():
+    payload = _payload()
+    payload["schema"] = REAPER_LEGACY_SNAPSHOT_SCHEMA
+    snapshot = ReaperObservationSnapshot.from_payload(payload)
+    assert snapshot.track_fx_chain_observed is False
+    assert snapshot.selected_track_fx == ()
+
+
+def test_fx_change_updates_observation_without_retriggering_reference_search():
+    before_payload = _payload()
+    before_payload["selected_track_fx"] = {
+        "complete": True,
+        "plugins": [{"index": 0, "name": "ReaEQ", "enabled": True, "offline": False}],
+    }
+    after_payload = _payload()
+    after_payload["selected_track_fx"] = {
+        "complete": True,
+        "plugins": [{"index": 0, "name": "ReaComp", "enabled": True, "offline": False}],
+    }
+    before = ReaperObservationSnapshot.from_payload(before_payload)
+    after = ReaperObservationSnapshot.from_payload(after_payload)
+    assert _observation_fingerprint(before) != _observation_fingerprint(after)
+    assert _reference_fingerprint(before) == _reference_fingerprint(after)
+
+
 def test_reaper_script_contains_no_project_mutation_or_raw_path_field():
     root = Path(__file__).resolve().parents[2]
     script = (root / "integrations" / "reaper" / "N0TEBridge.lua").read_text(
@@ -229,6 +314,10 @@ def test_reaper_script_contains_no_project_mutation_or_raw_path_field():
     assert "GetProjectStateChangeCount" in script
     assert "Master_GetTempo" in script
     assert "CountSelectedTracks" in script
+    assert "TrackFX_GetCount" in script
+    assert "TrackFX_GetFXName" in script
+    assert "TrackFX_GetEnabled" in script
+    assert "TrackFX_GetOffline" in script
     assert '"path"' not in script
     for forbidden in (
         "SetMediaTrackInfo_Value",
@@ -237,5 +326,8 @@ def test_reaper_script_contains_no_project_mutation_or_raw_path_field():
         "Main_OnCommand",
         "CSurf_OnPlay",
         "CSurf_OnStop",
+        "TrackFX_SetEnabled",
+        "TrackFX_SetOffline",
+        "TrackFX_SetParam",
     ):
         assert forbidden not in script

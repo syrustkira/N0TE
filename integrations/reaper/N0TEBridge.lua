@@ -2,11 +2,12 @@
 -- Observes the active project and writes bounded local snapshots only.
 -- It does not call any REAPER setter/action API and never emits the .rpp path.
 
-local SCHEMA = "n0te.reaper-observation/v1"
+local SCHEMA = "n0te.reaper-observation/v2"
 local ADAPTER_ID = "n0te-reaper-reascript"
 local ADAPTER_VERSION = "1"
 local WRITE_INTERVAL = 0.25
 local MAX_SELECTED_TRACKS = 32
+local MAX_SELECTED_TRACK_FX = 64
 
 local resource_path = reaper.GetResourcePath()
 local bridge_dir = resource_path .. "/Scripts/N0TEBridge"
@@ -94,6 +95,44 @@ local function selected_tracks_json(project)
   return "[" .. table.concat(rows, ",") .. "]", count > MAX_SELECTED_TRACKS
 end
 
+local function selected_track_fx_json(project)
+  local selected_count = reaper.CountSelectedTracks(project)
+  if selected_count ~= 1 then return "null" end
+
+  local track = reaper.GetSelectedTrack(project, 0)
+  if not track then return '{"complete":false,"plugins":[]}' end
+
+  local ok_count, fx_count = pcall(reaper.TrackFX_GetCount, track)
+  fx_count = tonumber(fx_count)
+  if not ok_count or fx_count == nil or fx_count < 0 or fx_count > MAX_SELECTED_TRACK_FX then
+    return '{"complete":false,"plugins":[]}'
+  end
+
+  local rows = {}
+  for fx = 0, math.floor(fx_count) - 1 do
+    local ok_name, name_ok, name = pcall(reaper.TrackFX_GetFXName, track, fx)
+    local text = tostring(name or "")
+    if not ok_name or not name_ok or text == "" then
+      return '{"complete":false,"plugins":[]}'
+    end
+
+    local ok_enabled, enabled = pcall(reaper.TrackFX_GetEnabled, track, fx)
+    local ok_offline, offline = pcall(reaper.TrackFX_GetOffline, track, fx)
+    if not ok_enabled or not ok_offline then
+      return '{"complete":false,"plugins":[]}'
+    end
+
+    rows[#rows + 1] = "{" ..
+      '"index":' .. tostring(fx) .. "," ..
+      '"name":' .. json_escape(text) .. "," ..
+      '"enabled":' .. bool_json(enabled == true) .. "," ..
+      '"offline":' .. bool_json(offline == true) ..
+      "}"
+  end
+
+  return '{"complete":true,"plugins":[' .. table.concat(rows, ",") .. ']}'
+end
+
 local function build_snapshot()
   local project, project_filename = reaper.EnumProjects(-1)
   if not project then return nil end
@@ -114,6 +153,7 @@ local function build_snapshot()
   local repeat_enabled = (reaper.GetSetRepeatEx(project, -1) or 0) == 1
   local track_count = math.max(0, math.floor(reaper.CountTracks(project) or 0))
   local selected_json, selection_truncated = selected_tracks_json(project)
+  local selected_track_fx = selected_track_fx_json(project)
   local version, os_name, machine = runtime_labels()
 
   return "{" ..
@@ -127,7 +167,8 @@ local function build_snapshot()
     '"transport":{"play_state":' .. tostring(play_state) .. ',"play_position_seconds":' .. string.format("%.6f", play_position) .. ',"repeat_enabled":' .. bool_json(repeat_enabled) .. "}," ..
     '"track_count":' .. tostring(track_count) .. "," ..
     '"selected_tracks":' .. selected_json .. "," ..
-    '"selection_truncated":' .. bool_json(selection_truncated) ..
+    '"selection_truncated":' .. bool_json(selection_truncated) .. "," ..
+    '"selected_track_fx":' .. selected_track_fx ..
     "}"
 end
 
