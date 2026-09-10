@@ -268,6 +268,24 @@ def test_real_fl_script_writes_atomic_read_only_snapshot_and_external_client_rea
     assert not snapshot_path.exists()
 
 
+def test_successful_project_load_rotates_bridge_session_identity(tmp_path: Path, monkeypatch):
+    snapshot_path = tmp_path / "n0te_snapshot.json"
+    namespace, _ = _load_fl_script(monkeypatch, snapshot_path)
+    namespace["OnInit"]()
+    initial = json.loads(snapshot_path.read_text(encoding="utf-8"))
+
+    namespace["OnProjectLoad"](101)
+    after_error = json.loads(snapshot_path.read_text(encoding="utf-8"))
+    assert after_error["bridge_session_id"] == initial["bridge_session_id"]
+
+    namespace["OnProjectLoad"](100)
+    loaded = json.loads(snapshot_path.read_text(encoding="utf-8"))
+    assert loaded["bridge_session_id"] != initial["bridge_session_id"]
+
+    namespace["OnDeInit"]()
+    assert not snapshot_path.exists()
+
+
 def test_fl_snapshot_roundtrips_into_canonical_reference_workflow(tmp_path: Path):
     snapshot_path = tmp_path / "n0te_snapshot.json"
     snapshot_path.write_text(json.dumps(_payload()), encoding="utf-8")

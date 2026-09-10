@@ -18,6 +18,7 @@ ADAPTER_ID = "N0TEBridge"
 ADAPTER_VERSION = "1"
 SNAPSHOT_FILE_NAME = "n0te_snapshot.json"
 WRITE_INTERVAL_SECONDS = 0.75
+PROJECT_LOAD_OK = 100
 
 _BRIDGE_SESSION_ID = uuid.uuid4().hex
 _SNAPSHOT_PATH = os.path.join(os.path.dirname(__file__), SNAPSHOT_FILE_NAME)
@@ -186,6 +187,13 @@ def _remove_own_snapshot():
         pass
 
 
+def _rotate_bridge_session():
+    global _BRIDGE_SESSION_ID, _LAST_WRITE_MONOTONIC
+    _remove_own_snapshot()
+    _BRIDGE_SESSION_ID = uuid.uuid4().hex
+    _LAST_WRITE_MONOTONIC = 0.0
+
+
 def OnInit():
     _write_snapshot(True)
 
@@ -203,7 +211,13 @@ def OnDoFullRefresh():
 
 
 def OnProjectLoad(status):
-    _write_snapshot(True)
+    try:
+        status = int(status)
+    except Exception:
+        return
+    if status == PROJECT_LOAD_OK:
+        _rotate_bridge_session()
+        _write_snapshot(True)
 
 
 def OnDeInit():
