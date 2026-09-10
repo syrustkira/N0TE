@@ -10,7 +10,9 @@ from n0te.creative_suggestions_shell import (
     _result_markup,
     _semantic_tool_context_markup,
 )
+from n0te.fl_studio_observer_service import FLStudioObserverService
 from n0te.hosts import HostRuntimeIdentity
+from n0te.reaper_observer_service import ReaperObserverService
 from n0te.shadow import ShadowEventInput
 from n0te.tools import SemanticToolProfile, ToolCapabilityBinding, ToolEndpoint
 
@@ -32,6 +34,13 @@ class _Shell:
         return f'<input type="hidden" value="{token}">'
 
 
+class _NoopObserver:
+    interval_seconds = 1.0
+
+    async def poll_once(self, *, force_discovery=False):
+        raise AssertionError("status projection test must not poll the DAW")
+
+
 def _runtime() -> HostRuntimeIdentity:
     return HostRuntimeIdentity.from_runtime_labels(
         host_family="ABLETON_LIVE",
@@ -39,6 +48,16 @@ def _runtime() -> HostRuntimeIdentity:
         edition="Suite",
         os_name="Darwin",
         machine="arm64",
+    )
+
+
+def _runtime_for(host_family: str) -> HostRuntimeIdentity:
+    return HostRuntimeIdentity.from_runtime_labels(
+        host_family=host_family,
+        version="test-1",
+        edition="Test",
+        os_name="Linux",
+        machine="x86_64",
     )
 
 
@@ -70,6 +89,39 @@ def _record_tools(headquarters, song_id, *, names, location="ableton-test:set-a"
         evidence_ref="test:shadow",
         verified=True,
         events=tuple(events),
+    )
+    return workspace
+
+
+def _record_status_tools(headquarters, song_id, *, host_family: str):
+    workspace = headquarters.workspaces.create(
+        song_id,
+        runtime=_runtime_for(host_family),
+        location_ref=f"test:{host_family.casefold()}:session",
+        display_name=f"{host_family} Status Test",
+    )
+    state = headquarters.workspaces.state(workspace.id)
+    position_field = "slot" if host_family == "FL_STUDIO" else "index"
+    events = (
+        ShadowEventInput("TRACK", "track:0", "name", "SET", "Lead", "test:track"),
+        ShadowEventInput("TRACK", "track:0", "device_count", "SET", 1, "test:chain"),
+        ShadowEventInput("DEVICE_PLUGIN", "device:track:0:0", "track_ref", "SET", "track:0", "test:device"),
+        ShadowEventInput("DEVICE_PLUGIN", "device:track:0:0", position_field, "SET", 0, "test:device"),
+        ShadowEventInput("DEVICE_PLUGIN", "device:track:0:0", "name", "SET", "Status Compressor", "test:device"),
+        ShadowEventInput("DEVICE_PLUGIN", "device:track:0:0", "role", "SET", "EFFECT", "test:device"),
+        ShadowEventInput("DEVICE_PLUGIN", "device:track:0:0", "class_name", "SET", "VST3", "test:device"),
+        ShadowEventInput("DEVICE_PLUGIN", "device:track:0:0", "enabled", "SET", True, "test:device"),
+        ShadowEventInput("DEVICE_PLUGIN", "device:track:0:0", "offline", "SET", False, "test:device"),
+    )
+    headquarters.shadow.record_batch(
+        workspace.id,
+        workspace_observation_id=state.current_observation.id,
+        host_runtime_fingerprint=state.current_observation.host_runtime_fingerprint,
+        coverage="FULL",
+        actor="EXTERNAL",
+        evidence_ref="test:status-shadow",
+        verified=True,
+        events=events,
     )
     return workspace
 
@@ -287,3 +339,77 @@ def test_creative_result_markup_includes_current_daw_and_semantic_tool_contexts(
         assert "Generated locally and deterministically" in markup
     finally:
         hq.close()
+
+
+def test_fl_and_reaper_status_services_expose_canonical_active_tools(tmp_path):
+    cases = (
+        ("FL_STUDIO", FLStudioObserverService, "SLOT"),
+        ("REAPER", ReaperObserverService, "INDEX"),
+    )
+    for case_index, (host_family, service_type, position_kind) in enumerate(cases):
+        hq = HeadquartersMemory.create(
+            tmp_path / f"status-{case_index}",
+            f"{host_family} Status Artist",
+        )
+        try:
+            song = hq.store.create_song(f"{host_family} Status Song")
+            workspace = _record_status_tools(
+                hq,
+                song.id,
+                host_family=host_family,
+            )
+            service = service_type(hq, _NoopObserver())
+            assert service._active_tools_status(workspace.id) == {
+                "state": "OBSERVED",
+                "host_family": host_family,
+                "scopes": [
+                    {
+                        "parent_kind": "TRACK",
+                        "parent_ref": "track:0",
+                        "parent_name": "Lead",
+                        "coverage": "COMPLETE",
+                        "expected_count": 1,
+                        "tools": [
+                            {
+                                "device_ref": "device:track:0:0",
+                                "name": "Status Compressor",
+                                "position_kind": position_kind,
+                                "position": 0,
+                                "role": "EFFECT",
+                                "class_name": "VST3",
+                                "enabled": True,
+                                "offline": False,
+                            }
+                        ],
+                    }
+                ],
+            }
+        finally:
+            hq.close()
+
+
+def test_fl_and_reaper_status_services_fail_closed_without_current_shadow(tmp_path):
+    cases = (
+        ("FL_STUDIO", FLStudioObserverService),
+        ("REAPER", ReaperObserverService),
+    )
+    for case_index, (host_family, service_type) in enumerate(cases):
+        hq = HeadquartersMemory.create(
+            tmp_path / f"unavailable-{case_index}",
+            f"{host_family} Unavailable Artist",
+        )
+        try:
+            song = hq.store.create_song(f"{host_family} Unavailable Song")
+            workspace = hq.workspaces.create(
+                song.id,
+                runtime=_runtime_for(host_family),
+                location_ref=f"test:{host_family.casefold()}:no-shadow",
+                display_name=f"{host_family} No Shadow",
+            )
+            service = service_type(hq, _NoopObserver())
+            status = service._active_tools_status(workspace.id)
+            assert status["state"] == "UNAVAILABLE"
+            assert status["error_class"] == "ActiveToolProjectionError"
+            assert status["scopes"] == []
+        finally:
+            hq.close()

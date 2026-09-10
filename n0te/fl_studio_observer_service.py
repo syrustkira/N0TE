@@ -18,7 +18,9 @@ from .fl_studio_continuous_observer import (
     FLStudioContinuousObserver,
 )
 from .fl_studio_host_bridge import FLStudioHostBridgeError, FLStudioSnapshotFileClient
+from .host_runtime import ActiveToolProjectionError, project_active_tools
 from .host_session_handshake import HostSessionReferenceWorkflow
+from .lineage import NotFoundError
 from .memory import HeadquartersMemory
 
 SERVICE_STATES = {"READY", "WAITING_FOR_BRIDGE", "OBSERVING", "STOPPED"}
@@ -266,6 +268,50 @@ class FLStudioObserverService:
         except Exception:
             return False
 
+    def _active_tools_status(self, workspace_id: str) -> dict[str, object]:
+        try:
+            projection = project_active_tools(
+                self.headquarters.workspaces,
+                self.headquarters.shadow,
+                workspace_id,
+            )
+        except (ActiveToolProjectionError, NotFoundError) as exc:
+            return {
+                "state": "UNAVAILABLE",
+                "error_class": type(exc).__name__,
+                "scopes": [],
+            }
+
+        scopes = []
+        for scope in projection.scopes:
+            scopes.append(
+                {
+                    "parent_kind": scope.parent_kind,
+                    "parent_ref": scope.parent_ref,
+                    "parent_name": scope.parent_name,
+                    "coverage": scope.coverage,
+                    "expected_count": scope.expected_count,
+                    "tools": [
+                        {
+                            "device_ref": tool.device_ref,
+                            "name": tool.name,
+                            "position_kind": tool.position_kind,
+                            "position": tool.position,
+                            "role": tool.role,
+                            "class_name": tool.class_name,
+                            "enabled": tool.enabled,
+                            "offline": tool.offline,
+                        }
+                        for tool in scope.tools
+                    ],
+                }
+            )
+        return {
+            "state": "OBSERVED",
+            "host_family": projection.host_family,
+            "scopes": scopes,
+        }
+
     def status_projection(self) -> dict[str, object]:
         cycle = self._latest_cycle
         payload: dict[str, object] = {
@@ -323,6 +369,7 @@ class FLStudioObserverService:
             ),
             "observation_committed": cycle.observation_committed,
         }
+        payload["active_tools"] = self._active_tools_status(binding.workspace_id)
         references = cycle.references
         payload["reference_discovery"] = {
             "provider_id": None if references is None else references.get("provider_id"),
